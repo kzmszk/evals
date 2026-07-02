@@ -8,6 +8,19 @@
 | 2 | 煙と炎 | `smoke-fire.html` | Stable Fluids (WebGL2, GPU) | [docs/02-smoke-fire-plan.md](docs/02-smoke-fire-plan.md) |
 | 3 | ダムブレイク | `dambreak.html` | 粒子法 (Double Density Relaxation) | [docs/03-dambreak-plan.md](docs/03-dambreak-plan.md) |
 
+## プロンプト
+
+* model: fable 5
+```
+流体の可視化シミュレーションを見てみたい。代表的なシミュレーションにはどんなものがある？カルマン禍とか聞いたことがあるけど、ひととおりおしえてほしい。
+```
+
+```
+煙・炎のシミュレーションと、カルマン渦列、ダムブレイクがみたい。それぞれビジュアルとしてインパクトがあるようなデモを作ってほしい。細かい手法や実装方法はまかせる。
+
+途中でrate limitにひっかかるかもしれないので、他のモデルやcodexでも実行できるように、それぞれの開発プランをドキュメントに落としてほしい。
+```
+
 ## 実行方法
 
 HTMLファイルをダブルクリック（`file://` で動く）。ローカルサーバーでもよい:
