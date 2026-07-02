@@ -5,6 +5,8 @@
 | # | デモ | ファイル | 手法 | 計画書 |
 |---|------|---------|------|--------|
 | 1 | ビル爆破カット | `building-explosion.html` | 2D Stable Fluids 風グリッド + パーティクル + セル調レンダリング | [docs/01-building-explosion-plan.md](docs/01-building-explosion-plan.md) |
+| 2 | ビル爆破カット・改 | `cel-explosion.html` | 流体シミュ不使用。全要素を量子化時刻の純関数として作画(コマ打ち・セル調バンド塗り・インパクトフレーム・スクラブ可能) | [docs/02-cel-explosion-plan.md](docs/02-cel-explosion-plan.md) |
+| 3 | ヘリ空爆カット | `heli-strike.html` | 02 の作画システム + Canvas 2D 自前透視投影の疑似 3D 市街地(ペインターズアルゴリズム)。攻撃ヘリ乗員視点でミサイル発射 → 着弾 → 爆発・倒壊。照準 HUD 付き | [docs/03-heli-strike-plan.md](docs/03-heli-strike-plan.md) |
 
 
 ## プロンプト
@@ -20,9 +22,19 @@ anime-effects というディレクトリをつくって、そこに開発計画
 全然アニメっぽくないんだけど。。。庵野さんのような爆発シーンを期待してる。何か根本的にちがう。
 ```
 
+* model: fable 5 (デモ 2)
+```
+anime-effects 配下に庵野さんのようなビル爆発シーンを表現するデモをcodexで作成してみたのだけど、かなり不満が残る。君ならどう作る？今のドキュメントや実装は残して、別の名前で設計文書と実装を作成してほしい。
+```
+
+* model: fable 5 (デモ 3)
+```
+anime-effects/cel-explosion.html はbuilding-explosion.html よりだいぶアニメらしくなった。爆発感があるね。ただ、全体的に背景の２D感が強すぎなのが残念なポイント。爆発の背景のビルは３Dっぽく立体で作って、斜め上空から俯瞰で表現したい。できれば視点のカメラは攻撃型ヘリコプターの乗組員の視点で、ミサイルを発射し、それがビルにあたって爆破するという一連を表現してほしい。だいぶ変更になると思うので新規の開発計画を作って実装してほしい。
+```
+
 ## 実行方法
 
-`building-explosion.html` をダブルクリックして開く。ローカルサーバーでもよい:
+各 HTML をダブルクリックして開く。ローカルサーバーでもよい:
 
 ```sh
 python3 -m http.server 8000

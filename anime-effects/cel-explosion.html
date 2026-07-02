@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ビル爆破カット・改 — セル調作画アプローチ</title>
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#0b0e14;color:#d8e2f0;font-family:system-ui,-apple-system,sans-serif;
+       display:flex;flex-direction:column;align-items:center}
+  h1{font-size:15px;font-weight:650;margin:14px 0 4px;color:#edf4ff;letter-spacing:.04em}
+  #bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center;
+       padding:8px 14px;margin:8px;background:#121826;border:1px solid #1f2937;border-radius:8px;font-size:12px}
+  label{display:flex;gap:6px;align-items:center;white-space:nowrap;color:#a9b8cf}
+  select,button{height:25px;background:#1c2434;color:#d8e2f0;border:1px solid #2a3650;border-radius:6px;
+       padding:3px 10px;font-size:12px;cursor:pointer}
+  button:hover,select:hover{background:#273248}
+  button.active{background:#f97316;color:#170a03;border-color:#fdba74}
+  input[type=checkbox]{accent-color:#f97316}
+  #seek{width:min(92vw,940px);margin:2px 0 0;accent-color:#f97316}
+  #tc{font-variant-numeric:tabular-nums;color:#7dd3fc;min-width:132px;text-align:right}
+  #wrap{width:min(96vw,960px);aspect-ratio:16/9;margin:4px 0 10px}
+  canvas{width:100%;height:100%;display:block;border-radius:8px;box-shadow:0 8px 40px #000b}
+</style>
+</head>
+<body>
+<h1>ビル爆破カット・改 — セル調作画(流体シミュ不使用・全要素が時刻の純関数)</h1>
+<div id="bar">
+  <button id="boom" class="active">爆破</button>
+  <button id="play">停止</button>
+  <button id="stepB">◀コマ</button>
+  <button id="stepF">コマ▶</button>
+  <label>コマ打ち <select id="koma">
+    <option value="1">1コマ (24fps)</option>
+    <option value="2" selected>2コマ (12fps)</option>
+    <option value="3">3コマ (8fps)</option>
+  </select></label>
+  <label>時間帯 <select id="pal">
+    <option value="sunset" selected>夕景</option>
+    <option value="night">夜</option>
+    <option value="day">昼</option>
+  </select></label>
+  <label><input id="impact" type="checkbox" checked>インパクトフレーム</label>
+  <label><input id="bars" type="checkbox" checked>シネスコ</label>
+  <span id="tc">t=0.00s コマ0</span>
+</div>
+<input id="seek" type="range" min="0" max="10" step="0.001" value="0">
+<div id="wrap"><canvas id="cv" width="960" height="540"></canvas></div>
+
+<script>
+'use strict';
+
+const W=960,H=540,FPS=24,DUR=10;
+const GY=470;                       // 地面
+const BX1=475,BX2=645,BTOP=130;     // 主役ビル
+const BCX=560,BCY=300;              // 爆心
+const T_MAIN=1.2,IMPACT_KOMA=4;
+const T_COLLAPSE=1.55,T_LAND=2.35;
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const DPR=Math.min(2,window.devicePixelRatio||1);
+cv.width=W*DPR; cv.height=H*DPR;
+
+const ui={koma:2,pal:'sunset',impact:true,bars:true};
+let tPlay=0,playing=true,seeking=false;
+
+// ---- 決定論ヘルパ: 乱数はすべて seed の純関数。Math.random は使わない ----
+function rnd(s){const x=Math.sin(s*12.9898+78.233)*43758.5453;return x-Math.floor(x);}
+function rnd2(s,k){return rnd(s*1.371+k*97.713);}
+function clamp(v,a,b){return v<a?a:v>b?b:v;}
+function lerp(a,b,m){return a+(b-a)*m;}
+function smoothstep(a,b,x){const u=clamp((x-a)/(b-a),0,1);return u*u*(3-2*u);}
+function qa(a,steps){return Math.ceil(clamp(a,0,1)*steps)/steps;} // 透明度の段階量子化
+function komaIndex(t){return Math.floor(t*FPS/ui.koma);}
+function qt(t){return komaIndex(t)*ui.koma/FPS;}
+
+// ---- パレット ----
+const PALS={
+  sunset:{sky:['#241033','#4a1c3c','#8c2e34','#c85426','#e88a30','#f4b34a'],
+    frac:[0,.20,.38,.54,.68,.82,1],sun:{x:240,y:412,r:52,c:'#ffe9a8'},cloud:'#55203a',
+    far:'#3a1e33',near:'#231018',ground:'#170d14',gline:'#2c1a24',
+    face:'#1e1219',face2:'#170d14',win:'#ffb54a',winA:.85,winP:.45,sil:'#0b0810'},
+  night:{sky:['#04060f','#071021','#0a1a30','#0f2440','#15304f','#1c3c5e'],
+    frac:[0,.22,.42,.6,.75,.88,1],sun:{x:720,y:115,r:32,c:'#e9edf4',moon:true},cloud:'#0d1626',
+    far:'#0d1728',near:'#08101c',ground:'#05080e',gline:'#101b2c',
+    face:'#0d1420',face2:'#0a0f18',win:'#ffd98a',winA:.95,winP:.5,sil:'#03050a'},
+  day:{sky:['#5e9fd4','#74b0de','#8ec2e8','#a8d2ef','#c2e0f5','#d8ecfa'],
+    frac:[0,.22,.42,.6,.75,.88,1],sun:{x:820,y:88,r:38,c:'#fff4c8'},cloud:'#eef6fc',
+    far:'#7d95ad',near:'#5a7089',ground:'#4d5b6a',gline:'#5f7080',
+    face:'#66798e',face2:'#57687b',win:'#d6e8f4',winA:.55,winP:.4,sil:'#2e3b4a'}
+};
+
+// 雲のセル調バンド: [スケール, xオフセット比, yオフセット比] 外側→内側
+const BANDS=[[1.00,0,0],[0.87,-.05,-.06],[0.72,-.10,-.13],[0.55,-.16,-.21],[0.37,-.22,-.30]];
+// 煤レベル別パレット [level][band]: 0=燃焼 → 3=灰煙
+const CLOUD=[
+  ['#260b04','#7e1c07','#ec5a1a','#ffc63e','#fff8dc'],
+  ['#200d07','#66241a','#c05a22','#eb9b4a','#f6d9a4'],
+  ['#1a1210','#3e2d24','#655040','#8f7357','#bfa680'],
+  ['#161114','#2e2629','#4c4345','#6e6260','#948780']
+];
+const DUST=['#1a1210','#41302a','#6b5544','#96785c'];
+
+// ---- ブロブパス: 位相はコマ番号のハッシュ → コマが変わると輪郭が差し替わる(ボイル) ----
+function blobPath(x,y,r,seed,koma,amp,sq){
+  const p1=rnd(seed+koma*7.31)*6.2832,p2=rnd(seed*1.7+koma*3.11)*6.2832,p3=rnd(seed*2.3+koma*5.77)*6.2832;
+  const STEPS=16;
+  for(let i=0;i<=STEPS;i++){
+    const a=6.2832*i/STEPS;
+    const w=1+amp*(0.55*Math.sin(3*a+p1)+0.30*Math.sin(5*a+p2)+0.18*Math.sin(8*a+p3));
+    const px=x+Math.cos(a)*r*w,py=y+Math.sin(a)*r*w*sq;
+    i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+  }
+  ctx.closePath();
+}
+
+// ---- 爆発イベント(タイムライン固定・初期化時に一度だけ生成) ----
+const PRE=[
+  {t:0.25,x:520,y:390,R:36,seed:41},
+  {t:0.55,x:612,y:296,R:40,seed:48},
+  {t:0.85,x:532,y:212,R:36,seed:55}
+];
+function makeBurst(o){
+  const n=o.kind==='main'?22:10,lobes=[],kids=[];
+  for(let i=0;i<n;i++){
+    const s=o.seed+i*13.7;
+    const ang=6.2832*i/n+(rnd(s)-0.5)*0.5;
+    lobes.push({ang,df:0.5+0.42*rnd(s+1),rf:0.34+0.30*rnd(s+2),
+      bias:rnd(s+3),cap:Math.sin(ang)<0.25,seed:s});
+  }
+  if(o.kind==='main')for(let i=0;i<16;i++){
+    const s=o.seed+400+i*7.9;
+    kids.push({ang:rnd(s)*6.2832,df:0.9+0.2*rnd(s+1),rf:0.14+0.12*rnd(s+2),
+      bias:0.3+0.7*rnd(s+3),cap:true,birth:0.35+1.4*rnd(s+4),seed:s});
+  }
+  return Object.assign({lobes,kids},o);
+}
+const bursts=PRE.map(e=>makeBurst({seed:e.seed,x:e.x,y:e.y,R:e.R,t0:e.t,life:1.9,kind:'pre'}));
+bursts.push(makeBurst({seed:9,x:BCX,y:BCY,R:150,t0:T_MAIN,life:DUR,kind:'main'}));
+
+// 破片: 弾道は閉形式。量子化時刻で描くだけでステップ運動になる
+const debris=[];
+for(let i=0;i<30;i++){
+  const s=900+i*3.3;
+  const ang=-Math.PI/2+(rnd(s)-0.5)*2.4,sp=240+520*rnd(s+1);
+  const nv=3+Math.floor(rnd(s+2)*3),verts=[];
+  for(let v=0;v<nv;v++){const a=6.2832*v/nv+rnd(s+3+v)*0.8;verts.push([Math.cos(a),Math.sin(a)*(0.5+0.5*rnd(s+7+v))]);}
+  debris.push({x0:BCX+(rnd(s+4)-0.5)*120,y0:BCY+(rnd(s+5)-0.5)*100,
+    vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,om:(rnd(s+6)-0.5)*12,
+    size:i<4?28+18*rnd(s+8):5+16*rnd(s+8),verts});
+}
+
+function growth(τ,R){return R*(τ/(τ+0.22))*(1+0.16*Math.sqrt(Math.max(0,τ-0.6)));}
+function lobeState(b,L,τ,G){
+  const rx=Math.cos(L.ang),ry=Math.sin(L.ang);
+  let px=b.x+rx*L.df*G,py=b.y+ry*L.df*G*0.88,r=G*L.rf;
+  if(b.kind==='main'){
+    const m=smoothstep(1.1,2.6,τ);
+    if(m>0){
+      const Hn=130*(1-Math.exp(-Math.max(0,τ-1)*0.30))+12*Math.max(0,τ-1);
+      let tx,ty,tr;
+      if(L.cap){tx=b.x+rx*G*1.12;ty=b.y-Hn+ry*G*0.45-G*0.12;tr=r*1.06;}
+      else{tx=b.x+rx*G*0.30;ty=b.y-Hn*(0.12+0.62*L.bias)+G*0.1;tr=r*0.72;}
+      px=lerp(px,tx,m);py=lerp(py,ty,m);r=lerp(r,tr,m);
+    }
+  }
+  return {px,py,r};
+}
+function sootLevel(b,L,τ){
+  let s=b.kind==='pre'?(τ-0.35)/1.0+L.bias*0.35
+       :(τ-0.8)/2.6+L.bias*0.5-(L.cap?0:0.25);
+  return Math.min(3,Math.max(0,Math.floor(clamp(s,0,0.999)*4)));
+}
+function drawBurst(b,t,koma){
+  const τ=t-b.t0;
+  if(τ<=0)return;
+  if(b.kind==='pre'&&τ>b.life)return;
+  const G=growth(τ,b.R);
+  ctx.save();
+  if(b.kind==='pre'){
+    const a=qa((b.life-τ)/0.7,3);
+    if(a<=0){ctx.restore();return;}
+    ctx.globalAlpha=a;
+  }
+  // 白玉ステージ: 発生直後は白一色+橙輪郭
+  if(τ<0.12){
+    ctx.beginPath();
+    for(const L of b.lobes){const p=lobeState(b,L,τ,G);blobPath(p.px,p.py,p.r,L.seed,koma,0.18,0.92);}
+    ctx.fillStyle='#fff8e6';ctx.fill();
+    ctx.strokeStyle='#ff7b1f';ctx.lineWidth=5;ctx.stroke();
+    ctx.restore();return;
+  }
+  const items=[];
+  for(const L of b.lobes){const p=lobeState(b,L,τ,G);items.push({p,L,lv:sootLevel(b,L,τ)});}
+  for(const k of b.kids){
+    if(τ<k.birth)continue;
+    const p=lobeState(b,k,τ,G);
+    p.r*=Math.min(1,(τ-k.birth)/0.4);
+    if(p.r<10)continue; // 育つまで描かない(白芯が点粒ノイズになる)
+    items.push({p,L:k,lv:Math.min(3,sootLevel(b,k,τ)+1)});
+  }
+  // 煤レベルの高い(煙)グループから奥に描き、バンドは外→内
+  for(let lv=3;lv>=0;lv--){
+    const g=items.filter(it=>it.lv===lv);
+    if(!g.length)continue;
+    for(let bi=0;bi<5;bi++){
+      const[sc,ox,oy]=BANDS[bi];
+      ctx.beginPath();
+      for(const it of g)blobPath(it.p.px+ox*it.p.r,it.p.py+oy*it.p.r,it.p.r*sc,it.L.seed+bi*3.1,koma,0.20-bi*0.02,0.92);
+      ctx.fillStyle=CLOUD[lv][bi];
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+// ---- 空・背景 ----
+function drawSky(pal){
+  const sky=pal.sky,fr=pal.frac;
+  for(let i=0;i<sky.length;i++){
+    const y0=fr[i]*GY,y1=fr[i+1]*GY;
+    ctx.fillStyle=sky[i];ctx.fillRect(0,y0,W,y1-y0+1);
+  }
+  const s=pal.sun;
+  ctx.fillStyle=s.c;
+  ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.2832);ctx.fill();
+  if(s.moon){ctx.fillStyle=sky[1];ctx.beginPath();ctx.arc(s.x-11,s.y-7,s.r*0.82,0,6.2832);ctx.fill();}
+  else{ // 太陽を横切るベタ帯(奥行きの記号)
+    ctx.fillStyle=sky[4];ctx.fillRect(s.x-70,s.y-8,150,7);
+    ctx.fillStyle=sky[3];ctx.fillRect(s.x-40,s.y-26,120,6);
+  }
+  ctx.fillStyle=pal.cloud;
+  for(const[cx,cy,cw]of[[120,120,180],[620,86,220],[810,180,150]]){
+    ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(cx,cy,cw,14,7):ctx.rect(cx,cy,cw,14);
+    ctx.roundRect?ctx.roundRect(cx+30,cy+12,cw*0.6,10,5):ctx.rect(cx+30,cy+12,cw*0.6,10);
+    ctx.fill();
+  }
+}
+function drawSkyline(pal){
+  ctx.fillStyle=pal.far;
+  for(let i=0;i<14;i++){
+    const s=60+i*4.7,x=i*74+(rnd(s)-0.5)*36,w=42+rnd(s+1)*52,h=48+rnd(s+2)*120;
+    ctx.fillRect(x,GY-h,w,h);
+  }
+  ctx.fillStyle=pal.near;
+  for(let i=0;i<10;i++){
+    const s=130+i*6.1,x=i*104+(rnd(s)-0.5)*50,w=56+rnd(s+1)*60,h=80+rnd(s+2)*160;
+    ctx.fillRect(x,GY-h,w,h);
+    if(rnd(s+3)<0.5)ctx.fillRect(x+w*0.32,GY-h-14,4,14); // アンテナ
+  }
+}
+function drawGround(pal){
+  ctx.fillStyle=pal.ground;ctx.fillRect(0,GY,W,H-GY);
+  ctx.fillStyle=pal.gline;ctx.fillRect(0,GY,W,3);
+}
+
+// ---- 主役ビル ----
+function drawFacade(pal,t,x,y,w,h){
+  ctx.fillStyle=pal.face;ctx.fillRect(x,y,w,h);
+  ctx.fillStyle=pal.face2;ctx.fillRect(x+w-26,y,26,h); // 側面の陰
+  const after=t>=T_MAIN;
+  for(let gx=0;gx<8;gx++)for(let gy=0;gy<20;gy++){
+    const wx=BX1+12+gx*19,wy=BTOP+12+gy*16.5;
+    if(wx<x+3||wx+11>x+w-3||wy<y+3||wy+9>y+h-3)continue;
+    let on=rnd(gx*7.3+gy*3.1+5)<pal.winP,c=pal.win,a=pal.winA;
+    if(after){on=rnd(gx*9.1+gy*5.7)<0.05&&(komaIndex(t)%6<3);c='#ff4a3a';a=0.9;} // 非常灯
+    else for(const e of PRE)if(t>=e.t&&Math.hypot(wx-e.x,wy-e.y)<e.R*1.6)on=false;
+    if(on){ctx.globalAlpha=a;ctx.fillStyle=c;ctx.fillRect(wx,wy,11,9);ctx.globalAlpha=1;}
+  }
+  // 誘爆の焦げ穴
+  for(const e of PRE){
+    const τe=t-e.t;if(τe<=0)continue;
+    if(e.x<x||e.x>x+w||e.y<y||e.y>y+h)continue;
+    ctx.beginPath();blobPath(e.x,e.y,e.R*0.8,e.seed+90,0,0.22,0.9);
+    ctx.fillStyle='#0c0708';ctx.fill();
+    if(τe<1.2){ctx.strokeStyle='#ff5a1e';ctx.globalAlpha=qa(1-τe/1.2,3);ctx.lineWidth=3;ctx.stroke();ctx.globalAlpha=1;}
+  }
+}
+function jagPts(xa,xb,y,seed,amp){
+  const pts=[],n=9;
+  for(let i=0;i<=n;i++)pts.push([xa+(xb-xa)*i/n,y+(rnd(seed+i)-0.3)*amp]);
+  return pts;
+}
+function drawBuilding(pal,t,koma){
+  if(t<T_MAIN){
+    drawFacade(pal,t,BX1,BTOP,BX2-BX1,GY-BTOP);
+    // 屋上ペントハウス+アンテナ+航空障害灯(点滅)
+    ctx.fillStyle=pal.face2;ctx.fillRect(534,112,52,18);
+    ctx.strokeStyle=pal.face2;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(560,112);ctx.lineTo(560,90);ctx.stroke();
+    if(koma%10<5){ctx.fillStyle='#ff3b2f';ctx.beginPath();ctx.arc(560,88,3.5,0,6.2832);ctx.fill();}
+    return;
+  }
+  // 下部躯体(破断面ジグザグ+灼けエッジ)
+  const lowJag=jagPts(BX1,BX2,345,321,16);
+  ctx.save();
+  ctx.beginPath();ctx.moveTo(BX1,GY);
+  for(const[px,py]of lowJag)ctx.lineTo(px,py);
+  ctx.lineTo(BX2,GY);ctx.closePath();
+  ctx.save();ctx.clip();
+  drawFacade(pal,t,BX1,330,BX2-BX1,GY-330);
+  ctx.restore();
+  if(t<3.2){
+    ctx.beginPath();
+    lowJag.forEach(([px,py],i)=>i?ctx.lineTo(px,py):ctx.moveTo(px,py));
+    ctx.strokeStyle='#ff7b2a';ctx.globalAlpha=qa(1-(t-T_MAIN)/2,4);ctx.lineWidth=3;ctx.stroke();ctx.globalAlpha=1;
+  }
+  ctx.restore();
+  // 上部躯体: 1.55s から傾きつつ自由落下(閉形式)
+  const τc=t-T_COLLAPSE;
+  ctx.save();
+  let dy=0,th=0,dx=0;
+  if(τc>0){
+    dy=Math.min(0.5*640*τc*τc,215+Math.min(26,Math.max(0,τc-0.82)*40));
+    th=Math.min(0.14*τc,0.16);dx=-14*Math.min(τc,1.2);
+  }
+  ctx.translate(BCX+dx,255+dy);ctx.rotate(th);ctx.translate(-BCX,-255);
+  const upJag=jagPts(BX2,BX1,255,352,16);
+  ctx.beginPath();ctx.moveTo(BX1,BTOP);ctx.lineTo(BX2,BTOP);
+  for(const[px,py]of upJag)ctx.lineTo(px,py);
+  ctx.closePath();
+  ctx.save();ctx.clip();
+  drawFacade(pal,t,BX1,BTOP,BX2-BX1,255-BTOP);
+  ctx.restore();
+  ctx.fillStyle=pal.face2;ctx.fillRect(534,112,52,18);
+  ctx.restore();
+}
+
+// ---- 破片・地走り煙・演出記号 ----
+function drawDebris(t,koma){
+  const τ=t-T_MAIN;if(τ<=0||τ>3.5)return;
+  for(const d of debris){
+    const x=d.x0+d.vx*τ,y=d.y0+d.vy*τ+0.5*880*τ*τ;
+    if(y>GY-4)continue;
+    ctx.save();ctx.translate(x,y);ctx.rotate(d.om*τ);
+    ctx.beginPath();
+    d.verts.forEach(([vx,vy],i)=>i?ctx.lineTo(vx*d.size,vy*d.size):ctx.moveTo(vx*d.size,vy*d.size));
+    ctx.closePath();
+    ctx.fillStyle='#120b0d';ctx.fill();
+    if(τ<0.8){ctx.strokeStyle='#ff9a3a';ctx.globalAlpha=qa(1-τ/0.8,3);ctx.lineWidth=2;ctx.stroke();}
+    ctx.restore();
+  }
+}
+function drawDustChain(t,koma,t0,maxD,front){
+  const τ=t-t0;if(τ<=0)return;
+  const D=maxD*τ/(τ+0.9);
+  const fade=qa(clamp((7.5-τ)/2,0,1),3);if(fade<=0)return;
+  ctx.save();ctx.globalAlpha=fade;
+  const puffs=[];
+  for(const side of[-1,1])for(let i=0;i<7;i++){
+    const fr=(i+1)/7,s=t0*31+side*57+i*9.7;
+    const r=(24+40*(0.4+0.6*fr))*(front?1:0.6);
+    puffs.push({x:BCX+side*D*fr+(rnd(s)-0.5)*24,y:GY-4-r*0.35-(1-fr)*τ*8,r,seed:s});
+  }
+  for(let bi=0;bi<4;bi++){
+    const[sc,ox,oy]=BANDS[bi];
+    ctx.beginPath();
+    for(const p of puffs)blobPath(p.x+ox*p.r,p.y+oy*p.r,p.r*sc,p.seed+bi*3.7,koma,0.20,0.7);
+    ctx.fillStyle=DUST[bi];ctx.fill();
+  }
+  ctx.restore();
+}
+function drawCross(t,x,y,scale,t0){
+  const τ=t-t0;if(τ<=0||τ>0.55)return;
+  const k=1-τ/0.55,L=330*k*scale,wArm=(26*k+6)*scale;
+  ctx.save();ctx.globalAlpha=qa(k,3);
+  for(const[s,c]of[[1.3,'rgba(255,140,40,0.4)'],[1,'#fffbe8']]){
+    ctx.beginPath();
+    ctx.moveTo(x,y-L*1.5*s);ctx.lineTo(x+wArm*s,y);ctx.lineTo(x,y+L*0.8*s);ctx.lineTo(x-wArm*s,y);
+    ctx.closePath();
+    ctx.moveTo(x-L*0.9*s,y);ctx.lineTo(x,y-wArm*0.8*s);ctx.lineTo(x+L*0.9*s,y);ctx.lineTo(x,y+wArm*0.8*s);
+    ctx.closePath();
+    ctx.fillStyle=c;ctx.fill();
+  }
+  ctx.restore();
+}
+function drawRing(t,x,y,t0,scale){
+  const τ=t-t0;if(τ<=0||τ>0.5)return;
+  const R=(90+2200*τ)*scale,k=1-τ/0.5;
+  ctx.save();ctx.globalAlpha=qa(k,3);
+  ctx.strokeStyle='#fff6e0';ctx.lineWidth=14*k*scale+2;
+  ctx.beginPath();ctx.ellipse(x,y,R,R*0.32,0,0,6.2832);ctx.stroke();
+  ctx.strokeStyle='#ff8c2e';ctx.lineWidth=4*scale;
+  ctx.beginPath();ctx.ellipse(x,y,R*1.06,R*0.34,0,0,6.2832);ctx.stroke();
+  ctx.restore();
+}
+function drawSparks(t,x,y,t0,seed,scale){
+  const τ=t-t0;if(τ<=0||τ>0.18)return;
+  ctx.save();ctx.strokeStyle='#fff2c8';ctx.lineWidth=2;
+  for(let i=0;i<12;i++){
+    const a=rnd(seed+i)*6.2832,sp=0.4+0.6*rnd(seed+i+20);
+    const d=(30+600*τ*sp)*scale;
+    ctx.beginPath();
+    ctx.moveTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
+    ctx.lineTo(x+Math.cos(a)*(d+18*scale),y+Math.sin(a)*(d+18*scale));
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawEmbers(t,koma){
+  ctx.fillStyle='#ffb05a';
+  for(let i=0;i<26;i++){
+    const s=700+i*5.3;
+    const born=1.9+rnd(s+9)*2.4,τe=t-born; // 粒ごとに発生時刻と高さを分散
+    if(τe<0||τe>3.2)continue;
+    const x=BCX+(rnd(s)-0.5)*300+Math.sin(τe*(0.6+rnd(s+1))+i)*22;
+    const y=BCY-10-rnd(s+10)*130-τe*(26+rnd(s+2)*34);
+    if(y<40)continue;
+    ctx.globalAlpha=((koma+i)%3<2)?0.9:0.3;
+    ctx.fillRect(x,y,2.5,2.5);
+  }
+  ctx.globalAlpha=1;
+}
+function drawPowerLines(){
+  ctx.fillStyle='#0b0810';
+  ctx.fillRect(82,165,6,GY-165);
+  ctx.fillRect(48,182,84,5);ctx.fillRect(58,212,64,5);
+  for(const x of[52,85,124])ctx.fillRect(x,178,4,4);
+  ctx.strokeStyle='#0b0810';ctx.lineWidth=2.5;
+  for(const[y0,cy,y1]of[[184,262,148],[184,278,168],[214,286,190],[214,300,208]]){
+    ctx.beginPath();ctx.moveTo(128,y0);ctx.quadraticCurveTo(540,cy,W,y1);ctx.stroke();
+  }
+}
+
+// ---- インパクトフレーム: 常に24fpsの1コマ打ち ----
+function drawImpactFrame(idx){
+  const inv=idx%2===1;
+  ctx.fillStyle=inv?'#0a0a0c':'#fffdf4';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=inv?'#fffdf4':'#0a0a0c';
+  const seed=500+idx*31;
+  for(let i=0;i<16;i++){
+    const a=rnd(seed+i)*6.2832,len=(0.35+0.65*rnd(seed+i+40))*760,hw=0.015+0.04*rnd(seed+i+80);
+    ctx.beginPath();
+    ctx.moveTo(BCX,BCY);
+    ctx.lineTo(BCX+Math.cos(a-hw)*len,BCY+Math.sin(a-hw)*len);
+    ctx.lineTo(BCX+Math.cos(a+hw)*len,BCY+Math.sin(a+hw)*len);
+    ctx.closePath();ctx.fill();
+  }
+  if(inv){ctx.fillStyle='#fffdf4';ctx.beginPath();ctx.arc(BCX,BCY,64,0,6.2832);ctx.fill();}
+}
+
+// ---- 画面演出 ----
+function shakeAmp(t){
+  let a=0;
+  if(t>T_MAIN)a+=16*Math.exp(-(t-T_MAIN)*2.0);
+  for(const e of PRE)if(t>e.t)a+=6*Math.exp(-(t-e.t)*4);
+  return a;
+}
+function drawFlash(t){
+  const tEnd=T_MAIN+IMPACT_KOMA/FPS;
+  const τ=t-(ui.impact?tEnd:T_MAIN);
+  if(τ>=0&&τ<0.5){
+    ctx.fillStyle='#fffdf0';ctx.globalAlpha=qa(1-τ/0.5,4)*0.8;
+    ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;
+  }
+  for(const e of PRE){
+    const τe=t-e.t;
+    if(τe>=0&&τe<ui.koma/FPS+1e-4){ctx.fillStyle='#fff';ctx.globalAlpha=0.35;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}
+  }
+}
+let vign=null;
+function drawVignette(){
+  if(!vign){
+    vign=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,560);
+    vign.addColorStop(0,'rgba(0,0,0,0)');vign.addColorStop(1,'rgba(0,0,0,0.30)');
+  }
+  ctx.fillStyle=vign;ctx.fillRect(0,0,W,H);
+}
+function drawBars(koma){
+  if(!ui.bars)return;
+  ctx.fillStyle='#050507';
+  ctx.fillRect(0,0,W,52);ctx.fillRect(0,H-52,W,52);
+  ctx.fillStyle='#8a8f98';ctx.font='10px ui-monospace,monospace';
+  ctx.textAlign='left';ctx.fillText(`CUT C-308 ビル爆破・改  ${ui.koma}コマ打ち`,14,H-20);
+  ctx.textAlign='right';ctx.fillText(`24fps  #${koma}`,W-14,H-20);
+  ctx.textAlign='left';
+}
+
+// ---- メイン描画: scene = draw(quantize(t)) ----
+function draw(){
+  const t=qt(tPlay),koma=komaIndex(tPlay);
+  const pal=PALS[ui.pal];
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  // インパクトフレーム窓
+  const fi=Math.floor((tPlay-T_MAIN)*FPS);
+  if(ui.impact&&tPlay>=T_MAIN&&fi<IMPACT_KOMA){
+    drawImpactFrame(fi);drawBars(koma);return;
+  }
+  // カメラ: 揺れはコマ単位の離散ジャンプ、主爆発でパンチズーム
+  ctx.save();
+  const amp=shakeAmp(t);
+  const sx=Math.round((rnd2(11,koma)-0.5)*2*amp),sy=Math.round((rnd2(37,koma)-0.5)*2*amp);
+  let zoom=1;
+  if(t>T_MAIN)zoom=1+0.045*Math.exp(-(t-T_MAIN)*2.5);
+  ctx.translate(W/2+sx,H/2+sy);ctx.scale(zoom,zoom);ctx.translate(-W/2,-H/2);
+
+  drawSky(pal);
+  drawSkyline(pal);
+  drawGround(pal);
+  drawDustChain(t,koma,T_MAIN+0.1,150,false);   // 後方粉塵
+  drawBuilding(pal,t,koma);
+  for(const b of bursts)drawBurst(b,t,koma);
+  drawDebris(t,koma);
+  drawDustChain(t,koma,1.30,240,true);          // 地走り(小)
+  drawDustChain(t,koma,T_LAND,480,true);        // 地走り(大)
+  for(const e of PRE){
+    drawSparks(t,e.x,e.y,e.t,e.seed+200,0.6);
+    drawRing(t,e.x,e.y,e.t,0.3);
+    drawCross(t,e.x,e.y,0.35,e.t);
+  }
+  drawSparks(t,BCX,BCY,T_MAIN,333,1.4);
+  drawRing(t,BCX,BCY,T_MAIN,1);
+  drawCross(t,BCX,BCY,1,T_MAIN);
+  drawEmbers(t,koma);
+  drawPowerLines();
+  ctx.restore();
+
+  drawFlash(t);
+  drawVignette();
+  drawBars(koma);
+}
+
+// ---- 再生ループ ----
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(0.1,(now-last)/1000);last=now;
+  if(playing){
+    tPlay+=dt;
+    if(tPlay>=DUR){tPlay=DUR;playing=false;playBtn.textContent='再生';}
+  }
+  if(!seeking)seek.value=tPlay;
+  tc.textContent=`t=${tPlay.toFixed(2)}s コマ${komaIndex(tPlay)}`;
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// ---- UI ----
+const seek=document.getElementById('seek'),tc=document.getElementById('tc');
+const playBtn=document.getElementById('play');
+document.getElementById('boom').addEventListener('click',()=>{tPlay=0;playing=true;playBtn.textContent='停止';});
+playBtn.addEventListener('click',()=>{playing=!playing;playBtn.textContent=playing?'停止':'再生';});
+function stepKoma(d){
+  playing=false;playBtn.textContent='再生';
+  tPlay=clamp((komaIndex(tPlay)+d)*ui.koma/FPS,0,DUR);
+}
+document.getElementById('stepB').addEventListener('click',()=>stepKoma(-1));
+document.getElementById('stepF').addEventListener('click',()=>stepKoma(1));
+document.getElementById('koma').addEventListener('change',e=>{ui.koma=+e.target.value;});
+document.getElementById('pal').addEventListener('change',e=>{ui.pal=e.target.value;});
+document.getElementById('impact').addEventListener('change',e=>{ui.impact=e.target.checked;});
+document.getElementById('bars').addEventListener('change',e=>{ui.bars=e.target.checked;});
+seek.addEventListener('pointerdown',()=>{seeking=true;});
+seek.addEventListener('pointerup',()=>{seeking=false;});
+seek.addEventListener('input',e=>{tPlay=+e.target.value;});
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();playBtn.click();}
+  else if(e.code==='ArrowLeft')stepKoma(-1);
+  else if(e.code==='ArrowRight')stepKoma(1);
+});
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ヘリ空爆カット — 3Dレイアウト×セル作画</title>
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#0b0e14;color:#d8e2f0;font-family:system-ui,-apple-system,sans-serif;
+       display:flex;flex-direction:column;align-items:center}
+  h1{font-size:15px;font-weight:650;margin:14px 0 4px;color:#edf4ff;letter-spacing:.04em}
+  #bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center;
+       padding:8px 14px;margin:8px;background:#121826;border:1px solid #1f2937;border-radius:8px;font-size:12px}
+  label{display:flex;gap:6px;align-items:center;white-space:nowrap;color:#a9b8cf}
+  select,button{height:25px;background:#1c2434;color:#d8e2f0;border:1px solid #2a3650;border-radius:6px;
+       padding:3px 10px;font-size:12px;cursor:pointer}
+  button:hover,select:hover{background:#273248}
+  button.active{background:#f97316;color:#170a03;border-color:#fdba74}
+  input[type=checkbox]{accent-color:#f97316}
+  #seek{width:min(92vw,940px);margin:2px 0 0;accent-color:#f97316}
+  #tc{font-variant-numeric:tabular-nums;color:#7dd3fc;min-width:132px;text-align:right}
+  #wrap{width:min(96vw,960px);aspect-ratio:16/9;margin:4px 0 10px}
+  canvas{width:100%;height:100%;display:block;border-radius:8px;box-shadow:0 8px 40px #000b}
+</style>
+</head>
+<body>
+<h1>ヘリ空爆カット — 疑似3D俯瞰レイアウト × セル調作画(全要素が量子化時刻の純関数)</h1>
+<div id="bar">
+  <button id="boom" class="active">発射</button>
+  <button id="play">停止</button>
+  <button id="stepB">◀コマ</button>
+  <button id="stepF">コマ▶</button>
+  <label>コマ打ち <select id="koma">
+    <option value="1">1コマ (24fps)</option>
+    <option value="2" selected>2コマ (12fps)</option>
+    <option value="3">3コマ (8fps)</option>
+  </select></label>
+  <label>時間帯 <select id="pal">
+    <option value="sunset" selected>夕景</option>
+    <option value="night">夜</option>
+  </select></label>
+  <label><input id="impact" type="checkbox" checked>インパクトフレーム</label>
+  <label><input id="hud" type="checkbox" checked>HUD</label>
+  <label><input id="bars" type="checkbox" checked>シネスコ</label>
+  <span id="tc">t=0.00s コマ0</span>
+</div>
+<input id="seek" type="range" min="0" max="12" step="0.001" value="0">
+<div id="wrap"><canvas id="cv" width="960" height="540"></canvas></div>
+
+<script>
+'use strict';
+
+const W=960,H=540,FPS=24,DUR=12,F=900,NEAR=4;
+const T_LOCK=0.9,T_LAUNCH=1.5,T_HIT=3.4,FLIGHT=T_HIT-T_LAUNCH,IMPACT_KOMA=4;
+const T_COLLAPSE=3.8,T_LAND=4.6;
+const TGT={x:0,z:800,w:64,d:64,h:152};   // 主役ビル(ワールド座標, m)
+const IP=[0,96,766];                     // 着弾点(ビル手前面)
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const DPR=Math.min(2,window.devicePixelRatio||1);
+cv.width=W*DPR; cv.height=H*DPR;
+
+const ui={koma:2,pal:'sunset',impact:true,hud:true,bars:true};
+let tPlay=0,playing=true,seeking=false,lastKey='';
+
+// ---- 決定論ヘルパ: 乱数はすべて seed の純関数。Math.random は使わない ----
+function rnd(s){const x=Math.sin(s*12.9898+78.233)*43758.5453;return x-Math.floor(x);}
+function rnd2(s,k){return rnd(s*1.371+k*97.713);}
+function clamp(v,a,b){return v<a?a:v>b?b:v;}
+function lerp(a,b,m){return a+(b-a)*m;}
+function smoothstep(a,b,x){const u=clamp((x-a)/(b-a),0,1);return u*u*(3-2*u);}
+function qa(a,steps){return Math.ceil(clamp(a,0,1)*steps)/steps;}
+function komaIndex(t){return Math.floor(t*FPS/ui.koma);}
+function qt(t){return komaIndex(t)*ui.koma/FPS;}
+
+// ---- カメラ: 攻撃進入 → 目標手前で減速 → 旋回(オービット)。すべて t の閉形式 ----
+// 経路は目標中心の極座標 (距離 r, 方位 φ)。機首は常に目標をトラッキングする
+function camPath(t){
+  const ap=smoothstep(0,7,t);                       // 接近の進行(7秒で完了)
+  const r=1250-680*ap, alt=320-85*ap;               // 1250m → 570m / 高度 320m → 235m
+  const phi=-0.12+0.02*t+0.66*smoothstep(3.3,11,t); // 着弾後にバンクして西側へ回り込む
+  return{r,alt,phi};
+}
+function camPose(t){
+  const A=camPath(t);
+  const px=TGT.x-A.r*Math.sin(A.phi)+6*Math.sin(t*0.53+1.7);
+  const py=A.alt+4*Math.sin(t*0.71);
+  const pz=TGT.z-A.r*Math.cos(A.phi)+6*Math.sin(t*0.41+3.1);
+  const aimY=80+70*smoothstep(3.4,7,t);             // 接近後は立ち上るキノコ雲へティルトアップ
+  const dx=TGT.x-px,dy=aimY-py,dz=TGT.z-pz;
+  const yaw=Math.atan2(dx,dz)+0.006*Math.sin(t*0.63+0.5);
+  let pitch=Math.atan2(-dy,Math.hypot(dx,dz))+0.004*Math.sin(t*0.87+2.2);
+  const dphi=(camPath(t+0.12).phi-camPath(Math.max(0,t-0.12)).phi)/0.24;
+  const roll=1.1*dphi+0.010*Math.sin(t*0.49+1.0);   // 旋回率に応じたバンク
+  if(t>T_LAUNCH){const u=t-T_LAUNCH;pitch-=0.012*Math.exp(-u*3.5)*Math.cos(u*18);} // 反動
+  return{px,py,pz,yaw,pitch,roll,cy:Math.cos(yaw),sy:Math.sin(yaw),cp:Math.cos(pitch),sp:Math.sin(pitch)};
+}
+let PS=camPose(0); // 現在フレームのポーズ
+function toCam(p){
+  const dx=p[0]-PS.px,dy=p[1]-PS.py,dz=p[2]-PS.pz;
+  const x=dx*PS.cy-dz*PS.sy,z1=dx*PS.sy+dz*PS.cy;
+  return[x,dy*PS.cp+z1*PS.sp,-dy*PS.sp+z1*PS.cp];
+}
+function prj(c){const iz=F/c[2];return[W/2+c[0]*iz,H/2-c[1]*iz,iz];}
+function prjP(p){return prj(toCam(p));}
+// ニアプレーンクリップ(カメラ空間, Sutherland–Hodgman)
+function clipNear(pts){
+  const out=[];
+  for(let i=0;i<pts.length;i++){
+    const a=pts[i],b=pts[(i+1)%pts.length],da=a[2]-NEAR,db=b[2]-NEAR;
+    if(da>=0)out.push(a);
+    if((da>0)!==(db>0)){const m=da/(da-db);out.push([a[0]+(b[0]-a[0])*m,a[1]+(b[1]-a[1])*m,NEAR]);}
+  }
+  return out;
+}
+function poly3(wpts,fill,stroke,lw){
+  const cl=clipNear(wpts.map(toCam));
+  if(cl.length<3)return;
+  ctx.beginPath();
+  for(let i=0;i<cl.length;i++){const s=prj(cl[i]);i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]);}
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1.4;ctx.stroke();}
+}
+
+// ---- 色: セル調なので混色も量子化キーでキャッシュ ----
+const MIXC={};
+function mix(a,b,m){
+  const k=a+b+((m*20)|0);
+  if(MIXC[k])return MIXC[k];
+  const pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16);
+  const r=Math.round(((pa>>16)&255)+(((pb>>16)&255)-((pa>>16)&255))*m);
+  const g=Math.round(((pa>>8)&255)+(((pb>>8)&255)-((pa>>8)&255))*m);
+  const bl=Math.round((pa&255)+((pb&255)-(pa&255))*m);
+  return MIXC[k]=`rgb(${r},${g},${bl})`;
+}
+
+// ---- パレット(夕景は逆光: 太陽は画面左端外の低い位置) ----
+const PALS={
+  sunset:{sky:['#2a1140','#54204a','#93313c','#c65426','#e8873a','#f6b34e'],frac:[0,.22,.4,.56,.7,.84,1],
+    sunP:[-2400,320,4300],sunR:64,sunC:'#ffe9a8',moon:false,cloud:'#5c2440',
+    sunDir:[-0.49,0.07,0.87],haze:'#d0683a',
+    top:'#8a4a52',lit:'#c06a4a',dark:'#33203a',line:'#1c0e1c',
+    ground:'#2a1622',road:'#412639',shadow:'#1c0e18',shadowDir:[0.75,-1.35],
+    win:'#ffb85e',winP:.42,winA:.9,
+    trail:['#6b5560','#9c8390','#cdbabf','#f5efe8'],hud:'#ffc06a'},
+  night:{sky:['#03060f','#071021','#0a1a30','#0f2440','#15304f','#1c3c5e'],frac:[0,.22,.42,.6,.75,.88,1],
+    sunP:[1800,900,4000],sunR:34,sunC:'#e9edf4',moon:true,cloud:'#0d1626',
+    sunDir:[0.42,0.5,0.75],haze:'#14243a',
+    top:'#1a2438',lit:'#243550',dark:'#0b1322',line:'#04070d',
+    ground:'#060a12',road:'#111c2c',shadow:'#03060b',shadowDir:[-0.5,-0.9],
+    win:'#ffd98a',winP:.55,winA:.95,
+    trail:['#39434f','#5b6a7c','#93a4b4','#e9eff5'],hud:'#7dffa8'}
+};
+const HZ=[0,.3,.55,.78]; // 距離ヘイズ 4 段
+const CHAR={top:'#2a171c',lit:'#412226',dark:'#180d12'}; // 被弾後の焦げ
+
+// 雲のセル調バンド(02 と同一): [スケール, xオフセット比, yオフセット比] 外側→内側
+const BANDS=[[1.00,0,0],[0.87,-.05,-.06],[0.72,-.10,-.13],[0.55,-.16,-.21],[0.37,-.22,-.30]];
+const CLOUD=[
+  ['#260b04','#7e1c07','#ec5a1a','#ffc63e','#fff8dc'],
+  ['#200d07','#66241a','#c05a22','#eb9b4a','#f6d9a4'],
+  ['#1a1210','#3e2d24','#655040','#8f7357','#bfa680'],
+  ['#161114','#2e2629','#4c4345','#6e6260','#948780']
+];
+const DUST=['#1a1210','#41302a','#6b5544','#96785c'];
+
+function blobPath(x,y,r,seed,koma,amp,sq){
+  const p1=rnd(seed+koma*7.31)*6.2832,p2=rnd(seed*1.7+koma*3.11)*6.2832,p3=rnd(seed*2.3+koma*5.77)*6.2832;
+  const STEPS=16;
+  for(let i=0;i<=STEPS;i++){
+    const a=6.2832*i/STEPS;
+    const w=1+amp*(0.55*Math.sin(3*a+p1)+0.30*Math.sin(5*a+p2)+0.18*Math.sin(8*a+p3));
+    const px=x+Math.cos(a)*r*w,py=y+Math.sin(a)*r*w*sq;
+    i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+  }
+  ctx.closePath();
+}
+
+// ---- 市街地生成(初期化時に一度だけ) ----
+const PITCH=132;
+const blds=[];
+for(let gx=-6;gx<=6;gx++)for(let gi=0;gi<14;gi++){
+  const z=140+gi*PITCH,x=gx*PITCH,s=gx*17.31+gi*7.77+3;
+  if(gx===0&&gi===5)continue;            // 主役ビルの街区
+  if(rnd(s)<0.26)continue;
+  const hMax=(Math.abs(gx)<=1&&Math.abs(gi-5)<=1)?38:(z<430?26:130); // 目標周辺は低層、手前は倉庫街
+  let h=16+Math.pow(rnd(s+1),2)*88;
+  if(rnd(s+2)<0.10)h+=55;
+  h=Math.min(h,hMax);
+  blds.push({x:x+(rnd(s+5)-.5)*22,z:z+(rnd(s+6)-.5)*22,
+    w:44+rnd(s+3)*52,d:44+rnd(s+4)*52,h,seed:s});
+}
+for(let gx=-8;gx<=8;gx++)for(let k=0;k<5;k++){ // 遠景ベルト
+  const s=500+gx*9.1+k*3.7;
+  if(rnd(s)<0.38)continue;
+  blds.push({x:gx*205+(rnd(s+1)-.5)*80,z:2050+k*280+(rnd(s+2)-.5)*100,
+    w:110+rnd(s+3)*120,d:100+rnd(s+4)*100,h:45+rnd(s+5)*125,seed:s,far:true});
+}
+
+// ---- ボックス描画: 法線は面中心−ボックス中心で外向きに矯正(倒壊回転でも壊れない) ----
+function boxVerts(x,z,w,d,y0,y1){
+  const x0=x-w/2,x1=x+w/2,z0=z-d/2,z1=z+d/2;
+  return[[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]];
+}
+const FACES=[[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]; // 天面+側面4(底は描かない)
+function drawSolid(v,pal,hz,cols){
+  const bc=[(v[0][0]+v[6][0])/2,(v[0][1]+v[6][1])/2,(v[0][2]+v[6][2])/2];
+  const C=cols||pal;
+  for(const f of FACES){
+    const a=v[f[0]],b=v[f[1]],c=v[f[2]];
+    const u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],w2=[c[0]-b[0],c[1]-b[1],c[2]-b[2]];
+    let n=[u[1]*w2[2]-u[2]*w2[1],u[2]*w2[0]-u[0]*w2[2],u[0]*w2[1]-u[1]*w2[0]];
+    const fc=[(a[0]+c[0])/2,(a[1]+c[1])/2,(a[2]+c[2])/2];
+    if(n[0]*(fc[0]-bc[0])+n[1]*(fc[1]-bc[1])+n[2]*(fc[2]-bc[2])<0)n=[-n[0],-n[1],-n[2]];
+    if(n[0]*(PS.px-fc[0])+n[1]*(PS.py-fc[1])+n[2]*(PS.pz-fc[2])<=0)continue;
+    const L=Math.hypot(n[0],n[1],n[2]),S=pal.sunDir;
+    const ny=n[1]/L,sd=(n[0]*S[0]+n[1]*S[1]+n[2]*S[2])/L;
+    const base=ny>0.6?C.top:(sd>0.15?C.lit:C.dark);
+    poly3(f.map(i=>v[i]),mix(base,pal.haze,HZ[hz]),hz===0?pal.line:null,1.4);
+  }
+}
+function drawShadow(x,z,w,d,h,pal){
+  const[sdx,sdz]=pal.shadowDir,ox=sdx*Math.min(h,90)*2.2,oz=sdz*Math.min(h,90)*2.2;
+  const e1=[[x+w/2,0.4,z-d/2],[x+w/2,0.4,z+d/2]],e2=[[x-w/2,0.4,z-d/2],[x+w/2,0.4,z-d/2]];
+  for(const[a,b]of[e1,e2])
+    poly3([a,b,[b[0]+ox,0.4,b[2]+oz],[a[0]+ox,0.4,a[2]+oz]],pal.shadow);
+}
+function drawWindowsFace(b,a,b2,pal,dense){
+  const len=Math.hypot(b2[0]-a[0],b2[2]-a[2]);
+  const nc=Math.floor(len/8),nf=Math.floor((b.h-8)/10);
+  if(nc<1||nf<1)return 0;
+  const p=dense||pal.winP;
+  let drew=0;
+  for(let fy=0;fy<nf;fy++)for(let cc=0;cc<nc;cc++){
+    if(rnd(b.seed+fy*3.17+cc*7.71)>p)continue;
+    const u0=(cc+0.25)/nc,u1=(cc+0.72)/nc,y0=6+fy*10,y1=y0+4;
+    const q=[[a[0]+(b2[0]-a[0])*u0,y0,a[2]+(b2[2]-a[2])*u0],[a[0]+(b2[0]-a[0])*u1,y0,a[2]+(b2[2]-a[2])*u1],
+             [a[0]+(b2[0]-a[0])*u1,y1,a[2]+(b2[2]-a[2])*u1],[a[0]+(b2[0]-a[0])*u0,y1,a[2]+(b2[2]-a[2])*u0]];
+    for(let i=0;i<4;i++){const s=prjP(q[i]);i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]);}
+    ctx.closePath();drew++;
+  }
+  return drew;
+}
+function drawWindows(b,v,pal,t,dense){
+  if(t>=T_HIT&&Math.hypot(b.x-TGT.x,b.z-TGT.z)<240)return; // 爆発後は周辺ブラックアウト
+  ctx.beginPath();
+  let drew=0;
+  if(PS.pz<b.z-b.d/2)drew+=drawWindowsFace(b,v[0],v[1],pal,dense);
+  if(PS.px>b.x+b.w/2)drew+=drawWindowsFace(b,v[1],v[2],pal,dense);
+  else if(PS.px<b.x-b.w/2)drew+=drawWindowsFace(b,v[3],v[0],pal,dense);
+  if(drew){ctx.globalAlpha=pal.winA;ctx.fillStyle=pal.win;ctx.fill();ctx.globalAlpha=1;}
+}
+function drawBuilding(b,pal,zc,t,koma){
+  const hz=zc<520?0:zc<950?1:zc<1650?2:3;
+  const v=boxVerts(b.x,b.z,b.w,b.d,0,b.h);
+  drawSolid(v,pal,hz);
+  if(hz<=1&&zc>60&&!b.far){ // zc ガード: カメラ直下・背後では窓の投影が破綻する
+    if(b.h>28)drawWindows(b,v,pal,t);
+    if(rnd(b.seed+9)<0.5){ // 屋上構造物
+      drawSolid(boxVerts(b.x-b.w*0.2,b.z-b.d*0.15,b.w*0.32,b.d*0.3,b.h,b.h+6),pal,hz);
+    }
+  }
+  if(b.h>105&&hz<=2&&zc>60&&koma%10<5){ // 航空障害灯
+    const s=prjP([b.x,b.h+2,b.z]);
+    ctx.fillStyle='#ff3b2f';ctx.beginPath();ctx.arc(s[0],s[1],2.5,0,6.2832);ctx.fill();
+  }
+}
+
+// ---- 主役ビル ----
+function drawTarget(t,koma,pal){
+  if(t<T_HIT){
+    const v=boxVerts(TGT.x,TGT.z,TGT.w,TGT.d,0,TGT.h);
+    drawSolid(v,pal,1);
+    drawWindows(TGT_B,v,pal,t,0.6);
+    // 屋上ヘリパッドの円 + アンテナ + 航空障害灯
+    const cp=[];for(let i=0;i<16;i++)cp.push([TGT.x+18*Math.cos(6.2832*i/16),TGT.h+0.4,TGT.z+18*Math.sin(6.2832*i/16)]);
+    poly3(cp,mix(mix(pal.top,'#ffffff',0.12),pal.haze,HZ[1]));
+    const a0=prjP([TGT.x,TGT.h,TGT.z]),a1=prjP([TGT.x,TGT.h+26,TGT.z]);
+    ctx.strokeStyle=pal.line;ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(a0[0],a0[1]);ctx.lineTo(a1[0],a1[1]);ctx.stroke();
+    if(koma%10<5){ctx.fillStyle='#ff3b2f';ctx.beginPath();ctx.arc(a1[0],a1[1]-2,3,0,6.2832);ctx.fill();}
+    return;
+  }
+  // 下部スタブ(焦げ)+ 破断面の灼けリム
+  const vs=boxVerts(TGT.x,TGT.z,TGT.w,TGT.d,0,62);
+  drawSolid(vs,pal,1,CHAR);
+  if(t<T_HIT+2.2){
+    ctx.globalAlpha=qa(1-(t-T_HIT)/2.2,3);
+    poly3([vs[4],vs[5],vs[6],vs[7]],null,'#ff7b2a',3);
+    ctx.globalAlpha=1;
+  }
+  // 上部躯体: ヒンジ回転で東へ倒壊(閉形式、着地後は静止ポーズ)
+  let v2=boxVerts(TGT.x,TGT.z,TGT.w,TGT.d,62,TGT.h);
+  const τc=t-T_COLLAPSE;
+  if(τc>0){
+    const φ=Math.min(1.50,2.6*τc*τc),hy=62-Math.min(24,τc*34),pvx=TGT.x+TGT.w/2;
+    const cf=Math.cos(φ),sf=Math.sin(φ);
+    v2=v2.map(([x,y,z])=>{const rx=x-pvx,ry=y-62;return[pvx+rx*cf+ry*sf,Math.max(1,hy-rx*sf+ry*cf),z];});
+  }
+  drawSolid(v2,pal,1,CHAR);
+}
+const TGT_B={x:TGT.x,z:TGT.z,w:TGT.w,d:TGT.d,h:TGT.h,seed:77.7};
+
+// ---- ミサイル: 発射位置はカメラ基底から復元(純関数) ----
+let _ln=null;
+function LNCH(){
+  if(!_ln){
+    const p=camPose(T_LAUNCH);
+    const R=[p.cy,0,-p.sy],U=[p.sy*p.sp,p.cp,p.cy*p.sp],Fv=[p.sy*p.cp,-p.sp,p.cy*p.cp];
+    _ln=[p.px+R[0]*1.8-U[0]*1.4+Fv[0]*3.5, p.py-U[1]*1.4+Fv[1]*3.5, p.pz+R[2]*1.8-U[2]*1.4+Fv[2]*3.5];
+  }
+  return _ln;
+}
+function missilePos(τ){
+  const L=LNCH(),u=clamp(τ/FLIGHT,0,1),e=u*u*(2-u); // 加速カーブ
+  const fx=IP[0]-L[0],fy=IP[1]-L[1],fz=IP[2]-L[2],fl=Math.hypot(fx,fz);
+  const sx=fz/fl,sz=-fx/fl; // 水平の横ベクトル
+  const arc=18*Math.sin(3.1416*u)*(1-0.4*u);
+  return[L[0]+fx*e+sx*arc, L[1]+fy*e+11*Math.sin(3.1416*u)*(1-u), L[2]+fz*e+sz*arc];
+}
+
+// ---- 爆発(02 の作画システムをローカルm座標+投影スケールに移植) ----
+function makeBurst(o){
+  const n=o.kind==='main'?22:10,lobes=[],kids=[];
+  for(let i=0;i<n;i++){
+    const s=o.seed+i*13.7;
+    const ang=6.2832*i/n+(rnd(s)-0.5)*0.5;
+    lobes.push({ang,df:0.5+0.42*rnd(s+1),rf:0.34+0.30*rnd(s+2),
+      bias:rnd(s+3),cap:Math.sin(ang)<0.25,seed:s});
+  }
+  if(o.kind==='main'){
+    for(let i=0;i<16;i++){
+      const s=o.seed+400+i*7.9;
+      kids.push({ang:rnd(s)*6.2832,df:0.9+0.2*rnd(s+1),rf:0.14+0.12*rnd(s+2),
+        bias:0.3+0.7*rnd(s+3),cap:true,birth:0.35+1.4*rnd(s+4),seed:s});
+    }
+    for(let i=0;i<3;i++){ // 傘の中央保証ローブ(疎になると傘に穴が空く)
+      const s=o.seed+900+i*11.3;
+      lobes.push({ang:-1.5708+(i-1)*0.42,df:0.55+0.2*rnd(s),rf:0.5+0.14*rnd(s+1),
+        bias:rnd(s+2)*0.4,cap:true,seed:s});
+    }
+  }
+  return Object.assign({lobes,kids},o);
+}
+// x,y は着弾点基準のローカル座標(m, y は画面下向き)
+const bursts=[
+  makeBurst({seed:9,x:0,y:0,R:105,t0:T_HIT,life:DUR,kind:'main'}),
+  makeBurst({seed:71,x:86,y:88,R:26,t0:T_LAND,life:2.4,kind:'pre'}) // 倒壊着地の二次爆発
+];
+function growth(τ,R){return R*(τ/(τ+0.22))*(1+0.16*Math.sqrt(Math.max(0,τ-0.6)));}
+function lobeState(b,L,τ,G){
+  const rx=Math.cos(L.ang),ry=Math.sin(L.ang);
+  let px=b.x+rx*L.df*G,py=b.y+ry*L.df*G*0.88,r=G*L.rf;
+  if(b.kind==='main'){
+    const m=smoothstep(1.1,2.6,τ);
+    if(m>0){
+      const Hn=b.R*1.5*(1-Math.exp(-Math.max(0,τ-1)*0.30))+12*Math.max(0,τ-1); // R比例(大きいと傘と柱が分離する)
+      let tx,ty,tr;
+      if(L.cap){tx=b.x+rx*G*0.92;ty=b.y-Hn+ry*G*0.45-G*0.12;tr=r*1.06;}
+      else{tx=b.x+rx*G*0.34;ty=b.y-Hn*(0.30+0.55*L.bias)+G*0.1;tr=r*0.78;} // 柱は傘まで届かせる(隙間が出ると雲が割れて見える)
+      px=lerp(px,tx,m);py=lerp(py,ty,m);r=lerp(r,tr,m);
+    }
+  }
+  return{px,py,r};
+}
+function sootLevel(b,L,τ){
+  const s=b.kind==='pre'?(τ-0.35)/1.0+L.bias*0.35
+        :(τ-0.8)/2.6+L.bias*0.5-(L.cap?0:0.25);
+  return Math.min(3,Math.max(0,Math.floor(clamp(s,0,0.999)*4)));
+}
+function drawBurstS(b,t,koma,ax,ay,s){
+  const τ=t-b.t0;
+  if(τ<=0)return;
+  if(b.kind==='pre'&&τ>b.life)return;
+  const G=growth(τ,b.R);
+  ctx.save();
+  if(b.kind==='pre'){
+    const a=qa((b.life-τ)/0.7,3);
+    if(a<=0){ctx.restore();return;}
+    ctx.globalAlpha=a;
+  }
+  if(τ<0.12){ // 白玉ステージ
+    ctx.beginPath();
+    for(const L of b.lobes){const p=lobeState(b,L,τ,G);blobPath(ax+p.px*s,ay+p.py*s,p.r*s,L.seed,koma,0.18,0.92);}
+    ctx.fillStyle='#fff8e6';ctx.fill();
+    ctx.strokeStyle='#ff7b1f';ctx.lineWidth=Math.max(2,5*s);ctx.stroke();
+    ctx.restore();return;
+  }
+  const items=[];
+  for(const L of b.lobes){const p=lobeState(b,L,τ,G);items.push({p,L,lv:sootLevel(b,L,τ)});}
+  for(const k of b.kids){
+    if(τ<k.birth)continue;
+    const p=lobeState(b,k,τ,G);
+    p.r*=Math.min(1,(τ-k.birth)/0.4);
+    if(p.r<9)continue;
+    items.push({p,L:k,lv:Math.min(3,sootLevel(b,k,τ)+1)});
+  }
+  for(let lv=3;lv>=0;lv--){
+    const g=items.filter(it=>it.lv===lv);
+    if(!g.length)continue;
+    for(let bi=0;bi<5;bi++){
+      const[sc,ox,oy]=BANDS[bi];
+      ctx.beginPath();
+      for(const it of g)blobPath(ax+(it.p.px+ox*it.p.r)*s,ay+(it.p.py+oy*it.p.r)*s,it.p.r*sc*s,it.L.seed+bi*3.1,koma,0.20-bi*0.02,0.92);
+      ctx.fillStyle=CLOUD[lv][bi];
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+// 破片: ワールド空間の弾道(閉形式)
+const debris=[];
+for(let i=0;i<26;i++){
+  const s=900+i*3.3;
+  const az=rnd(s)*6.2832,sp=30+85*rnd(s+1);
+  const nv=3+Math.floor(rnd(s+2)*3),verts=[];
+  for(let v=0;v<nv;v++){const a=6.2832*v/nv+rnd(s+3+v)*0.8;verts.push([Math.cos(a),Math.sin(a)*(0.5+0.5*rnd(s+7+v))]);}
+  debris.push({vx:Math.cos(az)*sp,vy:45+95*rnd(s+2),vz:Math.sin(az)*sp*0.8-18,
+    om:(rnd(s+6)-0.5)*10,size:i<4?7+5*rnd(s+8):2+4*rnd(s+8),verts,seed:s});
+}
+function drawGroundRing(t){
+  const τ=t-T_HIT;
+  if(τ<=0||τ>0.6)return;
+  const R=40+1500*τ,k=1-τ/0.6,pts=[];
+  for(let i=0;i<36;i++)pts.push([TGT.x+R*Math.cos(6.2832*i/36),0.6,TGT.z+R*Math.sin(6.2832*i/36)]);
+  ctx.save();ctx.globalAlpha=qa(k,3);
+  poly3(pts,null,'#fff6e0',12*k+2);
+  ctx.restore();
+}
+function drawDustChainW(t,koma,t0,maxD,big){
+  const τ=t-t0;
+  if(τ<=0)return;
+  const D=maxD*τ/(τ+0.9);
+  const fade=qa(clamp((8-τ)/2.5,0,1),3);
+  if(fade<=0)return;
+  const puffs=[];
+  for(const[axx,azz]of[[1,0],[-1,0],[0,-1],[0.7,-0.7]]) // 街路に沿った3方向+斜め
+    for(let i=0;i<6;i++){
+      const fr=(i+1)/6,s2=t0*31+axx*57+azz*13+i*9.7;
+      const r=(9+22*(0.4+0.6*fr))*(big?1:0.55);
+      puffs.push({w:[TGT.x+axx*D*fr+(rnd(s2)-.5)*10,r*0.5+(1-fr)*τ*2,TGT.z+azz*D*fr+(rnd(s2+1)-.5)*10],r,s:s2});
+    }
+  ctx.save();ctx.globalAlpha=fade;
+  for(let bi=0;bi<4;bi++){
+    const[sc,ox,oy]=BANDS[bi];
+    ctx.beginPath();
+    for(const p of puffs){
+      const c=toCam(p.w);
+      if(c[2]<NEAR)continue;
+      const q=prj(c),rp=p.r*q[2];
+      blobPath(q[0]+ox*rp,q[1]+oy*rp,rp*sc,p.s+bi*3.7,koma,0.20,0.7);
+    }
+    ctx.fillStyle=DUST[bi];ctx.fill();
+  }
+  ctx.restore();
+}
+function drawCross(t,x,y,scale,t0){
+  const τ=t-t0;
+  if(τ<=0||τ>0.55)return;
+  const k=1-τ/0.55,L=330*k*scale,wArm=(26*k+6)*scale;
+  ctx.save();ctx.globalAlpha=qa(k,3);
+  for(const[s,c]of[[1.3,'rgba(255,140,40,0.4)'],[1,'#fffbe8']]){
+    ctx.beginPath();
+    ctx.moveTo(x,y-L*1.5*s);ctx.lineTo(x+wArm*s,y);ctx.lineTo(x,y+L*0.8*s);ctx.lineTo(x-wArm*s,y);
+    ctx.closePath();
+    ctx.moveTo(x-L*0.9*s,y);ctx.lineTo(x,y-wArm*0.8*s);ctx.lineTo(x+L*0.9*s,y);ctx.lineTo(x,y+wArm*0.8*s);
+    ctx.closePath();
+    ctx.fillStyle=c;ctx.fill();
+  }
+  ctx.restore();
+}
+function drawRing(t,x,y,t0,scale){
+  const τ=t-t0;
+  if(τ<=0||τ>0.5)return;
+  const R=(90+2200*τ)*scale,k=1-τ/0.5;
+  ctx.save();ctx.globalAlpha=qa(k,3);
+  ctx.strokeStyle='#fff6e0';ctx.lineWidth=14*k*scale+2;
+  ctx.beginPath();ctx.ellipse(x,y,R,R*0.32,0,0,6.2832);ctx.stroke();
+  ctx.restore();
+}
+function drawSparks(t,x,y,t0,seed,scale){
+  const τ=t-t0;
+  if(τ<=0||τ>0.18)return;
+  ctx.save();ctx.strokeStyle='#fff2c8';ctx.lineWidth=2;
+  for(let i=0;i<12;i++){
+    const a=rnd(seed+i)*6.2832,sp=0.4+0.6*rnd(seed+i+20);
+    const d=(30+600*τ*sp)*scale;
+    ctx.beginPath();
+    ctx.moveTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
+    ctx.lineTo(x+Math.cos(a)*(d+18*scale),y+Math.sin(a)*(d+18*scale));
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawEmbersW(t,koma){
+  ctx.fillStyle='#ffb05a';
+  for(let i=0;i<24;i++){
+    const s2=700+i*5.3,born=T_HIT+0.5+rnd(s2+9)*2.4,τe=t-born;
+    if(τe<0||τe>3.2)continue;
+    const wx=IP[0]+(rnd(s2)-.5)*180+Math.sin(τe*(0.6+rnd(s2+1))+i)*15;
+    const wy=IP[1]+20+rnd(s2+10)*90+τe*(20+rnd(s2+2)*26);
+    const c=toCam([wx,wy,IP[2]+(rnd(s2+4)-.5)*120]);
+    if(c[2]<NEAR)continue;
+    const p=prj(c);
+    ctx.globalAlpha=((koma+i)%3<2)?0.9:0.3;
+    ctx.fillRect(p[0],p[1],2.5,2.5);
+  }
+  ctx.globalAlpha=1;
+}
+
+// ---- 空・地面 ----
+function horizonY(){return H/2-F*Math.tan(PS.pitch);}
+function drawSky(pal){
+  const hy=horizonY(),top=-80;
+  for(let i=0;i<pal.sky.length;i++){
+    const y0=top+pal.frac[i]*(hy-top),y1=top+pal.frac[i+1]*(hy-top);
+    ctx.fillStyle=pal.sky[i];ctx.fillRect(-80,y0,W+160,y1-y0+1.5);
+  }
+  const c=toCam(pal.sunP);
+  if(c[2]>NEAR){
+    const s=prj(c);
+    ctx.fillStyle=pal.sunC;
+    ctx.beginPath();ctx.arc(s[0],s[1],pal.sunR,0,6.2832);ctx.fill();
+    if(pal.moon){ctx.fillStyle=pal.sky[1];ctx.beginPath();ctx.arc(s[0]-11,s[1]-7,pal.sunR*0.82,0,6.2832);ctx.fill();}
+    else{ // 太陽を横切るベタ帯
+      ctx.fillStyle=pal.sky[4];ctx.fillRect(s[0]-40,s[1]-6,220,7);
+      ctx.fillStyle=pal.sky[3];ctx.fillRect(s[0]-10,s[1]-26,190,6);
+    }
+  }
+  ctx.fillStyle=pal.cloud;
+  for(const[cx,cy2,cw]of[[-1500,430,900],[900,560,1300],[2500,390,800]]){
+    const cc=toCam([cx,cy2,5000]);
+    if(cc[2]<NEAR)continue;
+    const s=prj(cc),w=cw*s[2],h2=Math.max(8,w*0.055);
+    ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(s[0]-w/2,s[1],w,h2,h2/2):ctx.rect(s[0]-w/2,s[1],w,h2);
+    ctx.roundRect?ctx.roundRect(s[0]-w*0.2,s[1]+h2*0.8,w*0.6,h2*0.7,h2/2):ctx.rect(s[0]-w*0.2,s[1]+h2*0.8,w*0.6,h2*0.7);
+    ctx.fill();
+  }
+}
+function drawGroundPlane(pal){
+  // 遠端が地平線に十分漸近するよう疑似無限遠まで張る(短いと地平線下に未描画の隙間が出る)
+  poly3([[-60000,0,-600],[60000,0,-600],[60000,0,60000],[-60000,0,60000]],pal.ground);
+  const hy=horizonY(); // 地平線際の大気ヘイズ(2段量子化)
+  ctx.fillStyle=pal.haze;
+  ctx.globalAlpha=.5;ctx.fillRect(-80,hy-1,W+160,20);
+  ctx.globalAlpha=.25;ctx.fillRect(-80,hy+19,W+160,26);
+  ctx.globalAlpha=1;
+  const rc=mix(pal.road,pal.haze,0.25),rf=mix(pal.road,pal.haze,0.6);
+  for(let gx=-6;gx<6;gx++){
+    const x=(gx+0.5)*PITCH;
+    poly3([[x-11,.2,-400],[x+11,.2,-400],[x+11,.2,1000],[x-11,.2,1000]],rc);
+    poly3([[x-11,.2,1000],[x+11,.2,1000],[x+11,.2,2600],[x-11,.2,2600]],rf);
+  }
+  for(let gi=0;gi<15;gi++){
+    const z=74+gi*PITCH;
+    poly3([[-1300,.2,z-11],[1300,.2,z-11],[1300,.2,z+11],[-1300,.2,z+11]],z<1000?rc:rf);
+  }
+}
+
+// ---- インパクトフレーム: 常に24fpsの1コマ打ち ----
+function drawImpactFrame(idx,ix,iy){
+  const inv=idx%2===1;
+  ctx.fillStyle=inv?'#0a0a0c':'#fffdf4';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=inv?'#fffdf4':'#0a0a0c';
+  const seed=500+idx*31;
+  for(let i=0;i<16;i++){
+    const a=rnd(seed+i)*6.2832,len=(0.35+0.65*rnd(seed+i+40))*760,hw=0.015+0.04*rnd(seed+i+80);
+    ctx.beginPath();
+    ctx.moveTo(ix,iy);
+    ctx.lineTo(ix+Math.cos(a-hw)*len,iy+Math.sin(a-hw)*len);
+    ctx.lineTo(ix+Math.cos(a+hw)*len,iy+Math.sin(a+hw)*len);
+    ctx.closePath();ctx.fill();
+  }
+  if(inv){ctx.fillStyle='#fffdf4';ctx.beginPath();ctx.arc(ix,iy,64,0,6.2832);ctx.fill();}
+}
+
+// ---- 画面演出 ----
+function shakeAmp(t){
+  let a=0;
+  if(t>T_HIT+0.22)a+=15*Math.exp(-(t-T_HIT-0.22)*1.8); // 衝撃波到達(音速遅延)
+  if(t>T_LAUNCH)a+=5*Math.exp(-(t-T_LAUNCH)*5);
+  if(t>T_LAND)a+=4*Math.exp(-(t-T_LAND)*3);
+  return a;
+}
+function drawFlash(t){
+  const tEnd=T_HIT+(ui.impact?IMPACT_KOMA/FPS:0);
+  const τ=t-tEnd;
+  if(τ>=0&&τ<0.5){
+    ctx.fillStyle='#fffdf0';ctx.globalAlpha=qa(1-τ/0.5,4)*0.85;
+    ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;
+  }
+  const τl=t-T_LAUNCH;
+  if(τl>=0&&τl<ui.koma/FPS+1e-4){ctx.fillStyle='#fff2d8';ctx.globalAlpha=0.25;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}
+}
+let vign=null;
+function drawVignette(){
+  if(!vign){
+    vign=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,560);
+    vign.addColorStop(0,'rgba(0,0,0,0)');vign.addColorStop(1,'rgba(0,0,0,0.30)');
+  }
+  ctx.fillStyle=vign;ctx.fillRect(0,0,W,H);
+}
+function drawBars(koma){
+  if(!ui.bars)return;
+  ctx.fillStyle='#050507';
+  ctx.fillRect(0,0,W,52);ctx.fillRect(0,H-52,W,52);
+  ctx.fillStyle='#8a8f98';ctx.font='10px ui-monospace,monospace';
+  ctx.textAlign='left';ctx.fillText(`CUT C-309 ヘリ空爆 3Dレイアウト  ${ui.koma}コマ打ち`,14,H-20);
+  ctx.textAlign='right';ctx.fillText(`24fps  #${koma}`,W-14,H-20);
+  ctx.textAlign='left';
+}
+// 機体パーツ(画面固定 = カメラ揺れの外)
+function drawPylon(t,koma){
+  ctx.fillStyle='#0d0a12';
+  ctx.beginPath(); // パイロン支柱
+  ctx.moveTo(W,388);ctx.lineTo(W-160,436);ctx.lineTo(W-160,452);ctx.lineTo(W,414);
+  ctx.closePath();ctx.fill();
+  ctx.fillRect(W-200,448,200,9); // ラック
+  if(t<T_LAUNCH){ // 弾体(発射前のみ)
+    ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(W-225,457,167,17,8):ctx.rect(W-225,457,167,17);
+    ctx.fill();
+    ctx.beginPath();ctx.moveTo(W-225,457);ctx.lineTo(W-244,465.5);ctx.lineTo(W-225,474);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#2a1f2e';ctx.fillRect(W-218,458.5,152,2); // リムハイライト
+  }else if(t<T_LAUNCH+0.14){ // 発射直後の排気
+    ctx.fillStyle='#ffdba0';ctx.globalAlpha=qa(1-(t-T_LAUNCH)/0.14,3);
+    ctx.beginPath();ctx.arc(W-232,464,10+40*(t-T_LAUNCH),0,6.2832);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+  ctx.fillStyle='#0d0a12'; // キャノピー枠(左下ウェッジ)
+  ctx.beginPath();ctx.moveTo(0,H-52);ctx.lineTo(0,H-140);ctx.lineTo(130,H-52);ctx.closePath();ctx.fill();
+}
+// 照準 HUD
+function drawHUD(t,koma,pal){
+  if(!ui.hud)return;
+  const c=pal.hud,cx=W/2,cyc=H/2;
+  ctx.save();
+  ctx.strokeStyle=c;ctx.fillStyle=c;ctx.globalAlpha=.85;ctx.lineWidth=1.2;
+  ctx.font='11px ui-monospace,monospace';
+  // 中央レティクル
+  ctx.beginPath();
+  ctx.moveTo(cx-46,cyc);ctx.lineTo(cx-14,cyc);ctx.moveTo(cx+14,cyc);ctx.lineTo(cx+46,cyc);
+  ctx.moveTo(cx,cyc-34);ctx.lineTo(cx,cyc-10);ctx.moveTo(cx,cyc+10);ctx.lineTo(cx,cyc+34);
+  ctx.stroke();
+  ctx.fillRect(cx-1.5,cyc-1.5,3,3);
+  ctx.setLineDash([4,7]);
+  ctx.beginPath();ctx.arc(cx,cyc,58,0,6.2832);ctx.stroke();
+  ctx.setLineDash([]);
+  // ターゲットボックス(捕捉演出: 収束する破線 → 実線)
+  const vs=boxVerts(TGT.x,TGT.z,TGT.w,TGT.d,0,TGT.h);
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(const p of vs){const s=prjP(p);x0=Math.min(x0,s[0]);y0=Math.min(y0,s[1]);x1=Math.max(x1,s[0]);y1=Math.max(y1,s[1]);}
+  const u=smoothstep(0,T_LOCK,t),ex=(1-u)*120+6;
+  x0-=ex;y0-=ex;x1+=ex;y1+=ex;
+  if(t<T_LOCK)ctx.setLineDash([6,6]);
+  const bl=14;
+  ctx.beginPath();
+  for(const[bx,by,dx2,dy2]of[[x0,y0,1,1],[x1,y0,-1,1],[x1,y1,-1,-1],[x0,y1,1,-1]]){
+    ctx.moveTo(bx+dx2*bl,by);ctx.lineTo(bx,by);ctx.lineTo(bx,by+dy2*bl);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+  const lockBlink=t<T_LOCK+0.4?(koma%4<2):true;
+  const st=t<T_LOCK?'SRCH':(t<T_LAUNCH?(lockBlink?'LOCK':''):(t<T_HIT?'TRK':(koma%4<2?'HIT':'')));
+  if(st)ctx.fillText(st,x0,y0-6);
+  // テキスト類
+  let rng;
+  if(t<T_LAUNCH)rng=Math.hypot(PS.px-TGT.x,PS.py-70,PS.pz-TGT.z);
+  else if(t<T_HIT){const m=missilePos(t-T_LAUNCH);rng=Math.hypot(m[0]-IP[0],m[1]-IP[1],m[2]-IP[2]);}
+  else rng=0;
+  const hdg=(360+Math.round(PS.yaw*57.29))%360;
+  ctx.fillText('TADS NFOV',60,74);
+  ctx.fillText('MSL ARM',60,88);
+  ctx.textAlign='right';
+  ctx.fillText(`HDG ${String(hdg).padStart(3,'0')}`,W-60,74);
+  ctx.fillText(`RNG ${String(Math.round(rng)).padStart(4,'0')}`,W-60,H-76);
+  ctx.fillText(`AGL ${String(Math.round(PS.py)).padStart(4,'0')}`,W-60,H-62);
+  ctx.textAlign='left';
+  ctx.fillText(`AGM-114 x${t<T_LAUNCH?4:3}`,60,H-76);
+  ctx.fillText(t<T_LOCK?'MSL RDY':(t<T_LAUNCH?'MSL LOCK':(t<T_HIT?'MSL FLY':'IMPACT')),60,H-62);
+  if(t>=T_LAUNCH&&t<T_LAUNCH+0.5&&koma%4<2){ctx.font='13px ui-monospace,monospace';ctx.fillText('LAUNCH',cx-24,cyc+86);}
+  ctx.restore();
+}
+
+// ---- メイン描画: scene = draw(quantize(t)) ----
+function draw(){
+  const t=qt(tPlay),koma=komaIndex(tPlay);
+  const fi=Math.floor((tPlay-T_HIT)*FPS);
+  const fik=(ui.impact&&tPlay>=T_HIT&&fi<IMPACT_KOMA)?fi:-1;
+  const key=[koma,fik,ui.koma,ui.pal,ui.impact,ui.hud,ui.bars].join('|');
+  if(key===lastKey)return; // コマが変わったときだけ描く
+  lastKey=key;
+  const pal=PALS[ui.pal];
+  PS=camPose(t);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(fik>=0){
+    const s=prjP(IP);
+    drawImpactFrame(fik,s[0],s[1]);drawBars(koma);
+    return;
+  }
+  ctx.save();
+  // 揺れはコマ単位の離散ジャンプ + パンチズーム + ロール
+  const amp=shakeAmp(t);
+  const sx2=Math.round((rnd2(11,koma)-.5)*2*amp),sy2=Math.round((rnd2(37,koma)-.5)*2*amp);
+  let zoom=1;
+  if(t>T_HIT)zoom=1+0.05*Math.exp(-(t-T_HIT)*2.5);
+  ctx.translate(W/2+sx2,H/2+sy2);ctx.scale(zoom,zoom);ctx.rotate(PS.roll);ctx.translate(-W/2,-H/2);
+
+  drawSky(pal);
+  drawGroundPlane(pal);
+  // 落影(近景のみ)
+  for(const b of blds){
+    if(b.far)continue;
+    const c=toCam([b.x,0,b.z]);
+    if(c[2]<NEAR||c[2]>1600||Math.abs(c[0])>c[2]*0.9+200)continue;
+    drawShadow(b.x,b.z,b.w,b.d,b.h,pal);
+  }
+  drawShadow(TGT.x,TGT.z,TGT.w,TGT.d,t<T_HIT?TGT.h:62,pal);
+
+  // 深度ソート済み描画リスト(ペインターズアルゴリズム)
+  const items=[];
+  for(const b of blds){
+    const c=toCam([b.x,b.h/2,b.z]);
+    // 中心がやや背後でも手前側の面が見えることがある(面ごとにニアクリップされる)
+    if(c[2]<-80||c[2]>4200||Math.abs(c[0])>Math.max(60,c[2])*0.9+220)continue;
+    items.push({z:c[2],f:()=>drawBuilding(b,pal,c[2],t,koma)});
+  }
+  {const c=toCam([TGT.x,60,TGT.z]);items.push({z:c[2],f:()=>drawTarget(t,koma,pal)});}
+  // 爆発グループ(着弾点にビルボード合成)
+  {
+    const c=toCam(IP);
+    if(c[2]>NEAR){
+      const s=prj(c);
+      items.push({z:c[2]-40,f:()=>{
+        drawGroundRing(t);
+        drawDustChainW(t,koma,T_HIT+0.15,120,false);
+        drawDustChainW(t,koma,T_LAND,300,true);
+        for(const b of bursts)drawBurstS(b,t,koma,s[0],s[1],s[2]);
+        drawSparks(t,s[0],s[1],T_HIT,333,1.5*s[2]);
+        drawRing(t,s[0],s[1],T_HIT,s[2]);
+        drawCross(t,s[0],s[1],1.15*s[2],T_HIT);
+        drawEmbersW(t,koma);
+      }});
+    }
+  }
+  // 破片(ワールド弾道、各個の深度で)
+  {
+    const τ=t-T_HIT;
+    if(τ>0&&τ<3.5)for(const d of debris){
+      const y=IP[1]+d.vy*τ-0.5*175*τ*τ;
+      if(y<1.5)continue;
+      const c=toCam([IP[0]+d.vx*τ,y,IP[2]+d.vz*τ]);
+      if(c[2]<NEAR)continue;
+      items.push({z:c[2],f:()=>{
+        const s=prj(c),sz=d.size*s[2];
+        ctx.save();ctx.translate(s[0],s[1]);ctx.rotate(d.om*τ);
+        ctx.beginPath();
+        d.verts.forEach(([vx,vy],i)=>i?ctx.lineTo(vx*sz,vy*sz):ctx.moveTo(vx*sz,vy*sz));
+        ctx.closePath();
+        ctx.fillStyle='#120b0d';ctx.fill();
+        if(τ<0.8){ctx.strokeStyle='#ff9a3a';ctx.globalAlpha=qa(1-τ/0.8,3);ctx.lineWidth=2;ctx.stroke();}
+        ctx.restore();
+      }});
+    }
+  }
+  // ミサイル + 煙トレイル(パフは1/24s刻みの閉形式サンプル)
+  if(t>T_LAUNCH){
+    const τm=t-T_LAUNCH;
+    const n=Math.min(Math.floor(τm*FPS),Math.floor(FLIGHT*FPS));
+    for(let j=0;j<=n;j++){
+      const τj=j/FPS,age=τm-τj;
+      // 発射機直近のパフはローター後流で即散る扱い(カメラ直前で巨大化して画面を覆うのを防ぐ)
+      const maxAge=0.5+2.9*smoothstep(0,0.5,τj);
+      if(age<0.02||age>=maxAge)continue;
+      const p=missilePos(τj);
+      const c=toCam([p[0]+(rnd(j*3.7)-.5)*3,p[1]+age*2+(rnd(j*5.1)-.5)*3,p[2]+(rnd(j*7.3)-.5)*3]);
+      if(c[2]<NEAR)continue;
+      const r=Math.min(16,1.4+5.5*age);
+      let al=qa(clamp((maxAge-age)/Math.min(1.2,maxAge),0,1),3);
+      if(t>T_HIT)al=Math.min(al,qa(clamp((T_HIT+0.6-t)/0.6,0,1),3)); // 着弾後は爆発が主役、トレイルは払う
+      if(al<=0)continue;
+      items.push({z:c[2],f:()=>{
+        const s=prj(c),rp=Math.min(160,r*s[2]);
+        ctx.globalAlpha=al;
+        for(let bi=0;bi<3;bi++){
+          const sc=[1,.7,.42][bi],off=[0,-.1,-.2][bi];
+          ctx.beginPath();
+          blobPath(s[0]+off*rp,s[1]+off*rp,rp*sc,j*13.7+bi*3.1,koma,0.22,0.85);
+          ctx.fillStyle=pal.trail[bi+1];ctx.fill();
+        }
+        ctx.globalAlpha=1;
+      }});
+    }
+    if(t<T_HIT){ // 弾体
+      const p0=missilePos(τm),c=toCam(p0);
+      if(c[2]>NEAR)items.push({z:c[2],f:()=>{
+        const s=prj(c),s2=prjP(missilePos(Math.min(FLIGHT,τm+0.03)));
+        let dx2=s2[0]-s[0],dy2=s2[1]-s[1];
+        const dl=Math.hypot(dx2,dy2)||1;dx2/=dl;dy2/=dl;
+        const len=5*s[2],fl=(6+5*rnd(koma*3.3))*s[2];
+        ctx.strokeStyle='#f4f0e6';ctx.lineWidth=Math.max(1.5,1.3*s[2]);
+        ctx.beginPath();ctx.moveTo(s[0],s[1]);ctx.lineTo(s[0]-dx2*len,s[1]-dy2*len);ctx.stroke();
+        ctx.strokeStyle='#ff9a3a';ctx.lineWidth=Math.max(1,s[2]);
+        ctx.beginPath();ctx.moveTo(s[0]-dx2*len,s[1]-dy2*len);ctx.lineTo(s[0]-dx2*(len+fl),s[1]-dy2*(len+fl));ctx.stroke();
+        ctx.fillStyle='#fffdf0';
+        ctx.beginPath();ctx.arc(s[0],s[1],Math.max(1.5,1.6*s[2]),0,6.2832);ctx.fill();
+      }});
+    }
+    if(τm<0.16){ // 発射フラッシュ(手前なのでほぼ最前面)
+      const c=toCam(LNCH());
+      if(c[2]>NEAR)items.push({z:c[2],f:()=>{
+        const s=prj(c);
+        ctx.save();ctx.globalAlpha=qa(1-τm/0.16,3);
+        ctx.fillStyle='#ffdba0';
+        ctx.beginPath();ctx.arc(s[0],s[1],60+300*τm,0,6.2832);ctx.fill();
+        ctx.fillStyle='#fffdf0';
+        ctx.beginPath();ctx.arc(s[0],s[1],26+140*τm,0,6.2832);ctx.fill();
+        ctx.restore();
+        drawSparks(t,s[0],s[1],T_LAUNCH,111,2.2);
+      }});
+    }
+  }
+  items.sort((a,b)=>b.z-a.z);
+  for(const it of items)it.f();
+  ctx.restore();
+
+  drawPylon(t,koma);
+  drawFlash(t);
+  drawHUD(t,koma,pal);
+  drawVignette();
+  drawBars(koma);
+}
+
+// ---- 再生ループ ----
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(0.1,(now-last)/1000);last=now;
+  if(playing){
+    tPlay+=dt;
+    if(tPlay>=DUR){tPlay=DUR;playing=false;playBtn.textContent='再生';}
+  }
+  if(!seeking)seek.value=tPlay;
+  tc.textContent=`t=${tPlay.toFixed(2)}s コマ${komaIndex(tPlay)}`;
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// ---- UI ----
+const seek=document.getElementById('seek'),tc=document.getElementById('tc');
+const playBtn=document.getElementById('play');
+document.getElementById('boom').addEventListener('click',()=>{tPlay=0;playing=true;playBtn.textContent='停止';});
+playBtn.addEventListener('click',()=>{playing=!playing;playBtn.textContent=playing?'停止':'再生';});
+function stepKoma(d){
+  playing=false;playBtn.textContent='再生';
+  tPlay=clamp((komaIndex(tPlay)+d)*ui.koma/FPS,0,DUR);
+}
+document.getElementById('stepB').addEventListener('click',()=>stepKoma(-1));
+document.getElementById('stepF').addEventListener('click',()=>stepKoma(1));
+document.getElementById('koma').addEventListener('change',e=>{ui.koma=+e.target.value;});
+document.getElementById('pal').addEventListener('change',e=>{ui.pal=e.target.value;});
+document.getElementById('impact').addEventListener('change',e=>{ui.impact=e.target.checked;});
+document.getElementById('hud').addEventListener('change',e=>{ui.hud=e.target.checked;});
+document.getElementById('bars').addEventListener('change',e=>{ui.bars=e.target.checked;});
+seek.addEventListener('pointerdown',()=>{seeking=true;});
+seek.addEventListener('pointerup',()=>{seeking=false;});
+seek.addEventListener('input',e=>{tPlay=+e.target.value;});
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();playBtn.click();}
+  else if(e.code==='ArrowLeft')stepKoma(-1);
+  else if(e.code==='ArrowRight')stepKoma(1);
+});
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
