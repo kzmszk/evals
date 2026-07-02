@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ダムブレイク — 粒子法 DDR</title>
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#0b0e14;color:#d8e2f0;font-family:system-ui,-apple-system,sans-serif;
+       display:flex;flex-direction:column;align-items:center}
+  h1{font-size:15px;font-weight:650;margin:14px 0 4px;color:#edf4ff;letter-spacing:.04em}
+  #bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center;
+       padding:8px 14px;margin:8px;background:#121826;border:1px solid #1f2937;border-radius:8px;font-size:12px}
+  label{display:flex;gap:6px;align-items:center;white-space:nowrap;color:#a9b8cf}
+  input[type=range]{width:92px;accent-color:#38bdf8}
+  select,button{height:25px;background:#1c2434;color:#d8e2f0;border:1px solid #2a3650;border-radius:6px;
+       padding:3px 10px;font-size:12px;cursor:pointer}
+  button:hover,select:hover{background:#273248}
+  #stats{font-variant-numeric:tabular-nums;color:#7dd3fc;min-width:70px;text-align:right}
+  canvas{width:min(96vw,960px);height:auto;display:block;border-radius:8px;box-shadow:0 8px 40px #000b;touch-action:none;cursor:grab}
+  canvas:active{cursor:grabbing}
+  #hint{font-size:11px;color:#5b6b85;margin:8px}
+</style>
+</head>
+<body>
+<h1>ダムブレイク — 粒子法 Double Density Relaxation</h1>
+<div id="bar">
+  <button id="reset">リセット</button>
+  <button id="add">水を追加</button>
+  <label>重力傾き <input id="angle" type="range" min="-45" max="45" step="1" value="0"></label>
+  <label>粒子数 <select id="count"><option>1500</option><option selected>2500</option><option>4000</option></select></label>
+  <label><input id="obstacle" type="checkbox" checked> 中央の柱</label>
+  <button id="pause">一時停止</button>
+  <span id="stats">— fps</span>
+</div>
+<canvas id="cv" width="960" height="540"></canvas>
+<div id="hint">ドラッグで水を押す。速い流れは白く、まとまった水面はメタボールで描画されます。</div>
+
+<script>
+'use strict';
+
+const W=960,H=540;
+const CONFIG={h:24,g:1500,substeps:2,rho0:2.15,k:280,kNear:360,sigma:0.08,beta:0.02,mouseR:80};
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const DPR=Math.min(2,window.devicePixelRatio||1);
+cv.width=W*DPR; cv.height=H*DPR; cv.style.aspectRatio=`${W}/${H}`;
+ctx.setTransform(DPR,0,0,DPR,0,0);
+
+const half=document.createElement('canvas'), hw=W>>1, hh=H>>1;
+half.width=hw; half.height=hh;
+const hctx=half.getContext('2d',{willReadFrequently:true});
+const sprites=[];
+let N=2500, x,y,px,py,vx,vy,next,head,cols,rows,gridCount;
+let obstacleOn=true, paused=false, gravityAngle=0;
+const mouse={down:false,x:0,y:0,px:0,py:0,vx:0,vy:0};
+
+function makeSprites(){
+  // 中心アルファを抑えた柔らかい減衰にすると、source-over 合成でも
+  // 粒の円が浮かず、隣接粒子の色が滑らかに混ざる
+  const colors=['#123e8c','#1663b7','#1e88d2','#2ea3de','#63b3f0','#9bd8ff','#d8f1ff','#ffffff'];
+  const hex=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
+  const r=Math.ceil(CONFIG.h*0.45);
+  for(const color of colors){
+    const [cr,cg,cb]=hex(color);
+    const s=document.createElement('canvas'); s.width=s.height=r*2+2;
+    const c=s.getContext('2d');
+    const g=c.createRadialGradient(r+1,r+1,0,r+1,r+1,r);
+    g.addColorStop(0,`rgba(${cr},${cg},${cb},0.72)`);
+    g.addColorStop(0.5,`rgba(${cr},${cg},${cb},0.38)`);
+    g.addColorStop(1,`rgba(${cr},${cg},${cb},0)`);
+    c.fillStyle=g; c.fillRect(0,0,s.width,s.height);
+    sprites.push(s);
+  }
+}
+makeSprites();
+
+function alloc(n){
+  N=n;
+  x=new Float32Array(N); y=new Float32Array(N); px=new Float32Array(N); py=new Float32Array(N);
+  vx=new Float32Array(N); vy=new Float32Array(N); next=new Int32Array(N);
+  cols=Math.ceil(W/CONFIG.h); rows=Math.ceil(H/CONFIG.h); gridCount=cols*rows; head=new Int32Array(gridCount);
+}
+function resetDam(){
+  alloc(+document.getElementById('count').value);
+  const damX=W*0.08, damY=H*0.12, damW=W*0.36, damH=H*0.76;
+  const s=Math.max(CONFIG.h*0.28,Math.sqrt((damW*damH)/N)*0.96);
+  CONFIG.rho0=Math.max(2.15,Math.PI*CONFIG.h*CONFIG.h/(6*s*s)*1.25);
+  let n=0;
+  for(let yy=damY; yy<damY+damH && n<N; yy+=s){
+    for(let xx=damX; xx<damX+damW && n<N; xx+=s){
+      x[n]=xx+(Math.random()-0.5)*0.4; y[n]=yy+(Math.random()-0.5)*0.4;
+      px[n]=x[n]; py[n]=y[n]; vx[n]=0; vy[n]=0; n++;
+    }
+  }
+  while(n<N){
+    x[n]=damX+Math.random()*damW; y[n]=damY+Math.random()*damH;
+    px[n]=x[n]; py[n]=y[n]; vx[n]=0; vy[n]=0; n++;
+  }
+}
+function addWater(){
+  for(let n=0;n<Math.min(320,N);n++){
+    const i=(Math.random()*N)|0;
+    x[i]=W*0.42+Math.random()*W*0.18; y[i]=H*0.06+Math.random()*H*0.14;
+    px[i]=x[i]; py[i]=y[i]; vx[i]=(Math.random()-0.5)*80; vy[i]=40;
+  }
+}
+function cellIndex(xx,yy){
+  let cx=(xx/CONFIG.h)|0, cy=(yy/CONFIG.h)|0;
+  if(cx<0)cx=0; else if(cx>=cols)cx=cols-1;
+  if(cy<0)cy=0; else if(cy>=rows)cy=rows-1;
+  return cy*cols+cx;
+}
+function buildGrid(){
+  head.fill(-1);
+  for(let i=0;i<N;i++){
+    const c=cellIndex(x[i],y[i]);
+    next[i]=head[c]; head[c]=i;
+  }
+}
+function constrainParticle(i){
+  const pad=3;
+  if(x[i]<pad)x[i]=pad; else if(x[i]>W-pad)x[i]=W-pad;
+  if(y[i]<pad)y[i]=pad; else if(y[i]>H-pad)y[i]=H-pad;
+  if(!obstacleOn) return;
+  // 床から立つ柱: 上面か左右の面のうち、めり込みが最小の方向へ押し出す
+  const ox=W*0.58, ow=62, top=H-200;
+  const l=ox-ow/2, r=ox+ow/2;
+  if(x[i]>l&&x[i]<r&&y[i]>top){
+    const dl=x[i]-l, dr=r-x[i], dt=y[i]-top;
+    if(dt<dl&&dt<dr)y[i]=top; else if(dl<dr)x[i]=l; else x[i]=r;
+  }
+}
+function applyMouse(){
+  if(!mouse.down) return;
+  const rr=CONFIG.mouseR*CONFIG.mouseR;
+  for(let i=0;i<N;i++){
+    const dx=x[i]-mouse.x, dy=y[i]-mouse.y, d2=dx*dx+dy*dy;
+    if(d2<rr){
+      const q=1-Math.sqrt(d2)/CONFIG.mouseR;
+      vx[i]+=mouse.vx*q*0.035;
+      vy[i]+=mouse.vy*q*0.035;
+    }
+  }
+  mouse.vx*=0.45; mouse.vy*=0.45;
+}
+function substep(dt){
+  const a=gravityAngle*Math.PI/180;
+  const gx=Math.sin(a)*CONFIG.g, gy=Math.cos(a)*CONFIG.g;
+  for(let i=0;i<N;i++){ vx[i]+=gx*dt; vy[i]+=gy*dt; }
+  applyMouse();
+
+  buildGrid();
+  const h=CONFIG.h, h2=h*h;
+  for(let i=0;i<N;i++){
+    const cx=(x[i]/h)|0, cy=(y[i]/h)|0;
+    for(let oy=-1;oy<=1;oy++){
+      const yy=cy+oy; if(yy<0||yy>=rows) continue;
+      for(let ox=-1;ox<=1;ox++){
+        const xx=cx+ox; if(xx<0||xx>=cols) continue;
+        for(let j=head[yy*cols+xx];j!==-1;j=next[j]){
+          if(j<=i) continue;
+          const rx=x[j]-x[i], ry=y[j]-y[i], d2=rx*rx+ry*ry;
+          if(d2<=1e-7||d2>=h2) continue;
+          const d=Math.sqrt(d2), q=d/h, nx=rx/d, ny=ry/d;
+          const u=(vx[i]-vx[j])*nx+(vy[i]-vy[j])*ny;
+          if(u>0){
+            const impulse=dt*(1-q)*(CONFIG.sigma*u+CONFIG.beta*u*u);
+            const ix=impulse*nx*0.5, iy=impulse*ny*0.5;
+            vx[i]-=ix; vy[i]-=iy; vx[j]+=ix; vy[j]+=iy;
+          }
+        }
+      }
+    }
+  }
+
+  for(let i=0;i<N;i++){ px[i]=x[i]; py[i]=y[i]; x[i]+=vx[i]*dt; y[i]+=vy[i]*dt; }
+  buildGrid();
+  for(let i=0;i<N;i++){
+    let rho=0, near=0;
+    const cx=(x[i]/h)|0, cy=(y[i]/h)|0;
+    for(let oy=-1;oy<=1;oy++){
+      const yy=cy+oy; if(yy<0||yy>=rows) continue;
+      for(let ox=-1;ox<=1;ox++){
+        const xx=cx+ox; if(xx<0||xx>=cols) continue;
+        for(let j=head[yy*cols+xx];j!==-1;j=next[j]){
+          if(j===i) continue;
+          const rx=x[j]-x[i], ry=y[j]-y[i], d2=rx*rx+ry*ry;
+          if(d2<=1e-7||d2>=h2) continue;
+          const q=1-Math.sqrt(d2)/h;
+          rho+=q*q; near+=q*q*q;
+        }
+      }
+    }
+    const P=CONFIG.k*(rho-CONFIG.rho0), Pn=CONFIG.kNear*near;
+    let xi=x[i], yi=y[i];
+    for(let oy=-1;oy<=1;oy++){
+      const yy=cy+oy; if(yy<0||yy>=rows) continue;
+      for(let ox=-1;ox<=1;ox++){
+        const xx=cx+ox; if(xx<0||xx>=cols) continue;
+        for(let j=head[yy*cols+xx];j!==-1;j=next[j]){
+          if(j===i) continue;
+          const rx=x[j]-xi, ry=y[j]-yi, d2=rx*rx+ry*ry;
+          if(d2<=1e-7||d2>=h2) continue;
+          const d=Math.sqrt(d2), q=1-d/h, D=dt*dt*(P*q+Pn*q*q);
+          const dx=(D*rx/d)*0.5, dy=(D*ry/d)*0.5;
+          x[j]+=dx; y[j]+=dy; xi-=dx; yi-=dy;
+        }
+      }
+    }
+    x[i]=xi; y[i]=yi;
+  }
+  for(let i=0;i<N;i++) constrainParticle(i);
+  for(let i=0;i<N;i++){
+    vx[i]=(x[i]-px[i])/dt; vy[i]=(y[i]-py[i])/dt;
+    if(y[i]>H-4||x[i]<4||x[i]>W-4){ vx[i]*=0.985; vy[i]*=0.985; }
+    if(!Number.isFinite(x[i]+y[i]+vx[i]+vy[i])){
+      x[i]=W*0.15+Math.random()*40; y[i]=H*0.2+Math.random()*40; vx[i]=0; vy[i]=0;
+    }
+  }
+}
+function simulate(){
+  const dt=1/60/CONFIG.substeps;
+  for(let s=0;s<CONFIG.substeps;s++) substep(dt);
+}
+function drawTank(){
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0b0e14'); bg.addColorStop(1,'#111923');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#334155'; ctx.lineWidth=4;
+  ctx.strokeRect(2,2,W-4,H-4);
+  ctx.strokeStyle='#1f2a3a'; ctx.lineWidth=1;
+  for(let yy=90;yy<H;yy+=90){ ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(W,yy); ctx.stroke(); }
+  if(obstacleOn){
+    const ox=W*0.58, ow=62, top=H-200;
+    ctx.fillStyle='#222b3b'; ctx.strokeStyle='#64748b'; ctx.lineWidth=2;
+    ctx.fillRect(ox-ow/2,top,ow,H-top-2); ctx.strokeRect(ox-ow/2,top,ow,H-top-2);
+  }
+}
+function renderWater(){
+  hctx.clearRect(0,0,hw,hh);
+  // source-over 合成: RGB はスプライト色 (速度色) のα加重平均になり、加算合成のような白飛びをしない
+  for(let i=0;i<N;i++){
+    const sp=Math.min(7,(Math.hypot(vx[i],vy[i])/150)|0);
+    const s=sprites[sp], r=s.width/2;
+    hctx.drawImage(s,x[i]*0.5-r,y[i]*0.5-r);
+  }
+  const img=hctx.getImageData(0,0,hw,hh), d=img.data;
+  for(let p=0;p<d.length;p+=4){
+    const a=d[p+3];
+    // RGB はスプライトの速度色の加重平均がそのまま入っている (lighter 合成 + 非乗算アルファ)
+    // ので上書きせず、αだけしきい値処理して液面化する
+    if(a<68){ d[p+3]=0; }
+    else d[p+3]=a<112?Math.min(255,(a-68)*5):235;
+  }
+  hctx.putImageData(img,0,0);
+  // 水にだけ縦グラデーションを重ねて深みを出す (source-atop で水以外には乗らない)
+  hctx.globalCompositeOperation='source-atop';
+  const wg=hctx.createLinearGradient(0,0,0,hh);
+  wg.addColorStop(0,'rgba(170,230,255,0.30)');
+  wg.addColorStop(0.55,'rgba(60,130,220,0.10)');
+  wg.addColorStop(1,'rgba(8,20,60,0.35)');
+  hctx.fillStyle=wg; hctx.fillRect(0,0,hw,hh);
+  hctx.globalCompositeOperation='source-over';
+  ctx.imageSmoothingEnabled=true;
+  ctx.drawImage(half,0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,0.75)';
+  for(let i=0;i<N;i++){
+    if(Math.hypot(vx[i],vy[i])>760){
+      ctx.fillRect(x[i]-1.1,y[i]-1.1,2.2,2.2);
+    }
+  }
+}
+function render(){
+  drawTank();
+  renderWater();
+}
+function canvasPoint(e){
+  const r=cv.getBoundingClientRect();
+  return [(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];
+}
+cv.addEventListener('pointerdown',e=>{
+  const p=canvasPoint(e); mouse.down=true; mouse.x=mouse.px=p[0]; mouse.y=mouse.py=p[1]; mouse.vx=0; mouse.vy=0;
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove',e=>{
+  if(!mouse.down) return;
+  const p=canvasPoint(e);
+  mouse.vx=(p[0]-mouse.x)*60; mouse.vy=(p[1]-mouse.y)*60;
+  mouse.px=mouse.x; mouse.py=mouse.y; mouse.x=p[0]; mouse.y=p[1];
+});
+cv.addEventListener('pointerup',()=>{mouse.down=false;});
+cv.addEventListener('pointercancel',()=>{mouse.down=false;});
+
+document.getElementById('reset').onclick=resetDam;
+document.getElementById('add').onclick=addWater;
+document.getElementById('angle').oninput=e=>gravityAngle=+e.target.value;
+document.getElementById('count').onchange=resetDam;
+document.getElementById('obstacle').onchange=e=>obstacleOn=e.target.checked;
+document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'再開':'一時停止';};
+
+resetDam();
+let last=performance.now(), frames=0, fpsLast=last;
+function loop(now){
+  if(!paused) simulate();
+  render();
+  frames++;
+  if(now-fpsLast>500){
+    document.getElementById('stats').textContent=`${(frames*1000/(now-fpsLast)).toFixed(0)} fps`;
+    frames=0; fpsLast=now;
+  }
+  last=now;
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>煙と炎 — Stable Fluids (WebGL2)</title>
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#0b0e14;color:#d8e2f0;font-family:system-ui,-apple-system,sans-serif;
+       display:flex;flex-direction:column;align-items:center}
+  h1{font-size:15px;font-weight:650;margin:14px 0 4px;color:#edf4ff;letter-spacing:.04em}
+  #bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center;
+       padding:8px 14px;margin:8px;background:#121826;border:1px solid #1f2937;border-radius:8px;font-size:12px}
+  label{display:flex;gap:6px;align-items:center;white-space:nowrap;color:#a9b8cf}
+  input[type=range]{width:92px;accent-color:#fb923c}
+  button{height:25px;background:#1c2434;color:#d8e2f0;border:1px solid #2a3650;border-radius:6px;
+         padding:3px 10px;font-size:12px;cursor:pointer}
+  button:hover{background:#273248}
+  button.mode{min-width:48px;padding:3px 8px}
+  button.active{background:#f97316;color:#140904;border-color:#fdba74}
+  #stats{font-variant-numeric:tabular-nums;color:#7dd3fc;min-width:70px;text-align:right}
+  #wrap{position:relative;width:min(96vw,1280px);aspect-ratio:16/9;margin:4px 0 10px}
+  canvas{width:100%;height:100%;display:block;border-radius:8px;box-shadow:0 8px 40px #000b;touch-action:none;cursor:crosshair}
+  #error{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:24px;color:#fecaca;background:#111827;border-radius:8px}
+  #hint{font-size:11px;color:#5b6b85;margin:0 0 10px}
+</style>
+</head>
+<body>
+<h1>煙と炎 — Stable Fluids (WebGL2)</h1>
+<div id="bar">
+  <button class="mode active" data-mode="fire">炎</button>
+  <button class="mode" data-mode="smoke">煙</button>
+  <button class="mode" data-mode="both">両方</button>
+  <label>渦強調 <input id="vort" type="range" min="0" max="50" step="1" value="25"></label>
+  <label>浮力 <input id="buoy" type="range" min="10" max="80" step="1" value="45"></label>
+  <label>強度 <input id="power" type="range" min="0" max="2" step="0.02" value="1"></label>
+  <button id="pause">一時停止</button>
+  <button id="clear">クリア</button>
+  <span id="stats">— fps</span>
+</div>
+<div id="wrap">
+  <canvas id="cv" width="1280" height="720"></canvas>
+  <div id="error"></div>
+</div>
+<div id="hint">ドラッグで炎や煙をかき混ぜる</div>
+
+<script>
+'use strict';
+
+const canvas=document.getElementById('cv');
+const gl=canvas.getContext('webgl2',{alpha:false,antialias:false,depth:false,stencil:false,preserveDrawingBuffer:false});
+const errorBox=document.getElementById('error');
+if(!gl){
+  errorBox.style.display='grid';
+  errorBox.textContent='WebGL2 に対応したブラウザで開いてください。';
+  throw new Error('WebGL2 not supported');
+}
+const colorFloat=gl.getExtension('EXT_color_buffer_float');
+const floatLinear=gl.getExtension('OES_texture_float_linear');
+if(!colorFloat){
+  errorBox.style.display='grid';
+  errorBox.textContent='EXT_color_buffer_float が利用できないため、このデモは実行できません。';
+  throw new Error('EXT_color_buffer_float not supported');
+}
+
+const filter=floatLinear?gl.LINEAR:gl.NEAREST;
+const SIM_W=320, SIM_H=180, DYE_W=1280, DYE_H=720;
+const state={mode:'fire',vort:25,buoy:45,power:1,paused:false};
+const pointer={down:false,x:0,y:0,px:0,py:0,dx:0,dy:0,moved:false};
+
+const vertex=`#version 300 es
+in vec2 aPosition;
+out vec2 vUv;
+void main(){
+  vUv=aPosition*0.5+0.5;
+  gl_Position=vec4(aPosition,0.0,1.0);
+}`;
+const header=`#version 300 es
+precision highp float;
+precision highp sampler2D;
+in vec2 vUv;
+out vec4 outColor;
+`;
+const shaders={
+  clear:header+`uniform sampler2D uTexture; uniform float uValue;
+void main(){ outColor=texture(uTexture,vUv)*uValue; }`,
+  splat:header+`uniform sampler2D uTarget; uniform vec2 uPoint; uniform vec4 uColor; uniform float uRadius; uniform float uAspect;
+void main(){
+  vec2 p=vUv-uPoint;
+  p.x*=uAspect;
+  float a=exp(-dot(p,p)/uRadius);
+  outColor=texture(uTarget,vUv)+a*uColor;
+}`,
+  advect:header+`uniform sampler2D uVelocity; uniform sampler2D uSource; uniform vec2 uTexel; uniform float uDt; uniform vec4 uDiss;
+void main(){
+  vec2 vel=texture(uVelocity,vUv).xy;
+  vec2 coord=clamp(vUv-uDt*vel*uTexel,vec2(0.001),vec2(0.999));
+  outColor=texture(uSource,coord)/(1.0+uDiss*uDt);
+}`,
+  curl:header+`uniform sampler2D uVelocity; uniform vec2 uTexel;
+void main(){
+  float L=texture(uVelocity,vUv-vec2(uTexel.x,0)).y;
+  float R=texture(uVelocity,vUv+vec2(uTexel.x,0)).y;
+  float B=texture(uVelocity,vUv-vec2(0,uTexel.y)).x;
+  float T=texture(uVelocity,vUv+vec2(0,uTexel.y)).x;
+  outColor=vec4(0.5*((R-L)-(T-B)),0,0,1);
+}`,
+  vorticity:header+`uniform sampler2D uVelocity; uniform sampler2D uCurl; uniform vec2 uTexel; uniform float uDt; uniform float uStrength;
+void main(){
+  float L=abs(texture(uCurl,vUv-vec2(uTexel.x,0)).x);
+  float R=abs(texture(uCurl,vUv+vec2(uTexel.x,0)).x);
+  float B=abs(texture(uCurl,vUv-vec2(0,uTexel.y)).x);
+  float T=abs(texture(uCurl,vUv+vec2(0,uTexel.y)).x);
+  float C=texture(uCurl,vUv).x;
+  vec2 force=0.5*vec2(T-B,R-L);
+  force/=length(force)+1e-5;
+  force*=uStrength*C;
+  force.y*=-1.0;
+  vec2 vel=texture(uVelocity,vUv).xy+force*uDt;
+  outColor=vec4(clamp(vel,vec2(-1000),vec2(1000)),0,1);
+}`,
+  buoyancy:header+`uniform sampler2D uVelocity; uniform sampler2D uDye; uniform float uDt; uniform float uBuoyancy;
+void main(){
+  vec2 vel=texture(uVelocity,vUv).xy;
+  vec4 d=texture(uDye,vUv);
+  vel.y+=uDt*(uBuoyancy*d.g-1.0*d.r);
+  outColor=vec4(clamp(vel,vec2(-1000),vec2(1000)),0,1);
+}`,
+  divergence:header+`uniform sampler2D uVelocity; uniform vec2 uTexel;
+void main(){
+  float L=texture(uVelocity,vUv-vec2(uTexel.x,0)).x;
+  float R=texture(uVelocity,vUv+vec2(uTexel.x,0)).x;
+  float B=texture(uVelocity,vUv-vec2(0,uTexel.y)).y;
+  float T=texture(uVelocity,vUv+vec2(0,uTexel.y)).y;
+  outColor=vec4(0.5*((R-L)+(T-B)),0,0,1);
+}`,
+  pressure:header+`uniform sampler2D uPressure; uniform sampler2D uDivergence; uniform vec2 uTexel;
+void main(){
+  float L=texture(uPressure,vUv-vec2(uTexel.x,0)).x;
+  float R=texture(uPressure,vUv+vec2(uTexel.x,0)).x;
+  float B=texture(uPressure,vUv-vec2(0,uTexel.y)).x;
+  float T=texture(uPressure,vUv+vec2(0,uTexel.y)).x;
+  float div=texture(uDivergence,vUv).x;
+  outColor=vec4((L+R+B+T-div)*0.25,0,0,1);
+}`,
+  gradient:header+`uniform sampler2D uVelocity; uniform sampler2D uPressure; uniform vec2 uTexel;
+void main(){
+  float L=texture(uPressure,vUv-vec2(uTexel.x,0)).x;
+  float R=texture(uPressure,vUv+vec2(uTexel.x,0)).x;
+  float B=texture(uPressure,vUv-vec2(0,uTexel.y)).x;
+  float T=texture(uPressure,vUv+vec2(0,uTexel.y)).x;
+  vec2 vel=texture(uVelocity,vUv).xy-0.5*vec2(R-L,T-B);
+  outColor=vec4(vel,0,1);
+}`,
+  display:header+`uniform sampler2D uDye;
+float rand(vec2 p){ return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453); }
+vec3 fireRamp(float t){
+  vec3 c=mix(vec3(0.0),vec3(0.45,0.02,0.0),smoothstep(0.0,0.3,t));
+  c=mix(c,vec3(1.0,0.32,0.03),smoothstep(0.25,0.65,t));
+  c=mix(c,vec3(1.0,0.85,0.35),smoothstep(0.6,1.1,t));
+  c=mix(c,vec3(1.0,0.99,0.9),smoothstep(1.0,1.8,t));
+  return c;
+}
+void main(){
+  vec4 d=texture(uDye,vUv);
+  vec3 fire=fireRamp(d.b);
+  vec3 smoke=vec3(0.72,0.76,0.86)*d.r*0.32;
+  vec3 c=smoke+fire;
+  c=1.6*c/(1.0+c);
+  float vig=smoothstep(0.95,0.35,length(vUv-0.5));
+  c*=0.55+0.45*vig;
+  c+=(rand(gl_FragCoord.xy)-0.5)/255.0;
+  outColor=vec4(c,1);
+}`
+};
+
+function compile(type,src){
+  const sh=gl.createShader(type);
+  gl.shaderSource(sh,src);
+  gl.compileShader(sh);
+  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh));
+  return sh;
+}
+function makeProgram(fs){
+  const p=gl.createProgram();
+  gl.attachShader(p,compile(gl.VERTEX_SHADER,vertex));
+  gl.attachShader(p,compile(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+const programs=Object.fromEntries(Object.entries(shaders).map(([k,s])=>[k,makeProgram(s)]));
+const quad=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+
+function target(w,h,linear=true){
+  const tex=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,linear?filter:gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,linear?filter:gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA16F,w,h,0,gl.RGBA,gl.HALF_FLOAT,null);
+  const fbo=gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
+  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE) throw new Error('Framebuffer incomplete');
+  return {tex,fbo,w,h};
+}
+function doubleTarget(w,h,linear=true){
+  return {read:target(w,h,linear),write:target(w,h,linear),swap(){const t=this.read;this.read=this.write;this.write=t;}};
+}
+const velocity=doubleTarget(SIM_W,SIM_H,true);
+const pressure=doubleTarget(SIM_W,SIM_H,false);
+const divergence=target(SIM_W,SIM_H,false);
+const curl=target(SIM_W,SIM_H,false);
+const dye=doubleTarget(DYE_W,DYE_H,true);
+
+function bindTexture(unit,tex){
+  gl.activeTexture(gl.TEXTURE0+unit);
+  gl.bindTexture(gl.TEXTURE_2D,tex);
+}
+function use(p,targetObj){
+  gl.useProgram(p);
+  gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+  const loc=gl.getAttribLocation(p,'aPosition');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,targetObj?targetObj.fbo:null);
+  gl.viewport(0,0,targetObj?targetObj.w:canvas.width,targetObj?targetObj.h:canvas.height);
+}
+function uni(p,name,type,...v){
+  const loc=gl.getUniformLocation(p,name);
+  if(loc===null) return;
+  if(type==='1i') gl.uniform1i(loc,v[0]);
+  else if(type==='1f') gl.uniform1f(loc,v[0]);
+  else if(type==='2f') gl.uniform2f(loc,v[0],v[1]);
+  else if(type==='4f') gl.uniform4f(loc,v[0],v[1],v[2],v[3]);
+}
+function draw(){ gl.drawArrays(gl.TRIANGLE_STRIP,0,4); }
+function clearTarget(t){
+  gl.bindFramebuffer(gl.FRAMEBUFFER,t.fbo);
+  gl.viewport(0,0,t.w,t.h);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+function clearAll(){
+  [velocity.read,velocity.write,pressure.read,pressure.write,divergence,curl,dye.read,dye.write].forEach(clearTarget);
+}
+clearAll();
+
+function passClear(src,dst,value){
+  const p=programs.clear; use(p,dst); bindTexture(0,src.tex);
+  uni(p,'uTexture','1i',0); uni(p,'uValue','1f',value); draw();
+}
+function passSplat(buffer,point,color,radius,aspect){
+  const p=programs.splat; use(p,buffer.write); bindTexture(0,buffer.read.tex);
+  uni(p,'uTarget','1i',0); uni(p,'uPoint','2f',point[0],point[1]);
+  uni(p,'uColor','4f',color[0],color[1],color[2],color[3]);
+  uni(p,'uRadius','1f',radius); uni(p,'uAspect','1f',aspect);
+  draw(); buffer.swap();
+}
+function emitters(t,dt){
+  const modes={
+    fire:[0.25,9.0,3.5,160],
+    smoke:[2.2,3.5,0.0,80],
+    both:[1.2,7.0,2.5,130]
+  };
+  const m=modes[state.mode], xs=[0.31,0.5,0.69], phases=[0.2,2.1,4.0];
+  for(let i=0;i<3;i++){
+    const flicker=0.55+0.45*Math.sin(t*(2.0+i*0.37)+phases[i])*Math.sin(t*(3.7+i*0.23)+phases[2-i]);
+    const f=Math.max(0.25,flicker)*state.power;
+    const sway=Math.sin(t*(1.5+i*0.4)+phases[i])*26*f;
+    const p=[xs[i]+Math.sin(t*0.9+phases[i])*0.018,0.035];
+    passSplat(velocity,p,[sway,m[3]*f,0,0],0.00030,16/9);
+    passSplat(dye,p,[m[0]*f*0.10,m[1]*f*0.10,m[2]*f*0.10,0],0.00062,16/9);
+  }
+}
+function injectPointer(dt){
+  if(!pointer.moved) return;
+  const modes={
+    fire:[0.20,5.5,2.4,0],
+    smoke:[1.5,2.0,0.0,0],
+    both:[0.9,4.0,1.7,0]
+  };
+  const c=modes[state.mode];
+  passSplat(velocity,[pointer.x,pointer.y],[pointer.dx*4200,pointer.dy*4200,0,0],0.00055,16/9);
+  passSplat(dye,[pointer.x,pointer.y],[c[0]*0.55,c[1]*0.55,c[2]*0.55,0],0.0009,16/9);
+  pointer.dx*=0.25; pointer.dy*=0.25;
+  if(Math.abs(pointer.dx)+Math.abs(pointer.dy)<0.0002) pointer.moved=false;
+}
+function step(dt,t){
+  emitters(t,dt);
+  injectPointer(dt);
+
+  let p=programs.curl; use(p,curl); bindTexture(0,velocity.read.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H); draw();
+
+  p=programs.vorticity; use(p,velocity.write); bindTexture(0,velocity.read.tex); bindTexture(1,curl.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uCurl','1i',1); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H);
+  uni(p,'uDt','1f',dt); uni(p,'uStrength','1f',state.vort); draw(); velocity.swap();
+
+  p=programs.buoyancy; use(p,velocity.write); bindTexture(0,velocity.read.tex); bindTexture(1,dye.read.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uDye','1i',1); uni(p,'uDt','1f',dt); uni(p,'uBuoyancy','1f',state.buoy);
+  draw(); velocity.swap();
+
+  p=programs.divergence; use(p,divergence); bindTexture(0,velocity.read.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H); draw();
+
+  passClear(pressure.read,pressure.write,0.8); pressure.swap();
+  p=programs.pressure;
+  for(let i=0;i<24;i++){
+    use(p,pressure.write); bindTexture(0,pressure.read.tex); bindTexture(1,divergence.tex);
+    uni(p,'uPressure','1i',0); uni(p,'uDivergence','1i',1); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H);
+    draw(); pressure.swap();
+  }
+
+  p=programs.gradient; use(p,velocity.write); bindTexture(0,velocity.read.tex); bindTexture(1,pressure.read.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uPressure','1i',1); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H);
+  draw(); velocity.swap();
+
+  p=programs.advect; use(p,velocity.write); bindTexture(0,velocity.read.tex); bindTexture(1,velocity.read.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uSource','1i',1); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H);
+  uni(p,'uDt','1f',dt); uni(p,'uDiss','4f',0.15,0.15,0.15,0.15); draw(); velocity.swap();
+
+  use(p,dye.write); bindTexture(0,velocity.read.tex); bindTexture(1,dye.read.tex);
+  uni(p,'uVelocity','1i',0); uni(p,'uSource','1i',1); uni(p,'uTexel','2f',1/SIM_W,1/SIM_H);
+  uni(p,'uDt','1f',dt); uni(p,'uDiss','4f',0.35,1.8,4.0,0); draw(); dye.swap();
+}
+function render(){
+  const p=programs.display; use(p,null); bindTexture(0,dye.read.tex);
+  uni(p,'uDye','1i',0); draw();
+}
+
+function eventUv(e){
+  const r=canvas.getBoundingClientRect();
+  return [(e.clientX-r.left)/r.width,1-(e.clientY-r.top)/r.height];
+}
+canvas.addEventListener('pointerdown',e=>{
+  const uv=eventUv(e); pointer.down=true; pointer.x=pointer.px=uv[0]; pointer.y=pointer.py=uv[1];
+  pointer.dx=0; pointer.dy=0; pointer.moved=true; canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!pointer.down) return;
+  const uv=eventUv(e);
+  pointer.dx=uv[0]-pointer.x; pointer.dy=uv[1]-pointer.y;
+  pointer.px=pointer.x; pointer.py=pointer.y; pointer.x=uv[0]; pointer.y=uv[1]; pointer.moved=true;
+});
+canvas.addEventListener('pointerup',()=>{pointer.down=false;});
+canvas.addEventListener('pointercancel',()=>{pointer.down=false;});
+
+document.querySelectorAll('button.mode').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('button.mode').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.mode=b.dataset.mode;
+});
+document.getElementById('vort').oninput=e=>state.vort=+e.target.value;
+document.getElementById('buoy').oninput=e=>state.buoy=+e.target.value;
+document.getElementById('power').oninput=e=>state.power=+e.target.value;
+document.getElementById('clear').onclick=clearAll;
+document.getElementById('pause').onclick=e=>{state.paused=!state.paused;e.target.textContent=state.paused?'再開':'一時停止';};
+
+let last=performance.now(), frames=0, fpsLast=last;
+function loop(now){
+  const dt=Math.min((now-last)/1000,1/60);
+  last=now;
+  if(!state.paused) step(dt,now/1000);
+  render();
+  frames++;
+  if(now-fpsLast>500){
+    document.getElementById('stats').textContent=`${(frames*1000/(now-fpsLast)).toFixed(0)} fps`;
+    frames=0; fpsLast=now;
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

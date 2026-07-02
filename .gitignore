@@ -1,0 +1,10 @@
+# OS/editor noise
+.DS_Store
+
+# Local assistant/tool state
+.claude/
+.playwright-cli/
+scratchpad/
+
+# Generated artifacts and verification output
+output/
