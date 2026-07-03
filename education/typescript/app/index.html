@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeScript 速習コース</title>
+<style>
+  :root {
+    --bg: #14161a;
+    --bg-panel: #1c1f26;
+    --bg-panel2: #23272f;
+    --border: #333842;
+    --text: #d8dce3;
+    --text-dim: #8b93a1;
+    --accent: #4f9cf9;
+    --accent-dim: #2a5a9c;
+    --green: #4ec97a;
+    --red: #e5645f;
+    --yellow: #e0b455;
+    --code-bg: #101216;
+    --radius: 8px;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+    height: 100vh; display: flex; overflow: hidden; line-height: 1.75;
+  }
+  code, pre, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; }
+
+  /* ---- sidebar ---- */
+  #sidebar {
+    width: 300px; min-width: 300px; background: var(--bg-panel);
+    border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0 32px;
+  }
+  #sidebar .logo {
+    padding: 4px 18px 14px; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+    border-bottom: 1px solid var(--border); margin-bottom: 8px;
+  }
+  #sidebar .logo span { color: var(--accent); }
+  .part-label {
+    padding: 12px 18px 4px; font-size: 0.75rem; color: var(--text-dim);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .ch-item {
+    padding: 8px 18px; cursor: pointer; font-size: 0.88rem;
+    display: flex; align-items: baseline; gap: 8px; border-left: 3px solid transparent;
+  }
+  .ch-item:hover { background: var(--bg-panel2); }
+  .ch-item.active { background: var(--bg-panel2); border-left-color: var(--accent); }
+  .ch-item .t { flex: 1; }
+  .ch-item .badges { font-size: 0.72rem; white-space: nowrap; color: var(--text-dim); }
+  .badge-pass { color: var(--green); }
+  .badge-master { color: var(--yellow); }
+
+  /* ---- main ---- */
+  #main { flex: 1; overflow-y: auto; }
+  .page { max-width: 880px; margin: 0 auto; padding: 32px 40px 120px; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  h2 { font-size: 1.25rem; margin: 32px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.05rem; margin: 24px 0 8px; color: var(--accent); }
+  h4, h5, h6 { font-size: 1rem; margin: 18px 0 6px; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 10px 0 10px 24px; }
+  li { margin: 4px 0; }
+  blockquote {
+    border-left: 3px solid var(--accent-dim); padding: 6px 14px; margin: 12px 0;
+    color: var(--text-dim); background: var(--bg-panel);
+  }
+  a { color: var(--accent); }
+  code { background: var(--bg-panel2); padding: 1px 6px; border-radius: 4px; font-size: 0.86em; }
+  pre.codeblock {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; margin: 12px 0; overflow-x: auto; font-size: 0.84rem; line-height: 1.6;
+  }
+  pre.codeblock code { background: none; padding: 0; font-size: inherit; }
+  .meta-line { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px; }
+  .goal-box {
+    background: var(--bg-panel); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: var(--radius); padding: 12px 16px; margin: 16px 0 8px; font-size: 0.92rem;
+  }
+
+  /* ---- tabs ---- */
+  .tabs { display: flex; gap: 4px; margin: 20px 0 24px; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 8px 18px; cursor: pointer; border: none; background: none; color: var(--text-dim);
+    font-size: 0.92rem; border-bottom: 2px solid transparent; font-family: inherit;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  /* ---- buttons ---- */
+  button.btn {
+    background: var(--accent-dim); color: #fff; border: none; border-radius: 6px;
+    padding: 8px 18px; cursor: pointer; font-size: 0.9rem; font-family: inherit;
+  }
+  button.btn:hover { background: var(--accent); }
+  button.btn.secondary { background: var(--bg-panel2); color: var(--text); border: 1px solid var(--border); }
+  button.btn.secondary:hover { border-color: var(--text-dim); }
+  button.btn.small { padding: 4px 12px; font-size: 0.8rem; }
+  button.btn:disabled { opacity: 0.45; cursor: default; }
+
+  .section-code-actions { text-align: right; margin-top: -6px; margin-bottom: 16px; }
+
+  /* ---- exercise ---- */
+  .editor-wrap {
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 14px 0;
+  }
+  .editor-host { height: 340px; }
+  .editor-missing { padding: 40px; text-align: center; color: var(--text-dim); }
+  .toolbar { display: flex; gap: 10px; margin: 12px 0; align-items: center; flex-wrap: wrap; }
+  .toolbar .note { color: var(--text-dim); font-size: 0.8rem; }
+  #console-pane, .console-pane {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    min-height: 60px; max-height: 220px; overflow-y: auto; padding: 10px 14px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.82rem; line-height: 1.6;
+  }
+  .console-pane .c-log { color: var(--text); }
+  .console-pane .c-warn { color: var(--yellow); }
+  .console-pane .c-error { color: var(--red); }
+  .console-pane .c-sys { color: var(--text-dim); font-style: italic; }
+  .check-results { margin: 14px 0; }
+  .check-item { padding: 6px 12px; border-radius: 6px; margin: 6px 0; font-size: 0.88rem; }
+  .check-item.ok { background: rgba(78,201,122,0.1); color: var(--green); }
+  .check-item.ng { background: rgba(229,100,95,0.12); color: var(--red); }
+  .pass-banner {
+    background: rgba(78,201,122,0.12); border: 1px solid var(--green); color: var(--green);
+    border-radius: var(--radius); padding: 12px 18px; margin: 14px 0; font-weight: 600;
+  }
+
+  /* ---- quiz ---- */
+  .quiz-status { display: flex; gap: 18px; color: var(--text-dim); font-size: 0.85rem; margin-bottom: 18px; }
+  .quiz-status .lv { color: var(--accent); font-weight: 600; }
+  .q-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; }
+  .q-diff { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; }
+  .q-options { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .q-opt {
+    text-align: left; background: var(--bg-panel2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 16px; cursor: pointer; color: var(--text);
+    font-size: 0.9rem; font-family: inherit; line-height: 1.6;
+  }
+  .q-opt:hover { border-color: var(--accent); }
+  .q-opt.correct { border-color: var(--green); background: rgba(78,201,122,0.1); }
+  .q-opt.wrong { border-color: var(--red); background: rgba(229,100,95,0.12); }
+  .q-opt:disabled { cursor: default; }
+  .q-explain {
+    margin-top: 16px; padding: 14px 18px; background: var(--bg-panel2);
+    border-radius: var(--radius); border-left: 3px solid var(--accent); font-size: 0.9rem;
+  }
+  .q-verdict { font-weight: 700; margin-top: 16px; }
+  .q-verdict.ok { color: var(--green); }
+  .q-verdict.ng { color: var(--red); }
+  .result-card { text-align: center; padding: 40px 20px; }
+  .result-grade { font-size: 2rem; font-weight: 700; margin: 10px 0; }
+  .result-grade.g-master { color: var(--yellow); }
+  .result-grade.g-pass { color: var(--green); }
+  .result-grade.g-almost { color: var(--accent); }
+  .result-grade.g-retry { color: var(--red); }
+  .review-list { text-align: left; max-width: 480px; margin: 20px auto; }
+
+  /* ---- home ---- */
+  .progress-bar { background: var(--bg-panel2); border-radius: 6px; height: 12px; margin: 8px 0 20px; overflow: hidden; }
+  .progress-bar > div { background: var(--accent); height: 100%; transition: width 0.3s; }
+  .home-ch-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.88rem; }
+  .home-ch-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  .home-ch-table tr { cursor: pointer; }
+  .home-ch-table tr:hover { background: var(--bg-panel); }
+
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 48px; }
+</style>
+<script>
+  // ---- Monaco 環境設定(loader より先に定義)----
+  const MONACO_BASE = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min';
+  window.MonacoEnvironment = {
+    getWorkerUrl: function () {
+      return URL.createObjectURL(new Blob([
+        "self.MonacoEnvironment={baseUrl:'" + MONACO_BASE + "/'};" +
+        "importScripts('" + MONACO_BASE + "/vs/base/worker/workerMain.js');"
+      ], { type: 'text/javascript' }));
+    }
+  };
+  var require = { paths: { vs: MONACO_BASE + '/vs' } };
+
+  // ---- コンテンツ登録レジストリ(content/*.js より先に定義)----
+  window.COURSE = {
+    chapters: [],
+    register(ch) { this.chapters.push(ch); }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js" onerror="window.__monacoFailed=true"></script>
+</head>
+<body>
+<nav id="sidebar"></nav>
+<div id="main"><div class="page" id="page"></div></div>
+
+<!-- ==== 章コンテンツ(1章 = 1ファイル)==== -->
+<script src="content/basic-01.js"></script>
+<script src="content/basic-02.js"></script>
+<script src="content/basic-03.js"></script>
+<script src="content/basic-04.js"></script>
+<script src="content/basic-05.js"></script>
+<script src="content/adv-01.js"></script>
+<script src="content/adv-02.js"></script>
+<script src="content/adv-03.js"></script>
+<script src="content/adv-04.js"></script>
+<script src="content/adv-05.js"></script>
+<script src="content/adv-06.js"></script>
+<script src="content/adv-07.js"></script>
+<script src="content/adv-08.js"></script>
+<script src="content/bridge-01.js"></script>
+
+<script>
+'use strict';
+
+/* =====================================================================
+ * 基盤: Markdown レンダラ(最小実装)
+ * =================================================================== */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+function inlineMd(s) {
+  s = escapeHtml(s);
+  s = s.replace(/`([^`]+)`/g, (m, c) => '<code>' + c + '</code>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return s;
+}
+function md(src) {
+  if (!src) return '';
+  const lines = String(src).split('\n');
+  let html = '', i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.trimStart().startsWith('```')) {
+      i++;
+      const buf = [];
+      while (i < lines.length && !lines[i].trimStart().startsWith('```')) { buf.push(lines[i]); i++; }
+      i++;
+      html += '<pre class="codeblock"><code>' + escapeHtml(buf.join('\n')) + '</code></pre>';
+      continue;
+    }
+    const h = line.match(/^(#{1,4}) (.*)/);
+    if (h) { const lvl = Math.min(h[1].length + 2, 6); html += `<h${lvl}>` + inlineMd(h[2]) + `</h${lvl}>`; i++; continue; }
+    if (/^[-*] /.test(line)) {
+      let items = '';
+      while (i < lines.length && /^[-*] /.test(lines[i])) { items += '<li>' + inlineMd(lines[i].slice(2)) + '</li>'; i++; }
+      html += '<ul>' + items + '</ul>'; continue;
+    }
+    if (/^\d+\. /.test(line)) {
+      let items = '';
+      while (i < lines.length && /^\d+\. /.test(lines[i])) { items += '<li>' + inlineMd(lines[i].replace(/^\d+\. /, '')) + '</li>'; i++; }
+      html += '<ol>' + items + '</ol>'; continue;
+    }
+    if (/^> ?/.test(line)) {
+      const buf = [];
+      while (i < lines.length && /^> ?/.test(lines[i])) { buf.push(lines[i].replace(/^> ?/, '')); i++; }
+      html += '<blockquote>' + inlineMd(buf.join(' ')) + '</blockquote>'; continue;
+    }
+    if (line.trim() === '') { i++; continue; }
+    const buf = [line]; i++;
+    while (i < lines.length && lines[i].trim() !== '' && !/^(#{1,4} |[-*] |\d+\. |> |\s*```)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    html += '<p>' + inlineMd(buf.join(' ')) + '</p>';
+  }
+  return html;
+}
+
+/* =====================================================================
+ * 状態管理
+ * =================================================================== */
+const PART_ORDER = { basic: 0, advanced: 1, bridge: 2 };
+const PART_LABEL = { basic: '基礎編', advanced: '応用編', bridge: '橋渡し' };
+const STORE_KEY = 'ts-course-progress-v1';
+
+const chapters = COURSE.chapters.slice().sort((a, b) =>
+  (PART_ORDER[a.part] - PART_ORDER[b.part]) || a.id.localeCompare(b.id));
+
+let progress = {};
+try { progress = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { progress = {}; }
+function chProg(id) {
+  if (!progress[id]) progress[id] = { read: false, exerciseDone: false, quiz: null };
+  return progress[id];
+}
+function saveProgress() { try { localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch (e) {} }
+
+const view = { kind: 'home', chapterId: null, tab: 'lesson' };
+const exDrafts = {};   // 章ごとの演習エディタ下書き
+let trialCode = null;  // 「エディタで試す」中の節コード {chapterId, title, code, original}
+let quizState = null;  // 実行中テストの状態
+
+/* =====================================================================
+ * Monaco / TypeScript 基盤
+ * =================================================================== */
+let monacoReady = false;
+let editor = null, model = null, editorHost = null;
+let editorCtx = null; // {kind:'exercise', chapterId} | {kind:'quiz'}
+
+// loader.js 読み込み成功時のみ AMD require が関数になっている
+if (typeof window.require === 'function') {
+  window.require(['vs/editor/editor.main'], function () {
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      strict: true,
+      noUncheckedIndexedAccess: true,
+      target: monaco.languages.typescript.ScriptTarget.ES2020,
+      noEmitOnError: false,
+    });
+    monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
+    monacoReady = true;
+    render(); // エディタ待ちの画面を描き直す
+  });
+}
+
+function ensureEditor(container) {
+  if (!monacoReady) {
+    container.innerHTML = '<div class="editor-missing">' +
+      (window.__monacoFailed ? 'エディタを読み込めませんでした。ネットワーク接続を確認してください(解説と選択式テストはオフラインでも利用できます)。'
+                             : 'エディタを読み込んでいます…') + '</div>';
+    return null;
+  }
+  if (!editor) {
+    model = monaco.editor.createModel('', 'typescript', monaco.Uri.parse('file:///main.ts'));
+    editorHost = document.createElement('div');
+    editorHost.className = 'editor-host';
+    editor = monaco.editor.create(editorHost, {
+      model, theme: 'vs-dark', fontSize: 14, minimap: { enabled: false },
+      automaticLayout: true, scrollBeyondLastLine: false, tabSize: 2,
+    });
+  }
+  if (editorHost.parentNode !== container) {
+    container.innerHTML = '';
+    container.appendChild(editorHost);
+    editor.layout();
+  }
+  return editor;
+}
+
+// 現在のエディタ内容をコンテキストに退避
+function stashEditor() {
+  if (!editor || !editorCtx) return;
+  if (editorCtx.kind === 'exercise') exDrafts[editorCtx.chapterId] = model.getValue();
+  else if (editorCtx.kind === 'trial' && trialCode) trialCode.code = model.getValue();
+}
+function setEditorCtx(ctx, value) {
+  stashEditor();
+  editorCtx = ctx;
+  if (model) model.setValue(value);
+}
+
+async function tsClient() {
+  const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
+  return getWorker(model.uri);
+}
+function flattenMsg(m) {
+  if (typeof m === 'string') return m;
+  let out = m.messageText;
+  let next = m.next;
+  while (next && next.length) { out += ' → ' + next[0].messageText; next = next[0].next; }
+  return out;
+}
+async function getDiags() {
+  const client = await tsClient();
+  const uri = model.uri.toString();
+  const [syn, sem] = await Promise.all([
+    client.getSyntacticDiagnostics(uri),
+    client.getSemanticDiagnostics(uri),
+  ]);
+  return syn.concat(sem).map(d => ({
+    message: flattenMsg(d.messageText),
+    line: d.start != null ? model.getPositionAt(d.start).lineNumber : null,
+    code: d.code,
+  }));
+}
+async function emitJs() {
+  const client = await tsClient();
+  const out = await client.getEmitOutput(model.uri.toString());
+  const f = (out.outputFiles || []).find(f => f.name.endsWith('.js'));
+  return f ? f.text : null;
+}
+
+/* ---- sandbox 実行 ---- */
+let runCounter = 0;
+let activeRun = null; // {id, iframe, logs, onLog, finalize}
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || !d.__tsCourse || !activeRun || d.runId !== activeRun.id) return;
+  if (d.kind === 'done') {
+    // 同期コード完了。タイマー/マイクロタスクの残りを 1.5 秒待って確定
+    const run = activeRun;
+    setTimeout(() => { if (activeRun === run) finalizeRun(); }, 1500);
+    return;
+  }
+  activeRun.logs.push({ kind: d.kind, text: d.text });
+  if (activeRun.onLog) activeRun.onLog(d.kind, d.text);
+});
+function finalizeRun() {
+  if (!activeRun) return;
+  const run = activeRun;
+  activeRun = null;
+  clearTimeout(run.timeout);
+  run.iframe.remove();
+  run.resolve(run.logs);
+}
+function runInSandbox(js, onLog) {
+  return new Promise(resolve => {
+    if (activeRun) finalizeRun();
+    const id = ++runCounter;
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.setAttribute('sandbox', 'allow-scripts');
+    const safeJs = js.replace(/<\/script>/gi, '<\\/script>');
+    iframe.srcdoc =
+      '<script>' +
+      'function __fmt(v){try{if(typeof v==="string")return v;if(v instanceof Error)return v.name+": "+v.message;' +
+      'if(typeof v==="function")return "[Function]";if(v===undefined)return "undefined";return JSON.stringify(v);}catch(e){return String(v);}}' +
+      'function __send(kind,text){parent.postMessage({__tsCourse:true,runId:' + id + ',kind:kind,text:text},"*");}' +
+      '["log","warn","error","info"].forEach(function(k){var o=console[k].bind(console);' +
+      'console[k]=function(){var a=[].slice.call(arguments);__send(k==="info"?"log":k,a.map(__fmt).join(" "));o.apply(null,a);};});' +
+      'window.onerror=function(m){__send("error",String(m));};' +
+      'window.addEventListener("unhandledrejection",function(e){__send("error","Unhandled rejection: "+__fmt(e.reason));});' +
+      '<\/script>' +
+      '<script>try{' + safeJs + '}catch(e){__send("error",__fmt(e));}<\/script>' +
+      '<script>__send("done","")<\/script>';
+    activeRun = { id, iframe, logs: [], onLog, resolve, timeout: setTimeout(finalizeRun, 5000) };
+    document.body.appendChild(iframe);
+  });
+}
+
+/* ---- 採点(演習・実技テスト共通)---- */
+async function runCheck(check) {
+  const src = model.getValue();
+  const results = [];
+  const diags = await getDiags();
+  if (check.noErrors) {
+    results.push({
+      ok: diags.length === 0,
+      label: diags.length === 0 ? '型エラーがないこと'
+        : `型エラーがないこと — ${diags.length}件のエラー(例: ${diags[0].line}行目 ${diags[0].message})`,
+    });
+  }
+  if (check.expectErrors) {
+    results.push({
+      ok: diags.length > 0,
+      label: diags.length > 0 ? '型エラーが検出されること' : '型エラーが検出されること — エラーがありません',
+    });
+  }
+  for (const rx of check.mustMatch || []) {
+    results.push({ ok: new RegExp(rx, 'm').test(src), label: `必須: /${rx}/ を含むこと` });
+  }
+  for (const rx of check.forbid || []) {
+    results.push({ ok: !new RegExp(rx, 'm').test(src), label: `禁止: /${rx}/ を使わないこと` });
+  }
+  if (check.output !== undefined) {
+    if (diags.length === 0) {
+      const js = await emitJs();
+      const logs = await runInSandbox(js);
+      const got = logs.filter(l => l.kind === 'log').map(l => l.text).join('\n').trim();
+      const want = check.output.trim();
+      results.push({
+        ok: got === want,
+        label: got === want ? '実行出力が期待値と一致すること'
+          : `実行出力が期待値と一致すること — 期待:「${want}」 実際:「${got}」`,
+      });
+    } else {
+      results.push({ ok: false, label: '実行出力チェック(型エラーがあるため未実行)' });
+    }
+  }
+  return results;
+}
+
+/* =====================================================================
+ * 描画
+ * =================================================================== */
+const $page = document.getElementById('page');
+const $sidebar = document.getElementById('sidebar');
+
+function el(tag, attrs, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === 'class') e.className = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  for (const c of children) {
+    if (c == null) continue;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  return e;
+}
+
+function quizBadge(q) {
+  if (!q) return null;
+  if (q.result === 'マスター') return el('span', { class: 'badge-master' }, '★' + q.result);
+  if (q.result === '合格') return el('span', { class: 'badge-pass' }, '✓' + q.result);
+  return el('span', {}, q.result);
+}
+
+function renderSidebar() {
+  $sidebar.innerHTML = '';
+  $sidebar.appendChild(el('div', { class: 'logo', onclick: () => go({ kind: 'home' }) },
+    el('span', { html: 'TS' }), ' 速習コース'));
+  let lastPart = null;
+  for (const ch of chapters) {
+    if (ch.part !== lastPart) {
+      lastPart = ch.part;
+      $sidebar.appendChild(el('div', { class: 'part-label' }, PART_LABEL[ch.part] || ch.part));
+    }
+    const p = chProg(ch.id);
+    const badges = el('span', { class: 'badges' },
+      p.read ? '📖' : '', p.exerciseDone ? ' ✍' : '', ' ', quizBadge(p.quiz));
+    $sidebar.appendChild(el('div', {
+      class: 'ch-item' + (view.kind === 'chapter' && view.chapterId === ch.id ? ' active' : ''),
+      onclick: () => go({ kind: 'chapter', chapterId: ch.id, tab: 'lesson' }),
+    }, el('span', { class: 't' }, ch.title), badges));
+  }
+}
+
+function go(v) {
+  stashEditor();
+  trialCode = null;
+  if (quizState && !quizState.finished && v.tab !== 'quiz') quizState = null;
+  Object.assign(view, { tab: 'lesson', chapterId: null }, v);
+  render();
+  document.getElementById('main').scrollTop = 0;
+}
+
+function render() {
+  renderSidebar();
+  $page.innerHTML = '';
+  if (view.kind === 'home') renderHome();
+  else renderChapter(chapters.find(c => c.id === view.chapterId));
+}
+
+/* ---- ホーム ---- */
+function renderHome() {
+  const total = chapters.length;
+  const done = chapters.filter(c => {
+    const q = chProg(c.id).quiz;
+    return q && (q.result === '合格' || q.result === 'マスター');
+  }).length;
+  const totalMin = chapters.reduce((s, c) => s + (c.minutes || 0), 0);
+  $page.appendChild(el('h1', {}, 'TypeScript 速習コース'));
+  $page.appendChild(el('p', { class: 'meta-line' },
+    `Python / Java 経験者向け ・ 全${total}章 ・ 約${Math.round(totalMin / 60 * 10) / 10}時間`));
+  $page.appendChild(el('div', { html: md(
+    'Python や Java での開発経験がある人向けに、TypeScript を**差分**で学ぶコースです。' +
+    '静的型付けの概念説明はしません。代わりに「JS の動的な文化」と「nominal → structural の頭の切り替え」に集中します。\n\n' +
+    '各章は **解説 → 演習 → 確認テスト** の3部構成。確認テストは適応型で、正解が続くと難しい問題に、誤答が続くとやさしい問題に切り替わります。' +
+    '進捗はこのブラウザに保存されます。') }));
+  $page.appendChild(el('h2', {}, `進捗 — テスト合格 ${done} / ${total} 章`));
+  const bar = el('div', { class: 'progress-bar' }, el('div', { style: `width:${total ? done / total * 100 : 0}%` }));
+  $page.appendChild(bar);
+
+  const table = el('table', { class: 'home-ch-table' });
+  for (const ch of chapters) {
+    const p = chProg(ch.id);
+    table.appendChild(el('tr', { onclick: () => go({ kind: 'chapter', chapterId: ch.id }) },
+      el('td', { style: 'color:var(--text-dim);white-space:nowrap' }, PART_LABEL[ch.part]),
+      el('td', {}, ch.title),
+      el('td', { style: 'white-space:nowrap;color:var(--text-dim)' }, `${ch.minutes}分`),
+      el('td', { style: 'white-space:nowrap' },
+        p.read ? '📖 ' : '', p.exerciseDone ? '✍ ' : '', quizBadge(p.quiz))));
+  }
+  $page.appendChild(table);
+  if (!chapters.length) {
+    $page.appendChild(el('p', {}, 'コンテンツが読み込まれていません。content/ ディレクトリを確認してください。'));
+  }
+}
+
+/* ---- 章 ---- */
+function renderChapter(ch) {
+  if (!ch) { renderHome(); return; }
+  const p = chProg(ch.id);
+  $page.appendChild(el('h1', {}, ch.title));
+  $page.appendChild(el('p', { class: 'meta-line' }, `${PART_LABEL[ch.part]} ・ 目安 ${ch.minutes}分`));
+  if (ch.goal) $page.appendChild(el('div', { class: 'goal-box', html: '<strong>到達目標:</strong> ' + inlineMd(ch.goal) }));
+
+  const tabs = el('div', { class: 'tabs' });
+  const tabDefs = [['lesson', '解説'], ['exercise', '演習'], ['quiz', '確認テスト']];
+  for (const [key, label] of tabDefs) {
+    if (key === 'exercise' && !ch.exercise) continue;
+    if (key === 'quiz' && !(ch.quiz && ch.quiz.length)) continue;
+    tabs.appendChild(el('button', {
+      class: 'tab' + (view.tab === key ? ' active' : ''),
+      onclick: () => { stashEditor(); if (view.tab === 'quiz' && key !== 'quiz' && quizState && !quizState.finished) quizState = null; view.tab = key; render(); },
+    }, label));
+  }
+  $page.appendChild(tabs);
+
+  if (view.tab === 'lesson') renderLesson(ch, p);
+  else if (view.tab === 'exercise') renderExercise(ch, p);
+  else renderQuiz(ch, p);
+}
+
+function renderLesson(ch, p) {
+  for (const sec of ch.sections || []) {
+    $page.appendChild(el('h2', {}, sec.title));
+    $page.appendChild(el('div', { html: md(sec.body) }));
+    if (sec.code) {
+      $page.appendChild(el('pre', { class: 'codeblock' }, el('code', {}, sec.code)));
+      if (ch.exercise) {
+        $page.appendChild(el('div', { class: 'section-code-actions' },
+          el('button', {
+            class: 'btn secondary small',
+            onclick: () => {
+              stashEditor();
+              trialCode = { chapterId: ch.id, title: sec.title, code: sec.code, original: sec.code };
+              view.tab = 'exercise'; render();
+            },
+          }, '▶ エディタで試す')));
+      }
+    }
+  }
+  const navBtns = el('div', { class: 'nav-buttons' });
+  const idx = chapters.indexOf(ch);
+  navBtns.appendChild(idx > 0
+    ? el('button', { class: 'btn secondary', onclick: () => go({ kind: 'chapter', chapterId: chapters[idx - 1].id }) }, '← 前の章')
+    : el('span', {}));
+  const mid = el('div', {});
+  if (!p.read) {
+    mid.appendChild(el('button', { class: 'btn', onclick: () => { p.read = true; saveProgress(); render(); } }, 'この章を読了にする'));
+  } else {
+    mid.appendChild(el('span', { style: 'color:var(--green)' }, '📖 読了済み'));
+  }
+  navBtns.appendChild(mid);
+  navBtns.appendChild(idx < chapters.length - 1
+    ? el('button', { class: 'btn secondary', onclick: () => go({ kind: 'chapter', chapterId: chapters[idx + 1].id }) }, '次の章 →')
+    : el('span', {}));
+  $page.appendChild(navBtns);
+}
+
+/* ---- 演習 ---- */
+function renderExercise(ch, p) {
+  const ex = ch.exercise;
+  const trial = trialCode && trialCode.chapterId === ch.id ? trialCode : null;
+  if (trial) {
+    $page.appendChild(el('div', { class: 'goal-box' },
+      el('div', {}, `お試しモード — 解説「${trial.title}」のコードをエディタに読み込んでいます。自由に書き換えて実行できます。`),
+      el('div', { style: 'margin-top:10px' },
+        el('button', {
+          class: 'btn', onclick: () => { trialCode = null; editorCtx = null; render(); },
+        }, '演習に取り組む(演習用のコードを読み込む)'))));
+  } else {
+    $page.appendChild(el('div', { html: md(ex.instructions) }));
+  }
+  const wrap = el('div', { class: 'editor-wrap' });
+  $page.appendChild(wrap);
+  const ed = ensureEditor(wrap);
+  if (ed && trial && (!editorCtx || editorCtx.kind !== 'trial' || editorCtx.chapterId !== ch.id || editorCtx.secTitle !== trial.title)) {
+    setEditorCtx({ kind: 'trial', chapterId: ch.id, secTitle: trial.title }, trial.code);
+  } else if (ed && !trial && (!editorCtx || editorCtx.kind !== 'exercise' || editorCtx.chapterId !== ch.id)) {
+    setEditorCtx({ kind: 'exercise', chapterId: ch.id },
+      exDrafts[ch.id] !== undefined ? exDrafts[ch.id] : ex.starter || '');
+  }
+
+  const consolePane = el('div', { class: 'console-pane' }, el('span', { class: 'c-sys' }, '— 実行結果はここに表示されます —'));
+  const checkPane = el('div', { class: 'check-results' });
+
+  const toolbar = el('div', { class: 'toolbar' });
+  toolbar.appendChild(el('button', {
+    class: 'btn', onclick: async function () {
+      if (!monacoReady) return;
+      this.disabled = true;
+      consolePane.innerHTML = '';
+      const diags = await getDiags();
+      if (diags.length) {
+        consolePane.appendChild(el('div', { class: 'c-warn' },
+          `⚠ 型エラーが${diags.length}件ありますが実行します(TS のエラーはコンパイルを止めません — これも学びです)`));
+        for (const d of diags.slice(0, 5)) consolePane.appendChild(el('div', { class: 'c-warn' }, `  ${d.line}行目: ${d.message}`));
+      }
+      const js = await emitJs();
+      if (js == null) { consolePane.appendChild(el('div', { class: 'c-error' }, 'JS を生成できませんでした')); this.disabled = false; return; }
+      await runInSandbox(js, (kind, text) => consolePane.appendChild(el('div', { class: 'c-' + kind }, text)));
+      consolePane.appendChild(el('div', { class: 'c-sys' }, '— 実行終了 —'));
+      this.disabled = false;
+    },
+  }, '▶ 実行'));
+  if (!trial) {
+    toolbar.appendChild(el('button', {
+      class: 'btn', onclick: async function () {
+        if (!monacoReady) return;
+        this.disabled = true;
+        checkPane.innerHTML = '';
+        const results = await runCheck(ex.check || { noErrors: true });
+        for (const r of results) checkPane.appendChild(el('div', { class: 'check-item ' + (r.ok ? 'ok' : 'ng') }, (r.ok ? '✓ ' : '✗ ') + r.label));
+        if (results.every(r => r.ok)) {
+          p.exerciseDone = true; saveProgress(); renderSidebar();
+          checkPane.appendChild(el('div', { class: 'pass-banner' }, '🎉 演習クリア!確認テストに進みましょう。'));
+        }
+        this.disabled = false;
+      },
+    }, '判定'));
+  }
+  toolbar.appendChild(el('button', {
+    class: 'btn secondary small',
+    onclick: () => { if (model) model.setValue(trial ? trial.original : (ex.starter || '')); },
+  }, 'リセット'));
+  if (!trial && p.exerciseDone) toolbar.appendChild(el('span', { style: 'color:var(--green);font-size:0.85rem' }, '✍ クリア済み'));
+  $page.appendChild(toolbar);
+  $page.appendChild(consolePane);
+  $page.appendChild(checkPane);
+}
+
+/* =====================================================================
+ * 適応型確認テスト
+ * =================================================================== */
+function pickQuestion(st) {
+  const remaining = st.ch.quiz.filter(q => !st.asked.includes(q));
+  if (!remaining.length) return null;
+  let best = null, bestDist = Infinity;
+  for (const q of remaining) {
+    const dist = Math.abs(q.d - st.level);
+    if (dist < bestDist) { bestDist = dist; best = [q]; }
+    else if (dist === bestDist) best.push(q);
+  }
+  return best[Math.floor(Math.random() * best.length)];
+}
+
+function renderQuiz(ch, p) {
+  if (!quizState || quizState.ch !== ch) quizState = null;
+
+  if (!quizState) {
+    // スタート画面
+    const card = el('div', { class: 'q-card result-card' });
+    card.appendChild(el('h2', { style: 'border:none' }, '確認テスト'));
+    card.appendChild(el('div', { html: md(
+      `この章の理解度を測ります。**適応型**なので、正解が続くと難しい問題に進み、レベル3の問題に安定して正解すると早く終わります。問題数は人によって異なります(最大12問)。`) }));
+    if (p.quiz) {
+      card.appendChild(el('p', { style: 'color:var(--text-dim)' },
+        `前回の結果: ${p.quiz.result}(${p.quiz.correct}/${p.quiz.asked}問正解)`));
+    }
+    card.appendChild(el('button', {
+      class: 'btn', onclick: () => {
+        quizState = {
+          ch, level: 1, up: 0, down: 0, asked: [], correct: 0, correctAtL3: 0,
+          reviews: new Set(), current: null, answered: false, finished: false, master: false,
+        };
+        quizState.current = pickQuestion(quizState);
+        render();
+      },
+    }, p.quiz ? 'もう一度挑戦する' : 'テストを開始する'));
+    $page.appendChild(card);
+    return;
+  }
+
+  const st = quizState;
+  if (st.finished) { renderQuizResult(ch, p, st); return; }
+  const q = st.current;
+
+  $page.appendChild(el('div', { class: 'quiz-status' },
+    el('span', {}, `第${st.asked.length + 1}問`),
+    el('span', { class: 'lv' }, `現在レベル ${st.level} / 3`),
+    el('span', {}, `正解 ${st.correct}`)));
+
+  const card = el('div', { class: 'q-card' });
+  card.appendChild(el('div', { class: 'q-diff' }, '難易度 ' + '★'.repeat(q.d) + '☆'.repeat(3 - q.d)));
+  card.appendChild(el('div', { html: md(q.prompt) }));
+  if (q.code) card.appendChild(el('pre', { class: 'codeblock' }, el('code', {}, q.code)));
+
+  const feedback = el('div', {});
+
+  function recordAnswer(correct) {
+    st.answered = true;
+    st.asked.push(q);
+    if (correct) {
+      st.correct++; st.up++; st.down = 0;
+      if (st.level === 3) st.correctAtL3++;
+    } else {
+      st.down++; st.up = 0;
+      if (q.review) st.reviews.add(q.review);
+    }
+    if (st.up >= 2 && st.level < 3) { st.level++; st.up = 0; }
+    if (st.down >= 2 && st.level > 1) { st.level--; st.down = 0; }
+
+    feedback.appendChild(el('div', { class: 'q-verdict ' + (correct ? 'ok' : 'ng') }, correct ? '○ 正解!' : '× 不正解'));
+    if (q.explanation) feedback.appendChild(el('div', { class: 'q-explain', html: md(q.explanation) }));
+
+    if (st.correctAtL3 >= 2) { st.finished = true; st.master = true; }
+    else if (st.asked.length >= 12 || !pickQuestion(st)) st.finished = true;
+
+    feedback.appendChild(el('div', { style: 'margin-top:16px' },
+      el('button', {
+        class: 'btn', onclick: () => {
+          st.answered = false;
+          if (!st.finished) st.current = pickQuestion(st);
+          if (!st.current) st.finished = true;
+          render();
+        },
+      }, st.finished ? '結果を見る' : '次の問題へ')));
+  }
+
+  if (q.type === 'choice') {
+    const opts = el('div', { class: 'q-options' });
+    q.options.forEach((opt, idx) => {
+      opts.appendChild(el('button', {
+        class: 'q-opt', onclick: function () {
+          if (st.answered) return;
+          [...opts.children].forEach((b, i) => {
+            b.disabled = true;
+            if (i === q.answer) b.classList.add('correct');
+            else if (i === idx && idx !== q.answer) b.classList.add('wrong');
+          });
+          recordAnswer(idx === q.answer);
+        },
+      }, el('span', { html: inlineMd(opt) })));
+    });
+    card.appendChild(opts);
+  } else { // code
+    const wrap = el('div', { class: 'editor-wrap' });
+    card.appendChild(wrap);
+    const ed = ensureEditor(wrap);
+    if (ed && (!editorCtx || editorCtx.kind !== 'quiz' || editorCtx.q !== q)) {
+      setEditorCtx({ kind: 'quiz', q }, q.starter || '');
+    }
+    const checkPane = el('div', { class: 'check-results' });
+    const toolbar = el('div', { class: 'toolbar' });
+    toolbar.appendChild(el('button', {
+      class: 'btn', onclick: async function () {
+        if (st.answered || !monacoReady) return;
+        this.disabled = true;
+        checkPane.innerHTML = '';
+        const results = await runCheck(q.check || { noErrors: true });
+        for (const r of results) checkPane.appendChild(el('div', { class: 'check-item ' + (r.ok ? 'ok' : 'ng') }, (r.ok ? '✓ ' : '✗ ') + r.label));
+        recordAnswer(results.every(r => r.ok));
+      },
+    }, '判定する(1回のみ)'));
+    toolbar.appendChild(el('button', {
+      class: 'btn secondary small', onclick: () => { if (!st.answered) recordAnswer(false); },
+    }, 'スキップ(誤答扱い)'));
+    if (!monacoReady) toolbar.appendChild(el('span', { class: 'note' }, 'エディタ読み込み待ち/オフラインの場合はスキップしてください'));
+    card.appendChild(toolbar);
+    card.appendChild(checkPane);
+  }
+
+  card.appendChild(feedback);
+  $page.appendChild(card);
+}
+
+function renderQuizResult(ch, p, st) {
+  const grade = st.master ? 'マスター' : st.level === 3 ? '合格' : st.level === 2 ? 'もう少し' : '要復習';
+  const gradeClass = st.master ? 'g-master' : st.level === 3 ? 'g-pass' : st.level === 2 ? 'g-almost' : 'g-retry';
+  const prev = p.quiz;
+  const RANK = { 'マスター': 4, '合格': 3, 'もう少し': 2, '要復習': 1 };
+  if (!prev || RANK[grade] >= RANK[prev.result]) {
+    p.quiz = { result: grade, asked: st.asked.length, correct: st.correct };
+    saveProgress();
+  }
+
+  const card = el('div', { class: 'q-card result-card' });
+  card.appendChild(el('div', {}, 'テスト終了'));
+  card.appendChild(el('div', { class: 'result-grade ' + gradeClass },
+    (st.master ? '★ ' : '') + grade));
+  card.appendChild(el('p', {}, `出題 ${st.asked.length} 問 / 正解 ${st.correct} 問(到達レベル ${st.level})`));
+
+  if (st.reviews.size) {
+    const list = el('div', { class: 'review-list' });
+    list.appendChild(el('p', {}, '間違えた問題に対応する節を復習しましょう:'));
+    const ul = el('ul', {});
+    for (const r of st.reviews) {
+      ul.appendChild(el('li', {}, el('a', {
+        href: '#', onclick: e => { e.preventDefault(); quizState = null; view.tab = 'lesson'; render(); },
+      }, `「${r}」を読み直す`)));
+    }
+    list.appendChild(ul);
+    card.appendChild(list);
+  }
+
+  const btns = el('div', { style: 'margin-top:24px;display:flex;gap:12px;justify-content:center' });
+  btns.appendChild(el('button', { class: 'btn secondary', onclick: () => { quizState = null; render(); } }, 'もう一度挑戦'));
+  const idx = chapters.indexOf(ch);
+  if (idx < chapters.length - 1) {
+    btns.appendChild(el('button', {
+      class: 'btn', onclick: () => { quizState = null; go({ kind: 'chapter', chapterId: chapters[idx + 1].id }); },
+    }, '次の章へ →'));
+  }
+  card.appendChild(btns);
+  $page.appendChild(card);
+  renderSidebar();
+}
+
+/* ---- 起動 ---- */
+render();
+</script>
+</body>
+</html>

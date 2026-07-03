@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e249] [cursor=pointer]: TS 速習コース
+    - generic [ref=e250]: 基礎編
+    - generic [ref=e251] [cursor=pointer]:
+      - generic [ref=e252]: オリエンテーション — TS は「JS + 静的解析」である
+      - generic [ref=e253]: ✍
+  - generic [ref=e8]:
+    - heading "オリエンテーション — TS は「JS + 静的解析」である" [level=1] [ref=e254]
+    - paragraph [ref=e255]: 基礎編 ・ 目安 20分
+    - generic [ref=e256]:
+      - strong [ref=e257]: "到達目標:"
+      - text: TypeScript の型がコンパイル時に消える(type erasure)ことを理解し、型エラーメッセージを読んで直す最初の一歩を踏み出せる。
+    - generic [ref=e258]:
+      - button "解説" [ref=e259] [cursor=pointer]
+      - button "演習" [ref=e260] [cursor=pointer]
+      - button "確認テスト" [ref=e261] [cursor=pointer]
+    - generic [ref=e262]:
+      - heading "確認テスト" [level=2] [ref=e263]
+      - paragraph [ref=e265]:
+        - text: この章の理解度を測ります。
+        - strong [ref=e266]: 適応型
+        - text: なので、正解が続くと難しい問題に進み、レベル3の問題に安定して正解すると早く終わります。問題数は人によって異なります(最大12問)。
+      - button "テストを開始する" [ref=e267] [cursor=pointer]
+  - generic [ref=e194]:
+    - alert
+    - alert
