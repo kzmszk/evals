@@ -8,6 +8,7 @@ scratchpad/
 
 # Generated artifacts and verification output
 output/
+3DCG/mls-mpm-snow/results/
 
 # secrets
 .env

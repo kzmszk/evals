@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLS-MPM Snow — WebGPU</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #16202e; }
+  #c { display: block; width: 100vw; height: 100vh; touch-action: none; cursor: grab; }
+  #c.dragging { cursor: grabbing; }
+  #hud {
+    position: fixed; top: 12px; left: 12px; z-index: 5;
+    background: rgba(12, 18, 28, 0.62); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+    color: #e6edf7; font: 13px/1.6 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    padding: 10px 14px; min-width: 210px; user-select: none;
+  }
+  #hud h1 { font-size: 13px; margin: 0 0 6px; font-weight: 600; letter-spacing: 0.02em; color: #ffffff; }
+  #hud .row { display: flex; justify-content: space-between; gap: 12px; }
+  #hud .row span:last-child { font-variant-numeric: tabular-nums; color: #9fd4ff; }
+  #hud .btns { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  #hud button {
+    background: #2b3c55; color: #e6edf7; border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 6px; padding: 4px 10px; font: 12px "Hiragino Sans", system-ui, sans-serif;
+    cursor: pointer;
+  }
+  #hud button:hover { background: #3a5074; }
+  #hud label { display: flex; align-items: center; gap: 5px; margin-top: 7px; font-size: 12px; color: #b9c6d8; cursor: pointer; }
+  #help {
+    position: fixed; bottom: 12px; left: 12px; z-index: 5;
+    color: rgba(230, 237, 247, 0.75); font: 12px/1.7 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    background: rgba(12, 18, 28, 0.45); border-radius: 8px; padding: 6px 12px;
+    pointer-events: none; user-select: none;
+  }
+  #overlay {
+    position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+    background: #16202e; color: #e6edf7; text-align: center;
+    font: 15px/1.9 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  }
+  #overlay .box { max-width: 560px; padding: 28px 34px; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; background: rgba(20,30,45,0.8); }
+  #overlay h2 { font-size: 17px; margin: 0 0 10px; }
+  #overlay .msg { color: #ffb0a8; word-break: break-word; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <h1>MLS-MPM Snow (WebGPU)</h1>
+  <div class="row"><span>FPS</span><span id="fps">--</span></div>
+  <div class="row"><span>粒子数</span><span id="pcount">0</span></div>
+  <div class="row"><span>サブステップ</span><span id="steps">--</span></div>
+  <div class="btns">
+    <button id="dropBtn">雪玉を投下</button>
+    <button id="resetBtn">リセット</button>
+  </div>
+  <label><input type="checkbox" id="autoChk" checked> 自動投下（5秒おき）</label>
+</div>
+<div id="help">ドラッグ: カメラ回転　/　ホイール: ズーム　/　クリック: 雪玉を投下</div>
+<div id="overlay" hidden>
+  <div class="box">
+    <h2>WebGPU を利用できません</h2>
+    <div class="msg"></div>
+    <div style="margin-top:10px; font-size:13px; color:#b9c6d8;">
+      このデモは WebGPU compute shader で MLS-MPM 雪シミュレーションを実行します。<br>
+      Chrome / Edge 113+、Safari 26+ など WebGPU 対応ブラウザでお試しください。
+    </div>
+  </div>
+</div>
+
+<script type="module">
+'use strict';
+
+// ============================================================
+// MLS-MPM snow simulation (Stomakhin et al. 2013 constitutive
+// model) implemented with WebGPU compute shaders.
+//   P2G  -> grid update -> G2P, APIC/MLS transfers,
+//   quadratic B-spline weights, fixed-corotated elasticity,
+//   singular-value clamping plasticity + hardening.
+// ============================================================
+
+const canvas  = document.getElementById('c');
+const overlay = document.getElementById('overlay');
+const fpsEl   = document.getElementById('fps');
+const cntEl   = document.getElementById('pcount');
+const stepEl  = document.getElementById('steps');
+
+function fatal(msg) {
+  overlay.hidden = false;
+  overlay.querySelector('.msg').textContent = msg;
+  console.error('[fatal]', msg);
+}
+
+// ---------------- simulation constants ----------------
+const N        = 64;            // grid resolution (N^3 nodes), domain = unit cube
+const DX       = 1 / N;
+const INV_DX   = N;
+const DT       = 2.5e-4;        // substep (s)
+let   SUBSTEPS = 20;            // substeps per frame (adaptive 12..20)
+const GRAVITY  = 9.8;
+const RHO      = 400;           // snow density kg/m^3
+const E_YOUNG  = 1.4e5;         // Young's modulus (Stomakhin 2013)
+const NU       = 0.2;           // Poisson ratio
+const MU0      = E_YOUNG / (2 * (1 + NU));
+const LAMBDA0  = E_YOUNG * NU / ((1 + NU) * (1 - 2 * NU));
+const XI       = 10.0;          // hardening coefficient
+const THETA_C  = 2.5e-2;        // critical compression
+const THETA_S  = 4.5e-3;        // critical stretch
+const FP       = 1e8;           // fixed-point scale for grid atomics
+const BOUND    = 3;             // boundary thickness in cells
+const FRICTION = 0.7;           // tangential damping at floor per substep
+const FLOOR_Y  = BOUND * DX;
+
+const MAX_PARTICLES  = 131072;
+const FLOATS_PER_P   = 36;      // 144 bytes / particle
+const INIT_BALL_N    = 32768;
+const EXTRA_BALL_N   = 8192;
+const N3 = N * N * N;
+
+const fmt = (x) => { const s = String(x); return /[.e]/.test(s) ? s : s + '.0'; };
+
+// ---------------- WGSL: shared particle struct ----------------
+const PARTICLE_STRUCT = /* wgsl */`
+struct Particle {
+  pos  : vec3f,  mass : f32,
+  vel  : vec3f,  vol  : f32,
+  C    : mat3x3f,
+  F    : mat3x3f,
+  extra: vec4f,          // x: Jp (plastic determinant), yzw: unused
+};
+`;
+
+// ---------------- WGSL: simulation kernels ----------------
+const SIM_WGSL = /* wgsl */`
+${PARTICLE_STRUCT}
+struct SimU { n : u32, dt : f32, gravity : f32, pad : f32, };
+
+@group(0) @binding(0) var<uniform> sim : SimU;
+@group(0) @binding(1) var<storage, read_write> particles : array<Particle>;
+@group(0) @binding(2) var<storage, read_write> grid : array<atomic<i32>>;
+
+const NG      : i32 = ${N};
+const NG3     : u32 = ${N3}u;
+const DX      : f32 = ${fmt(DX)};
+const INV_DX  : f32 = ${fmt(INV_DX)};
+const FP      : f32 = ${fmt(FP)};
+const MU0     : f32 = ${fmt(MU0)};
+const LAMBDA0 : f32 = ${fmt(LAMBDA0)};
+const XI      : f32 = ${fmt(XI)};
+const THETA_C : f32 = ${fmt(THETA_C)};
+const THETA_S : f32 = ${fmt(THETA_S)};
+const BOUND   : i32 = ${BOUND};
+const FRICTION: f32 = ${fmt(FRICTION)};
+
+const ID = mat3x3f(vec3f(1,0,0), vec3f(0,1,0), vec3f(0,0,1));
+
+fn diagm(v : vec3f) -> mat3x3f {
+  return mat3x3f(vec3f(v.x,0,0), vec3f(0,v.y,0), vec3f(0,0,v.z));
+}
+
+// One Jacobi rotation annihilating S[p][q] (symmetric S), accumulated into V.
+fn jacobiRot(S : ptr<function, mat3x3f>, V : ptr<function, mat3x3f>, p : i32, q : i32) {
+  let apq = (*S)[q][p];
+  if (abs(apq) < 1e-12) { return; }
+  let app = (*S)[p][p];
+  let aqq = (*S)[q][q];
+  let tau = (aqq - app) / (2.0 * apq);
+  var t : f32;
+  if (tau >= 0.0) { t = 1.0 / (tau + sqrt(1.0 + tau * tau)); }
+  else            { t = 1.0 / (tau - sqrt(1.0 + tau * tau)); }
+  let c = inverseSqrt(1.0 + t * t);
+  let s = t * c;
+  var G = ID;
+  G[p][p] = c;  G[q][q] = c;
+  G[q][p] = s;  // element (row p, col q)
+  G[p][q] = -s; // element (row q, col p)
+  *S = transpose(G) * (*S) * G;
+  *V = (*V) * G;
+}
+
+fn orthoTo(u : vec3f) -> vec3f {
+  var a = vec3f(1.0, 0.0, 0.0);
+  if (abs(u.x) > 0.9) { a = vec3f(0.0, 1.0, 0.0); }
+  return normalize(cross(u, a));
+}
+
+struct SVD { U : mat3x3f, S : vec3f, V : mat3x3f, };
+
+// 3x3 SVD via Jacobi eigen-decomposition of A^T A.
+// Guarantees det(U)=det(V)=+1; possible reflection goes into sign of S.z.
+fn svd3(A : mat3x3f) -> SVD {
+  var S = transpose(A) * A;
+  var V = ID;
+  for (var sweep = 0; sweep < 6; sweep++) {
+    jacobiRot(&S, &V, 0, 1);
+    jacobiRot(&S, &V, 0, 2);
+    jacobiRot(&S, &V, 1, 2);
+  }
+  var e  = vec3f(S[0][0], S[1][1], S[2][2]);
+  var v0 = V[0]; var v1 = V[1]; var v2 = V[2];
+  // sort eigenvalues descending (keep matching columns)
+  if (e.x < e.y) { let t = e.x; e.x = e.y; e.y = t; let tv = v0; v0 = v1; v1 = tv; }
+  if (e.x < e.z) { let t = e.x; e.x = e.z; e.z = t; let tv = v0; v0 = v2; v2 = tv; }
+  if (e.y < e.z) { let t = e.y; e.y = e.z; e.z = t; let tv = v1; v1 = v2; v2 = tv; }
+  var Vs = mat3x3f(v0, v1, v2);
+  if (determinant(Vs) < 0.0) { v2 = -v2; Vs = mat3x3f(v0, v1, v2); }
+
+  var u0 = A * v0;
+  let l0 = length(u0);
+  if (l0 > 1e-9) { u0 = u0 / l0; } else { u0 = vec3f(1.0, 0.0, 0.0); }
+  var t1 = A * v1;
+  t1 = t1 - dot(t1, u0) * u0;
+  let l1 = length(t1);
+  var u1 : vec3f;
+  if (l1 > 1e-9) { u1 = t1 / l1; } else { u1 = orthoTo(u0); }
+  let u2 = cross(u0, u1);
+
+  var r : SVD;
+  r.U = mat3x3f(u0, u1, u2);
+  r.S = vec3f(dot(u0, A * v0), dot(u1, A * v1), dot(u2, A * v2));
+  r.V = Vs;
+  return r;
+}
+
+fn cellIndex(n : vec3i) -> u32 {
+  return (u32(n.x) + u32(n.y) * ${N}u + u32(n.z) * ${N * N}u) * 4u;
+}
+
+fn encodeFixed(v : f32) -> i32 {
+  return i32(round(clamp(v * FP, -2.0e9, 2.0e9)));
+}
+
+// ---- kernel: clear grid ----
+@compute @workgroup_size(64)
+fn clearGrid(@builtin(global_invocation_id) gid : vec3u) {
+  let c = gid.x;
+  if (c >= NG3) { return; }
+  atomicStore(&grid[c * 4u + 0u], 0);
+  atomicStore(&grid[c * 4u + 1u], 0);
+  atomicStore(&grid[c * 4u + 2u], 0);
+  atomicStore(&grid[c * 4u + 3u], 0);
+}
+
+// ---- kernel: P2G (with F update, plasticity, stress; MLS-MPM fused) ----
+@compute @workgroup_size(64)
+fn p2g(@builtin(global_invocation_id) gid : vec3u) {
+  let pi = gid.x;
+  if (pi >= sim.n) { return; }
+  var p = particles[pi];
+
+  // deformation gradient update (uses affine velocity C from previous G2P)
+  var F = (ID + sim.dt * p.C) * p.F;
+
+  // plasticity: clamp singular values (Stomakhin et al. 2013)
+  let r = svd3(F);
+  let sig  = r.S;
+  let sigC = clamp(sig, vec3f(1.0 - THETA_C), vec3f(1.0 + THETA_S));
+  var Jp = p.extra.x * (sig.x / sigC.x) * (sig.y / sigC.y) * (sig.z / sigC.z);
+  Jp = clamp(Jp, 0.4, 1.6);
+  F = r.U * diagm(sigC) * transpose(r.V);
+  particles[pi].F = F;
+  particles[pi].extra.x = Jp;
+
+  // hardening
+  let h  = clamp(exp(XI * (1.0 - Jp)), 0.1, 5.0);
+  let mu = MU0 * h;
+  let la = LAMBDA0 * h;
+  let J  = sigC.x * sigC.y * sigC.z;
+  let R  = r.U * transpose(r.V);
+
+  // fixed corotated PK1 * F^T  (Cauchy * J)
+  let stress = 2.0 * mu * (F - R) * transpose(F) + ID * (la * J * (J - 1.0));
+  let factor = -sim.dt * p.vol * 4.0 * INV_DX * INV_DX;
+  let affine = factor * stress + p.mass * p.C;
+
+  // quadratic B-spline
+  let xp   = p.pos * INV_DX;
+  let base = vec3i(floor(xp - 0.5));
+  let fx   = xp - vec3f(base);
+  var w : array<vec3f, 3>;
+  w[0] = 0.5  * (1.5 - fx) * (1.5 - fx);
+  w[1] = 0.75 - (fx - 1.0) * (fx - 1.0);
+  w[2] = 0.5  * (fx - 0.5) * (fx - 0.5);
+
+  for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
+      for (var k = 0; k < 3; k++) {
+        let node = base + vec3i(i, j, k);
+        if (any(node < vec3i(0)) || any(node >= vec3i(NG))) { continue; }
+        let dpos = (vec3f(f32(i), f32(j), f32(k)) - fx) * DX;
+        let wt   = w[i].x * w[j].y * w[k].z;
+        let mom  = wt * (p.mass * p.vel + affine * dpos);
+        let idx  = cellIndex(node);
+        atomicAdd(&grid[idx + 0u], encodeFixed(p.mass * wt));
+        atomicAdd(&grid[idx + 1u], encodeFixed(mom.x));
+        atomicAdd(&grid[idx + 2u], encodeFixed(mom.y));
+        atomicAdd(&grid[idx + 3u], encodeFixed(mom.z));
+      }
+    }
+  }
+}
+
+// ---- kernel: grid update (momentum -> velocity, gravity, boundaries) ----
+@compute @workgroup_size(64)
+fn gridUpdate(@builtin(global_invocation_id) gid : vec3u) {
+  let c = gid.x;
+  if (c >= NG3) { return; }
+  let m = f32(atomicLoad(&grid[c * 4u + 0u])) / FP;
+  var v = vec3f(0.0);
+  if (m > 1e-10) {
+    v = vec3f(f32(atomicLoad(&grid[c * 4u + 1u])),
+              f32(atomicLoad(&grid[c * 4u + 2u])),
+              f32(atomicLoad(&grid[c * 4u + 3u]))) / (FP * m);
+    v.y -= sim.dt * sim.gravity;
+
+    let i = i32(c % ${N}u);
+    let j = i32((c / ${N}u) % ${N}u);
+    let k = i32(c / ${N * N}u);
+
+    // floor: no penetration + strong friction (snow sticks and piles up)
+    if (j < BOUND && v.y < 0.0) {
+      v = vec3f(v.x * FRICTION, 0.0, v.z * FRICTION);
+    }
+    if (j > NG - 1 - BOUND && v.y > 0.0) { v.y = 0.0; }
+    if (i < BOUND          && v.x < 0.0) { v.x = 0.0; }
+    if (i > NG - 1 - BOUND && v.x > 0.0) { v.x = 0.0; }
+    if (k < BOUND          && v.z < 0.0) { v.z = 0.0; }
+    if (k > NG - 1 - BOUND && v.z > 0.0) { v.z = 0.0; }
+
+    // CFL safety clamp
+    let vmax = 0.4 * DX / sim.dt;
+    v = clamp(v, vec3f(-vmax), vec3f(vmax));
+  }
+  atomicStore(&grid[c * 4u + 1u], bitcast<i32>(v.x));
+  atomicStore(&grid[c * 4u + 2u], bitcast<i32>(v.y));
+  atomicStore(&grid[c * 4u + 3u], bitcast<i32>(v.z));
+}
+
+// ---- kernel: G2P (APIC gather + advection) ----
+@compute @workgroup_size(64)
+fn g2p(@builtin(global_invocation_id) gid : vec3u) {
+  let pi = gid.x;
+  if (pi >= sim.n) { return; }
+  let pos = particles[pi].pos;
+
+  let xp   = pos * INV_DX;
+  let base = vec3i(floor(xp - 0.5));
+  let fx   = xp - vec3f(base);
+  var w : array<vec3f, 3>;
+  w[0] = 0.5  * (1.5 - fx) * (1.5 - fx);
+  w[1] = 0.75 - (fx - 1.0) * (fx - 1.0);
+  w[2] = 0.5  * (fx - 0.5) * (fx - 0.5);
+
+  var v = vec3f(0.0);
+  var B = mat3x3f(vec3f(0.0), vec3f(0.0), vec3f(0.0));
+  for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
+      for (var k = 0; k < 3; k++) {
+        let node = base + vec3i(i, j, k);
+        if (any(node < vec3i(0)) || any(node >= vec3i(NG))) { continue; }
+        let idx = cellIndex(node);
+        let gv = vec3f(bitcast<f32>(atomicLoad(&grid[idx + 1u])),
+                       bitcast<f32>(atomicLoad(&grid[idx + 2u])),
+                       bitcast<f32>(atomicLoad(&grid[idx + 3u])));
+        let dpos = (vec3f(f32(i), f32(j), f32(k)) - fx) * DX;
+        let wt   = w[i].x * w[j].y * w[k].z;
+        v += wt * gv;
+        B += mat3x3f(gv * dpos.x, gv * dpos.y, gv * dpos.z) * wt;
+      }
+    }
+  }
+  let C = B * (4.0 * INV_DX * INV_DX);
+  var x = pos + sim.dt * v;
+  x = clamp(x, vec3f(DX * 1.51), vec3f(1.0 - DX * 1.51));
+
+  particles[pi].pos = x;
+  particles[pi].vel = v;
+  particles[pi].C   = C;
+}
+`;
+
+// ---------------- WGSL: rendering ----------------
+const RENDER_WGSL = /* wgsl */`
+${PARTICLE_STRUCT}
+struct RU {
+  view : mat4x4f,
+  proj : mat4x4f,
+  camRight : vec4f,   // xyz: right,   w: particle radius
+  camUp    : vec4f,   // xyz: up,      w: time
+  camPos   : vec4f,   // xyz: eye
+  camFwd   : vec4f,   // xyz: forward
+};
+@group(0) @binding(0) var<uniform> ru : RU;
+@group(0) @binding(1) var<storage, read> parts : array<Particle>;
+
+const SKY_ZENITH  = vec3f(0.34, 0.46, 0.66);
+const SKY_HORIZON = vec3f(0.76, 0.81, 0.89);
+const FLOOR_Y : f32 = ${fmt(FLOOR_Y)};
+const BXMIN   : f32 = ${fmt(BOUND * DX)};
+const BXMAX   : f32 = ${fmt(1 - BOUND * DX)};
+
+fn hash1(x : f32) -> f32 { return fract(sin(x * 12.9898) * 43758.5453); }
+
+// ======== sky (fullscreen triangle) ========
+struct SkyOut { @builtin(position) pos : vec4f, @location(0) uv : vec2f, };
+
+@vertex
+fn vsSky(@builtin(vertex_index) vi : u32) -> SkyOut {
+  var p = array<vec2f, 3>(vec2f(-1.0, -3.0), vec2f(3.0, 1.0), vec2f(-1.0, 1.0));
+  var o : SkyOut;
+  o.pos = vec4f(p[vi], 1.0, 1.0);
+  o.uv  = p[vi];
+  return o;
+}
+@fragment
+fn fsSky(in : SkyOut) -> @location(0) vec4f {
+  let t = clamp(in.uv.y * 0.5 + 0.5, 0.0, 1.0);
+  let c = mix(SKY_HORIZON, SKY_ZENITH, pow(t, 1.3));
+  return vec4f(c, 1.0);
+}
+
+// ======== ground plane ========
+struct FloorOut { @builtin(position) pos : vec4f, @location(0) world : vec3f, };
+
+@vertex
+fn vsFloor(@builtin(vertex_index) vi : u32) -> FloorOut {
+  var xz = array<vec2f, 4>(vec2f(-3.0, -3.0), vec2f(4.0, -3.0), vec2f(-3.0, 4.0), vec2f(4.0, 4.0));
+  var o : FloorOut;
+  let wp = vec3f(xz[vi].x, FLOOR_Y, xz[vi].y);
+  o.pos = ru.proj * ru.view * vec4f(wp, 1.0);
+  o.world = wp;
+  return o;
+}
+@fragment
+fn fsFloor(in : FloorOut) -> @location(0) vec4f {
+  var col = vec3f(0.80, 0.84, 0.90);
+  // faint grid every 1/8 unit
+  let g  = in.world.xz * 8.0;
+  let aw = fwidth(g);
+  let dl = abs(fract(g + 0.5) - 0.5) / max(aw, vec2f(1e-4));
+  let line = 1.0 - min(min(dl.x, dl.y), 1.0);
+  col = col * (1.0 - 0.07 * line);
+  // subtle vignette toward domain center
+  let d = distance(in.world.xz, vec2f(0.5, 0.5));
+  col = col * (1.0 - 0.10 * exp(-d * d * 5.0));
+  // fade into horizon
+  col = mix(col, SKY_HORIZON, smoothstep(0.8, 2.8, d));
+  return vec4f(col, 1.0);
+}
+
+// ======== simulation-domain wire box ========
+struct BoxOut { @builtin(position) pos : vec4f, };
+
+@vertex
+fn vsBox(@builtin(vertex_index) vi : u32) -> BoxOut {
+  let a = BXMIN; let b = BXMAX;
+  var e = array<vec3f, 24>(
+    vec3f(a,a,a), vec3f(b,a,a),  vec3f(b,a,a), vec3f(b,a,b),
+    vec3f(b,a,b), vec3f(a,a,b),  vec3f(a,a,b), vec3f(a,a,a),
+    vec3f(a,b,a), vec3f(b,b,a),  vec3f(b,b,a), vec3f(b,b,b),
+    vec3f(b,b,b), vec3f(a,b,b),  vec3f(a,b,b), vec3f(a,b,a),
+    vec3f(a,a,a), vec3f(a,b,a),  vec3f(b,a,a), vec3f(b,b,a),
+    vec3f(b,a,b), vec3f(b,b,b),  vec3f(a,a,b), vec3f(a,b,b));
+  var o : BoxOut;
+  o.pos = ru.proj * ru.view * vec4f(e[vi], 1.0);
+  return o;
+}
+@fragment
+fn fsBox(in : BoxOut) -> @location(0) vec4f {
+  return vec4f(0.55, 0.62, 0.75, 0.30);
+}
+
+// ======== snow particles: lit sphere impostors ========
+struct PVOut {
+  @builtin(position) pos : vec4f,
+  @location(0) uv : vec2f,
+  @location(1) viewZ : f32,
+  @location(2) world : vec3f,
+  @location(3) @interpolate(flat) rand : f32,
+  @location(4) @interpolate(flat) jp : f32,
+};
+
+@vertex
+fn vsParticle(@builtin(vertex_index) vi : u32, @builtin(instance_index) ii : u32) -> PVOut {
+  var corner = array<vec2f, 4>(vec2f(-1.0,-1.0), vec2f(1.0,-1.0), vec2f(-1.0,1.0), vec2f(1.0,1.0));
+  let p = parts[ii];
+  let r = ru.camRight.w;
+  let cw = corner[vi];
+  let world = p.pos + (ru.camRight.xyz * cw.x + ru.camUp.xyz * cw.y) * r;
+  var o : PVOut;
+  o.pos   = ru.proj * ru.view * vec4f(world, 1.0);
+  o.uv    = cw;
+  o.viewZ = (ru.view * vec4f(p.pos, 1.0)).z;
+  o.world = p.pos;
+  o.rand  = hash1(f32(ii) + 1.0);
+  o.jp    = p.extra.x;
+  return o;
+}
+
+struct PFOut { @builtin(frag_depth) depth : f32, @location(0) color : vec4f, };
+
+@fragment
+fn fsParticle(in : PVOut) -> PFOut {
+  let r2 = dot(in.uv, in.uv);
+  if (r2 > 1.0) { discard; }
+  let nz  = sqrt(max(0.0, 1.0 - r2));
+  let nrm = normalize(ru.camRight.xyz * in.uv.x + ru.camUp.xyz * in.uv.y - ru.camFwd.xyz * nz);
+
+  // sphere-correct depth
+  let r  = ru.camRight.w;
+  let vz = in.viewZ + nz * r;
+  let clipZ = ru.proj[2].z * vz + ru.proj[3].z;
+  let clipW = -vz;
+  var o : PFOut;
+  o.depth = clamp(clipZ / clipW, 0.0, 1.0);
+
+  // lighting
+  let L    = normalize(vec3f(0.45, 0.80, 0.30));
+  let wrap = max((dot(nrm, L) + 0.35) / 1.35, 0.0);
+  let ambient = mix(vec3f(0.36, 0.43, 0.56), vec3f(0.66, 0.74, 0.88), nrm.y * 0.5 + 0.5);
+  let viewDir = normalize(ru.camPos.xyz - in.world);
+  let H    = normalize(L + viewDir);
+  let spec = pow(max(dot(nrm, H), 0.0), 48.0) * 0.30;
+  // sparkle glints on a few grains
+  let glint = select(0.0, pow(max(dot(nrm, H), 0.0), 220.0) * 1.4, in.rand > 0.85);
+
+  let tint = 0.90 + 0.10 * in.rand;
+  var albedo = vec3f(0.94, 0.96, 1.0) * tint;
+  // compressed snow gets slightly denser blue tone
+  let compress = clamp((1.0 - in.jp) * 6.0, 0.0, 1.0);
+  albedo = mix(albedo, vec3f(0.70, 0.79, 0.94), compress * 0.4);
+
+  var col = albedo * (vec3f(1.0, 0.98, 0.93) * wrap * 0.82 + ambient * 0.55) + vec3f(spec + glint);
+  o.color = vec4f(col, 1.0);
+  return o;
+}
+`;
+
+// ---------------- tiny mat4 helpers (column-major) ----------------
+function perspective(fovy, aspect, near, far) {
+  const f = 1 / Math.tan(fovy / 2);
+  const out = new Float32Array(16);
+  out[0] = f / aspect; out[5] = f;
+  out[10] = far / (near - far); out[11] = -1;
+  out[14] = (near * far) / (near - far);
+  return out;
+}
+function lookAt(eye, target, up) {
+  const z = norm3(sub3(eye, target));
+  const x = norm3(cross3(up, z));
+  const y = cross3(z, x);
+  return new Float32Array([
+    x[0], y[0], z[0], 0,
+    x[1], y[1], z[1], 0,
+    x[2], y[2], z[2], 0,
+    -dot3(x, eye), -dot3(y, eye), -dot3(z, eye), 1,
+  ]);
+}
+const sub3   = (a, b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
+const add3   = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+const scale3 = (a, s) => [a[0]*s, a[1]*s, a[2]*s];
+const dot3   = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+const cross3 = (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+const norm3  = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0]/l, a[1]/l, a[2]/l]; };
+
+// ---------------- main ----------------
+async function main() {
+  if (!navigator.gpu) {
+    fatal('navigator.gpu が存在しません（このブラウザは WebGPU 非対応です）。');
+    return;
+  }
+  let adapter = null;
+  try { adapter = await navigator.gpu.requestAdapter(); } catch (e) { /* fallthrough */ }
+  if (!adapter) {
+    fatal('WebGPU アダプタを取得できませんでした（GPU がブロックされている可能性があります）。');
+    return;
+  }
+  const device = await adapter.requestDevice();
+  device.lost.then((info) => {
+    if (info.reason !== 'destroyed') fatal('WebGPU デバイスが失われました: ' + info.message);
+  });
+  device.onuncapturederror = (ev) => { console.error('WebGPU uncaptured error:', ev.error.message); };
+
+  const context = canvas.getContext('webgpu');
+  const format  = navigator.gpu.getPreferredCanvasFormat();
+  context.configure({ device, format, alphaMode: 'opaque' });
+
+  // ---- buffers ----
+  const particleBuf = device.createBuffer({
+    size: MAX_PARTICLES * FLOATS_PER_P * 4,
+    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+  });
+  const gridBuf = device.createBuffer({
+    size: N3 * 4 * 4,
+    usage: GPUBufferUsage.STORAGE,
+  });
+  const simUBuf = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const renUBuf = device.createBuffer({ size: 192, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+
+  // ---- pipelines: compute ----
+  const simModule = device.createShaderModule({ code: SIM_WGSL });
+  const computeBGL = device.createBindGroupLayout({
+    entries: [
+      { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
+      { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
+      { binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
+    ],
+  });
+  const computePL = device.createPipelineLayout({ bindGroupLayouts: [computeBGL] });
+  const mkCompute = (entryPoint) =>
+    device.createComputePipeline({ layout: computePL, compute: { module: simModule, entryPoint } });
+  const clearPipe = mkCompute('clearGrid');
+  const p2gPipe   = mkCompute('p2g');
+  const gridPipe  = mkCompute('gridUpdate');
+  const g2pPipe   = mkCompute('g2p');
+  const computeBG = device.createBindGroup({
+    layout: computeBGL,
+    entries: [
+      { binding: 0, resource: { buffer: simUBuf } },
+      { binding: 1, resource: { buffer: particleBuf } },
+      { binding: 2, resource: { buffer: gridBuf } },
+    ],
+  });
+
+  // ---- pipelines: render ----
+  const renModule = device.createShaderModule({ code: RENDER_WGSL });
+  const renderBGL = device.createBindGroupLayout({
+    entries: [
+      { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
+      { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: { type: 'read-only-storage' } },
+    ],
+  });
+  const renderPL = device.createPipelineLayout({ bindGroupLayouts: [renderBGL] });
+  const renderBG = device.createBindGroup({
+    layout: renderBGL,
+    entries: [
+      { binding: 0, resource: { buffer: renUBuf } },
+      { binding: 1, resource: { buffer: particleBuf } },
+    ],
+  });
+  const DEPTH_FORMAT = 'depth24plus';
+  const mkRender = (vs, fs, topology, depthWrite, depthCompare, blend) =>
+    device.createRenderPipeline({
+      layout: renderPL,
+      vertex:   { module: renModule, entryPoint: vs },
+      fragment: { module: renModule, entryPoint: fs, targets: [{ format, blend }] },
+      primitive: { topology, cullMode: 'none' },
+      depthStencil: { format: DEPTH_FORMAT, depthWriteEnabled: depthWrite, depthCompare },
+    });
+  const alphaBlend = {
+    color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+    alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+  };
+  const skyPipe   = mkRender('vsSky', 'fsSky', 'triangle-list', false, 'always');
+  const floorPipe = mkRender('vsFloor', 'fsFloor', 'triangle-strip', true, 'less');
+  const boxPipe   = mkRender('vsBox', 'fsBox', 'line-list', false, 'less', alphaBlend);
+  const partPipe  = mkRender('vsParticle', 'fsParticle', 'triangle-strip', true, 'less');
+
+  // ---- depth texture / resize ----
+  let depthTex = null, depthView = null;
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+    const h = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+    if (canvas.width === w && canvas.height === h && depthTex) return;
+    canvas.width = w; canvas.height = h;
+    if (depthTex) depthTex.destroy();
+    depthTex = device.createTexture({
+      size: [w, h], format: DEPTH_FORMAT, usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+    depthView = depthTex.createView();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---- particle spawning ----
+  let count = 0;
+  const simUData = new ArrayBuffer(16);
+  const simU_u32 = new Uint32Array(simUData);
+  const simU_f32 = new Float32Array(simUData);
+  function writeSimU() {
+    simU_u32[0] = count;
+    simU_f32[1] = DT;
+    simU_f32[2] = GRAVITY;
+    device.queue.writeBuffer(simUBuf, 0, simUData);
+    cntEl.textContent = count.toLocaleString('ja-JP');
+  }
+
+  function spawnBall(cx, cy, cz, radius, n, vy) {
+    n = Math.min(n, MAX_PARTICLES - count);
+    if (n <= 0) return false;
+    const vol  = (4 / 3) * Math.PI * radius ** 3 / n; // rest volume per particle
+    const mass = vol * RHO;
+    const data = new Float32Array(n * FLOATS_PER_P);
+    for (let i = 0; i < n; i++) {
+      let x, y, z;
+      do {
+        x = Math.random() * 2 - 1; y = Math.random() * 2 - 1; z = Math.random() * 2 - 1;
+      } while (x * x + y * y + z * z > 1);
+      const o = i * FLOATS_PER_P;
+      data[o + 0] = cx + x * radius;
+      data[o + 1] = cy + y * radius;
+      data[o + 2] = cz + z * radius;
+      data[o + 3] = mass;
+      data[o + 4] = (Math.random() - 0.5) * 0.05;
+      data[o + 5] = vy + (Math.random() - 0.5) * 0.05;
+      data[o + 6] = (Math.random() - 0.5) * 0.05;
+      data[o + 7] = vol;
+      // C = 0 (o+8 .. o+19 already zero)
+      data[o + 20] = 1; data[o + 25] = 1; data[o + 30] = 1; // F = I
+      data[o + 32] = 1; // Jp
+    }
+    device.queue.writeBuffer(particleBuf, count * FLOATS_PER_P * 4, data);
+    count += n;
+    writeSimU();
+    return true;
+  }
+
+  function resetSim() {
+    count = 0;
+    writeSimU();
+    spawnBall(0.5, 0.68, 0.5, 0.12, INIT_BALL_N, -0.6);
+    lastDrop = performance.now();
+  }
+
+  // ---- camera ----
+  const FOV = 45 * Math.PI / 180;
+  const camHome = { theta: 0.7, phi: 0.34, dist: 1.65 };
+  const cam = { ...camHome };
+  const target = [0.5, 0.22, 0.5];
+  let camEye = [0, 0, 0], camRight = [1, 0, 0], camUp = [0, 1, 0], camFwd = [0, 0, -1];
+
+  const renUData = new Float32Array(48);
+  function updateCamera(time) {
+    const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+    const cp = Math.cos(cam.phi), sp = Math.sin(cam.phi);
+    camEye = [
+      target[0] + cam.dist * cp * st,
+      target[1] + cam.dist * sp,
+      target[2] + cam.dist * cp * ct,
+    ];
+    const view = lookAt(camEye, target, [0, 1, 0]);
+    const aspect = canvas.width / canvas.height;
+    const proj = perspective(FOV, aspect, 0.02, 30);
+    camFwd   = norm3(sub3(target, camEye));
+    camRight = norm3(cross3(camFwd, [0, 1, 0]));
+    camUp    = cross3(camRight, camFwd);
+    renUData.set(view, 0);
+    renUData.set(proj, 16);
+    renUData.set([...camRight, 0.0062], 32);           // w: particle render radius
+    renUData.set([...camUp, time * 0.001], 36);
+    renUData.set([...camEye, 0], 40);
+    renUData.set([...camFwd, 0], 44);
+    device.queue.writeBuffer(renUBuf, 0, renUData);
+  }
+
+  // ---- input ----
+  let dragging = false, moved = 0, lastX = 0, lastY = 0;
+  canvas.addEventListener('pointerdown', (e) => {
+    dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
+    canvas.classList.add('dragging');
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    lastX = e.clientX; lastY = e.clientY;
+    cam.theta -= dx * 0.006;
+    cam.phi = Math.min(1.45, Math.max(-0.05, cam.phi + dy * 0.006));
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    dragging = false;
+    canvas.classList.remove('dragging');
+    if (moved < 6) spawnAtPointer(e);
+  });
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    cam.dist = Math.min(5, Math.max(0.4, cam.dist * Math.exp(e.deltaY * 0.001)));
+  }, { passive: false });
+
+  function spawnAtPointer(e) {
+    const rect = canvas.getBoundingClientRect();
+    const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const ndcY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    const tanF = Math.tan(FOV / 2);
+    const aspect = canvas.width / canvas.height;
+    const dir = norm3(add3(camFwd,
+      add3(scale3(camRight, ndcX * tanF * aspect), scale3(camUp, ndcY * tanF))));
+    let px = 0.5, pz = 0.5;
+    const t = (0.5 - camEye[1]) / (dir[1] || -1e-6);
+    if (t > 0) {
+      px = Math.min(0.82, Math.max(0.18, camEye[0] + dir[0] * t));
+      pz = Math.min(0.82, Math.max(0.18, camEye[2] + dir[2] * t));
+    }
+    spawnBall(px, 0.74, pz, 0.085, EXTRA_BALL_N, -1.2);
+  }
+
+  // ---- UI ----
+  let lastDrop = performance.now();
+  const autoChk = document.getElementById('autoChk');
+  document.getElementById('dropBtn').addEventListener('click', () => {
+    spawnBall(0.3 + Math.random() * 0.4, 0.74, 0.3 + Math.random() * 0.4, 0.085, EXTRA_BALL_N, -1.2);
+    lastDrop = performance.now();
+  });
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    Object.assign(cam, camHome);
+    resetSim();
+  });
+
+  // ---- start ----
+  resetSim();
+
+  // ---- frame loop ----
+  let prevT = performance.now();
+  let emaFrame = 16.7;
+  let lastHud = 0, lastAdapt = 0;
+  const gridWG = Math.ceil(N3 / 64);
+
+  function frame(tNow) {
+    const dtWall = Math.min(100, tNow - prevT);
+    prevT = tNow;
+    emaFrame = emaFrame * 0.95 + dtWall * 0.05;
+
+    // adaptive substep count to hold ~60fps on slower GPUs
+    if (tNow - lastAdapt > 1000) {
+      lastAdapt = tNow;
+      if (emaFrame > 19 && SUBSTEPS > 12) SUBSTEPS -= 2;
+      else if (emaFrame < 15.5 && SUBSTEPS < 20) SUBSTEPS += 2;
+    }
+
+    // auto drop
+    if (autoChk.checked && tNow - lastDrop > 5000 && count + EXTRA_BALL_N <= MAX_PARTICLES) {
+      spawnBall(0.3 + Math.random() * 0.4, 0.74, 0.3 + Math.random() * 0.4, 0.085, EXTRA_BALL_N, -1.2);
+      lastDrop = tNow;
+    }
+
+    resize();
+    updateCamera(tNow);
+
+    const enc = device.createCommandEncoder();
+
+    // --- simulation substeps ---
+    const partWG = Math.ceil(count / 64);
+    const cp = enc.beginComputePass();
+    cp.setBindGroup(0, computeBG);
+    for (let s = 0; s < SUBSTEPS; s++) {
+      cp.setPipeline(clearPipe); cp.dispatchWorkgroups(gridWG);
+      cp.setPipeline(p2gPipe);   cp.dispatchWorkgroups(partWG);
+      cp.setPipeline(gridPipe);  cp.dispatchWorkgroups(gridWG);
+      cp.setPipeline(g2pPipe);   cp.dispatchWorkgroups(partWG);
+    }
+    cp.end();
+
+    // --- render ---
+    const rp = enc.beginRenderPass({
+      colorAttachments: [{
+        view: context.getCurrentTexture().createView(),
+        clearValue: { r: 0.76, g: 0.81, b: 0.89, a: 1 },
+        loadOp: 'clear', storeOp: 'store',
+      }],
+      depthStencilAttachment: {
+        view: depthView, depthClearValue: 1.0,
+        depthLoadOp: 'clear', depthStoreOp: 'store',
+      },
+    });
+    rp.setBindGroup(0, renderBG);
+    rp.setPipeline(skyPipe);   rp.draw(3);
+    rp.setPipeline(floorPipe); rp.draw(4);
+    rp.setPipeline(boxPipe);   rp.draw(24);
+    if (count > 0) { rp.setPipeline(partPipe); rp.draw(4, count); }
+    rp.end();
+
+    device.queue.submit([enc.finish()]);
+
+    if (tNow - lastHud > 250) {
+      lastHud = tNow;
+      fpsEl.textContent = (1000 / emaFrame).toFixed(0);
+      stepEl.textContent = `${SUBSTEPS} × ${(DT * 1000).toFixed(2)} ms`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+main().catch((err) => {
+  fatal(String(err && err.message ? err.message : err));
+});
+</script>
+</body>
+</html>
