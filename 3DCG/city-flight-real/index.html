@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>NYC Flight REAL — Google Photorealistic 3D Tiles</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;}
+  #app{position:fixed;inset:0;}
+  .hud{position:fixed;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);pointer-events:none;user-select:none;}
+  #stats{top:16px;left:18px;font-family:"SF Mono",Menlo,monospace;font-size:14px;line-height:1.7;letter-spacing:.5px;}
+  #stats b{font-size:22px;}
+  #help{bottom:26px;left:50%;transform:translateX(-50%);font-size:12px;opacity:.85;white-space:nowrap;}
+  #attr{bottom:6px;left:8px;font-size:10px;opacity:.8;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(5,8,16,.55);backdrop-filter:blur(3px);color:#fff;user-select:none;}
+  #overlay h1{font-size:40px;margin:0 0 4px;letter-spacing:5px;font-weight:800;text-shadow:0 2px 18px rgba(80,160,255,.7);}
+  #overlay p{margin:4px 0;opacity:.85;font-size:14px;}
+  #keyrow{margin-top:18px;display:flex;gap:8px;}
+  #keyinput{width:340px;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.4);
+    background:rgba(255,255,255,.1);color:#fff;font-size:13px;outline:none;}
+  #startbtn{padding:9px 26px;border-radius:8px;border:1px solid rgba(255,255,255,.6);background:rgba(60,130,255,.35);
+    color:#fff;font-size:14px;letter-spacing:2px;cursor:pointer;}
+  #startbtn:hover{background:rgba(60,130,255,.6);}
+  #msg{margin-top:14px;font-size:12px;color:#ffb0a0;max-width:520px;text-align:center;line-height:1.6;}
+  #loading{position:fixed;top:16px;right:18px;color:#fff;font-size:12px;opacity:.8;text-shadow:0 1px 3px #000;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="hud" id="stats"></div>
+<div class="hud" id="help">マウス: 視点 ／ W: 前進 ・ S: 後退 ・ A/D: 横移動 ／ Space: 上昇 ・ C: 下降 ／ Shift: 加速 ／ V: 一人称切替 ／ Esc: メニュー</div>
+<div class="hud" id="attr"></div>
+<div id="loading" style="display:none">tiles loading…</div>
+<div id="overlay">
+  <h1>NYC FLIGHT <span style="color:#7fb4ff">REAL</span></h1>
+  <p>Google Photorealistic 3D Tiles で本物のマンハッタンを飛ぶ</p>
+  <div id="keyrow">
+    <input id="keyinput" type="password" placeholder="Google Maps API キー (Map Tiles API を有効化)">
+    <button id="startbtn">飛行開始</button>
+  </div>
+  <p style="opacity:.6;font-size:11px;margin-top:10px">キーはこのブラウザの localStorage にのみ保存されます</p>
+  <div id="msg"></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+  "3d-tiles-renderer": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.28/build/index.js",
+  "3d-tiles-renderer/plugins": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.28/build/index.plugins.js",
+  "pbf": "https://cdn.jsdelivr.net/npm/pbf@4.0.1/+esm",
+  "pmtiles": "https://cdn.jsdelivr.net/npm/pmtiles@4.3.2/+esm",
+  "@mapbox/vector-tile": "https://cdn.jsdelivr.net/npm/@mapbox/vector-tile@2.0.3/+esm"
+} }
+</script>
+
+<script type="module">
+const msgEl=document.getElementById('msg');
+window.addEventListener('error', e=>{ msgEl.textContent=(e.message||e.type); });
+
+import * as THREE from 'three';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { TilesRenderer } from '3d-tiles-renderer';
+import { GoogleCloudAuthPlugin, GLTFExtensionsPlugin, TileCompressionPlugin,
+         TilesFadePlugin, ReorientationPlugin } from '3d-tiles-renderer/plugins';
+
+/* ---------- 基本セットアップ ---------- */
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.NoToneMapping; // タイルの色味をそのまま出す
+document.getElementById('app').appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(68, innerWidth/innerHeight, 0.5, 100000);
+
+/* 空(昼) */
+{
+  const skyMat=new THREE.ShaderMaterial({
+    side:THREE.BackSide, depthWrite:false,
+    uniforms:{ uZenith:{value:new THREE.Color(0.22,0.42,0.78)},
+               uHorizon:{value:new THREE.Color(0.80,0.87,0.94)} },
+    vertexShader:`varying vec3 vDir; void main(){ vDir=normalize(position);
+      gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader:`varying vec3 vDir; uniform vec3 uZenith,uHorizon;
+      void main(){ float h=clamp(normalize(vDir).y,0.0,1.0);
+        gl_FragColor=vec4(mix(uHorizon,uZenith,pow(h,0.6)),1.0); }`
+  });
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(60000,32,16), skyMat));
+}
+/* アバター用ライト(タイルは unlit 化するので影響なし) */
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.6));
+const sun=new THREE.DirectionalLight(0xfff2df, 2.0);
+sun.position.set(-800, 1400, 600); scene.add(sun);
+
+/* ---------- Google Photorealistic 3D Tiles ---------- */
+const EMPIRE_STATE={lat:40.7484, lon:-73.9857}; // 原点に置く地点
+let tiles=null;
+function initTiles(apiKey){
+  tiles=new TilesRenderer();
+  tiles.registerPlugin(new GoogleCloudAuthPlugin({apiToken:apiKey, autoRefreshToken:true}));
+  const draco=new DRACOLoader();
+  draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+  tiles.registerPlugin(new GLTFExtensionsPlugin({dracoLoader:draco}));
+  tiles.registerPlugin(new TileCompressionPlugin());
+  tiles.registerPlugin(new TilesFadePlugin());
+  tiles.registerPlugin(new ReorientationPlugin({
+    lat:EMPIRE_STATE.lat*THREE.MathUtils.DEG2RAD,
+    lon:EMPIRE_STATE.lon*THREE.MathUtils.DEG2RAD,
+    height:0, recenter:true,
+  }));
+  tiles.setCamera(camera);
+  tiles.setResolutionFromRenderer(camera, renderer);
+  tiles.errorTarget=8;
+  // 焼き込みテクスチャをそのまま表示(ライティング非依存)
+  tiles.addEventListener('load-model', e=>{
+    e.scene.traverse(o=>{
+      if(o.isMesh&&o.material&&o.material.map!==undefined){
+        const m=new THREE.MeshBasicMaterial({map:o.material.map});
+        o.material.dispose(); o.material=m;
+      }
+    });
+  });
+  tiles.addEventListener('load-root-tileset', ()=>{ msgEl.textContent=''; });
+  tiles.addEventListener('load-error', e=>{
+    msgEl.textContent='タイルの読み込みに失敗しました。APIキーが正しいか、Google Cloud Console で「Map Tiles API」が有効か、課金が有効かを確認してください。'
+      +(e.error&&e.error.message?` (${e.error.message})`:'');
+  });
+  scene.add(tiles.group);
+}
+
+/* 帰属表示(Google 利用規約上必須) */
+const attrEl=document.getElementById('attr');
+let attrFrame=0;
+function updateAttribution(){
+  if(!tiles||(attrFrame++%90)!==0) return;
+  try{
+    const a=tiles.getAttributions([]);
+    const text=a.map(x=>typeof x.value==='string'?x.value:'').filter(Boolean).join(' · ');
+    attrEl.textContent=text?('© '+text):'© Google';
+  }catch(_){/* 読み込み前 */}
+}
+
+/* ---------- 飛行キャラクター ---------- */
+let capeGeo,capeBase;
+const avatar=(()=>{
+  const suit=new THREE.MeshStandardMaterial({color:0x2a5da8,roughness:.5,metalness:.15,emissive:0x16345e,emissiveIntensity:.2});
+  const accent=new THREE.MeshStandardMaterial({color:0xb52a2a,roughness:.5,emissive:0x5e1010,emissiveIntensity:.25});
+  const skin=new THREE.MeshStandardMaterial({color:0xd9a385,roughness:.7});
+  const rig=new THREE.Group(); rig.rotation.order='YXZ';
+  const body=new THREE.Group();
+  const add=(geo,mat,x,y,z,rz=0)=>{const m=new THREE.Mesh(geo,mat);
+    m.position.set(x,y,z); m.rotation.z=rz; body.add(m); return m;};
+  add(new THREE.CapsuleGeometry(.24,.5,4,10),suit,0,.32,0);
+  add(new THREE.SphereGeometry(.15,16,12),skin,0,.78,0);
+  add(new THREE.CapsuleGeometry(.065,.5,4,8),suit,-.16,1.0,0,.12);
+  add(new THREE.CapsuleGeometry(.065,.5,4,8),suit,.16,1.0,0,-.12);
+  add(new THREE.SphereGeometry(.08,8,8),accent,-.19,1.32,0);
+  add(new THREE.SphereGeometry(.08,8,8),accent,.19,1.32,0);
+  add(new THREE.CapsuleGeometry(.09,.55,4,8),suit,-.11,-.42,0);
+  add(new THREE.CapsuleGeometry(.09,.55,4,8),suit,.11,-.42,0);
+  add(new THREE.CapsuleGeometry(.075,.22,4,8),accent,-.11,-.85,0);
+  add(new THREE.CapsuleGeometry(.075,.22,4,8),accent,.11,-.85,0);
+  capeGeo=new THREE.PlaneGeometry(.55,1.0,4,8); capeGeo.translate(0,-.5,0);
+  capeBase=capeGeo.attributes.position.array.slice();
+  const cape=new THREE.Mesh(capeGeo,new THREE.MeshStandardMaterial({color:0xb52a2a,roughness:.8,side:THREE.DoubleSide}));
+  cape.position.set(0,.55,.16); cape.rotation.x=.28; body.add(cape);
+  rig.add(body); rig.scale.setScalar(1.35); scene.add(rig);
+  return {rig,body};
+})();
+
+/* ---------- 操作・飛行モデル ---------- */
+const keys={};
+addEventListener('keydown',e=>{ keys[e.code]=true;
+  if(e.code==='Space')e.preventDefault();
+  if(e.code==='KeyV')firstPerson=!firstPerson; });
+addEventListener('keyup',e=>keys[e.code]=false);
+
+const overlay=document.getElementById('overlay');
+const keyInput=document.getElementById('keyinput');
+let locked=false, firstPerson=false;
+const params=new URLSearchParams(location.search);
+let apiKey=params.get('key')||localStorage.getItem('gmp3d_key')||'';
+keyInput.value=apiKey;
+if(apiKey) initTiles(apiKey);
+
+document.getElementById('startbtn').addEventListener('click',()=>{
+  const k=keyInput.value.trim();
+  if(!k){ msgEl.textContent='APIキーを入力してください。'; return; }
+  if(k!==apiKey){ localStorage.setItem('gmp3d_key',k); apiKey=k;
+    if(tiles){ location.reload(); return; }
+    initTiles(k);
+  }
+  renderer.domElement.requestPointerLock();
+});
+document.addEventListener('pointerlockchange',()=>{
+  locked=document.pointerLockElement===renderer.domElement;
+  overlay.style.display=locked?'none':'flex';
+});
+let yaw=0, pitch=-0.12;
+addEventListener('mousemove',e=>{
+  if(!locked)return;
+  yaw-=e.movementX*0.0022;
+  pitch=Math.max(-1.45,Math.min(1.45,pitch-e.movementY*0.0022));
+});
+let chaseDist=7;
+addEventListener('wheel',e=>{ chaseDist=Math.max(3,Math.min(20,chaseDist+e.deltaY*0.005)); });
+
+const pos=new THREE.Vector3(0,420,900); // エンパイアステートビルが原点
+const vel=new THREE.Vector3();
+const fwd=new THREE.Vector3(), right=new THREE.Vector3(), tmp=new THREE.Vector3();
+const camPos=new THREE.Vector3().copy(pos).add(new THREE.Vector3(0,3,14));
+let smoothYawRate=0, prevYaw=yaw;
+
+function updatePlayer(dt){
+  fwd.set(-Math.sin(yaw)*Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw)*Math.cos(pitch));
+  right.set(-Math.cos(yaw),0,Math.sin(yaw));
+  const boost=keys['ShiftLeft']||keys['ShiftRight'];
+  const spd=boost?160:50;
+  tmp.set(0,0,0);
+  if(locked||window.__test){
+    if(keys['KeyW'])tmp.addScaledVector(fwd,spd);
+    if(keys['KeyS'])tmp.addScaledVector(fwd,-spd*0.5);
+    if(keys['KeyA'])tmp.addScaledVector(right,-spd*0.45);
+    if(keys['KeyD'])tmp.addScaledVector(right,spd*0.45);
+    if(keys['Space'])tmp.y+=spd*0.5;
+    if(keys['KeyC'])tmp.y-=spd*0.5;
+  }
+  vel.lerp(tmp,1-Math.exp(-2.5*dt));
+  pos.addScaledVector(vel,dt);
+  pos.y=Math.max(-100,Math.min(6000,pos.y));
+  pos.x=Math.max(-15000,Math.min(15000,pos.x));
+  pos.z=Math.max(-15000,Math.min(15000,pos.z));
+
+  let dYaw=yaw-prevYaw; prevYaw=yaw;
+  smoothYawRate+=((dYaw/Math.max(dt,1e-4))-smoothYawRate)*Math.min(1,6*dt);
+  const roll=Math.max(-0.9,Math.min(0.9,-smoothYawRate*0.55));
+
+  const speed=vel.length();
+  const proneT=Math.min(1,speed/25);
+  avatar.rig.position.copy(pos);
+  avatar.rig.rotation.set(pitch*proneT,yaw,roll);
+  avatar.body.rotation.x=-1.38*proneT;
+  avatar.body.visible=!firstPerson;
+
+  const t=clock.elapsedTime, wind=Math.min(1,speed/70);
+  const p=capeGeo.attributes.position;
+  for(let i=0;i<p.count;i++){
+    const x=capeBase[i*3], y=capeBase[i*3+1];
+    const f=-y;
+    p.setZ(i, capeBase[i*3+2]
+      + Math.sin(t*6+f*7+x*5)*0.05*f*(0.4+wind)
+      + f*f*0.30*wind);
+  }
+  p.needsUpdate=true; capeGeo.computeVertexNormals();
+
+  if(firstPerson){
+    camera.position.copy(pos).addScaledVector(fwd,0.4).add(tmp.set(0,0.25,0));
+    camera.quaternion.setFromEuler(new THREE.Euler(pitch,yaw,roll*0.3,'YXZ'));
+  }else{
+    const dist=chaseDist+speed*0.035;
+    tmp.copy(pos).addScaledVector(fwd,-dist).add(new THREE.Vector3(0,2.2,0));
+    camPos.lerp(tmp,1-Math.exp(-7*dt));
+    camera.position.copy(camPos);
+    camera.lookAt(tmp.copy(pos).addScaledVector(fwd,14));
+    camera.rotation.z+=roll*0.12;
+  }
+  const fovT=68+speed*0.12;
+  camera.fov+=(fovT-camera.fov)*Math.min(1,5*dt);
+  camera.updateProjectionMatrix();
+
+  document.getElementById('stats').innerHTML=
+    `SPEED <b>${Math.round(speed*3.6)}</b> km/h<br>ALT <b>${Math.round(pos.y)}</b> m`;
+}
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+  if(tiles) tiles.setResolutionFromRenderer(camera, renderer);
+});
+
+/* ---------- メインループ ---------- */
+const loadingEl=document.getElementById('loading');
+const clock=new THREE.Clock();
+function tick(){
+  requestAnimationFrame(tick);
+  const dt=Math.min(0.05,clock.getDelta());
+  if(!locked) yaw+=dt*0.02;
+  updatePlayer(dt);
+  camera.updateMatrixWorld();
+  if(tiles){
+    tiles.update();
+    const st=tiles.stats;
+    loadingEl.style.display=(st&&(st.downloading>0||st.parsing>0))?'block':'none';
+  }
+  updateAttribution();
+  renderer.render(scene,camera);
+}
+tick();
+</script>
+</body>
+</html>

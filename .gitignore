@@ -8,3 +8,6 @@ scratchpad/
 
 # Generated artifacts and verification output
 output/
+
+# secrets
+.env
