@@ -1,0 +1,22 @@
+{
+  "name": "health-movie-remotion",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "preview": "remotion preview src/index.ts",
+    "render": "remotion render src/index.ts HealthVideo"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.300",
+    "@remotion/layout-utils": "^4.0.300",
+    "remotion": "^4.0.300",
+    "typescript": "^5.5.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {},
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "words": [
+    {
+      "surface": "Van Dongen",
+      "pronunciation": "バン ドンゲン",
+      "accent_type": 1,
+      "priority": 5
+    },
+    {
+      "surface": "Depner",
+      "pronunciation": "デプナー",
+      "accent_type": 1,
+      "priority": 5
+    },
+    {
+      "surface": "インスリン感受性",
+      "pronunciation": "インスリンカンジュセイ",
+      "accent_type": 6,
+      "priority": 6
+    },
+    {
+      "surface": "社会的時差ボケ",
+      "pronunciation": "シャカイテキジサボケ",
+      "accent_type": 7,
+      "priority": 6
+    }
+  ]
+}

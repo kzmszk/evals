@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "same_speaker": 150,
+    "speaker_change": 300,
+    "myth_bust": 240,
+    "quiz_think": 3000,
+    "before_answer": 550,
+    "important_conclusion": 500,
+    "scene_boundary": 700
+  }
+}

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>読み・アクセントレビュー</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
+        background: #101418;
+        color: #edf4f2;
+      }
+      body {
+        margin: 0;
+        padding: 28px;
+      }
+      main {
+        max-width: 920px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 18px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 180px;
+        border: 1px solid #334047;
+        border-radius: 6px;
+        background: #151b20;
+        color: inherit;
+        padding: 12px;
+      }
+      button {
+        margin-top: 12px;
+        border: 0;
+        border-radius: 6px;
+        padding: 10px 14px;
+        background: #5cd6a4;
+        color: #07100d;
+        font-weight: 700;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 14px;
+        align-items: center;
+        border-top: 1px solid #25313a;
+        padding: 14px 0;
+      }
+      code {
+        color: #9fe7c8;
+      }
+      p {
+        color: #b8c7c2;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>読み・アクセントレビュー</h1>
+      <p>生成済みの <code>build/*/timeline.json</code> を貼り付けると、発話ごとの音声確認リストを作ります。</p>
+      <textarea id="json" placeholder="timeline.json の内容を貼り付け"></textarea>
+      <button id="load">読み込む</button>
+      <section id="list"></section>
+    </main>
+    <script>
+      const list = document.querySelector("#list");
+      document.querySelector("#load").addEventListener("click", () => {
+        list.textContent = "";
+        const timeline = JSON.parse(document.querySelector("#json").value);
+        for (const scene of timeline.scenes || []) {
+          for (const utterance of scene.utterances || []) {
+            const row = document.createElement("div");
+            row.className = "row";
+            const text = document.createElement("div");
+            text.innerHTML = `<strong>${scene.id} / ${utterance.speaker}</strong><br>${utterance.text}`;
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = utterance.wav;
+            row.append(text, audio);
+            list.append(row);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 # OS/editor noise
 .DS_Store
+__pycache__/
 
 # Local assistant/tool state
 .claude/
@@ -10,6 +11,10 @@ scratchpad/
 output/
 3DCG/mls-mpm-snow/results/
 infographics/bakumatsu-timeline/results/
+movie/build/
+movie/out/
+movie/remotion/node_modules/
+movie/remotion/out/
 
 # secrets
 .env
