@@ -56,6 +56,21 @@ JSONだけを返してください。Markdownや説明文は不要です。
 
 使用できる `type` は `title`, `hook`, `quiz`, `answer`, `explain`, `myth_bust`, `takeaway`, `sources` のみです。
 
+## onScreen 契約
+
+Remotion は次のフィールドだけを正規契約として読みます。別名の `title`, `subtitle`, `note`, `points` は使わないでください。
+
+- `title`: `onScreen.headline`, 任意で `onScreen.subhead`
+- `hook`: `onScreen.headline`, 任意で `onScreen.subhead`
+- `quiz`: `onScreen.question`, `onScreen.options`
+- `answer`: `onScreen.headline`, `onScreen.mark`
+- `explain`: `onScreen.headline`, 任意で `onScreen.subhead`, `onScreen.badge`
+- `myth_bust`: `onScreen.headline`, `onScreen.subhead`
+- `takeaway`: `onScreen.headline`, `onScreen.items`
+- `sources`: `onScreen.headline`, `onScreen.sources`
+
+`headline` は画面に常設する巨大テキストです。`emphasis` は発話中にハイライトしたい語を指定するだけで、headlineの代わりに一瞬だけ出す用途にはしません。
+
 ## 尺と情報量
 
 - 合計 1500-1900字。

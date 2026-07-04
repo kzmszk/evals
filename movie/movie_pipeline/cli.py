@@ -8,7 +8,7 @@ from pathlib import Path
 from .draft_parser import parse_draft
 from .script_generator import generate_script, generate_script_with_claude
 from .timeline import build_audio_and_timeline
-from .validate import validate_script
+from .validate import normalize_script, validate_script
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,9 +33,20 @@ def cmd_parse(args: argparse.Namespace) -> int:
 def cmd_script(args: argparse.Namespace) -> int:
     draft = _read_json(Path(args.draft_json))
     if args.method == "claude":
-        script = generate_script_with_claude(draft, Path(args.prompt), target_sec=args.target_sec)
+        script = {}
+        feedback = None
+        for attempt in range(args.retries + 1):
+            script = generate_script_with_claude(draft, Path(args.prompt), target_sec=args.target_sec, feedback=feedback)
+            normalize_script(script)
+            report = validate_script(script)
+            if not report["errors"]:
+                break
+            feedback = "前回のJSONは検証に失敗しました。次のエラーを直して、JSONだけを再出力してください:\n" + "\n".join(f"- {err}" for err in report["errors"])
+            if attempt == args.retries:
+                break
     else:
         script = generate_script(draft, target_sec=args.target_sec)
+        normalize_script(script)
     report = validate_script(script)
     script.setdefault("review", {})["validation"] = report
     _write_json(Path(args.out), script)
@@ -92,6 +103,7 @@ def cmd_build(args: argparse.Namespace) -> int:
             target_sec=args.target_sec,
             method=args.method,
             prompt=args.prompt,
+            retries=args.retries,
         )
     )
     if script_code not in (0,):
@@ -125,6 +137,7 @@ def make_parser() -> argparse.ArgumentParser:
     script_cmd.add_argument("--target-sec", type=float, default=300)
     script_cmd.add_argument("--method", choices=["heuristic", "claude"], default="heuristic")
     script_cmd.add_argument("--prompt", default=str(ROOT / "prompts" / "scenario.md"))
+    script_cmd.add_argument("--retries", type=int, default=2)
     script_cmd.set_defaults(func=cmd_script)
 
     validate_cmd = sub.add_parser("validate", help="validate script.json")
@@ -154,6 +167,7 @@ def make_parser() -> argparse.ArgumentParser:
     build_cmd.add_argument("--target-sec", type=float, default=300)
     build_cmd.add_argument("--method", choices=["heuristic", "claude"], default="heuristic")
     build_cmd.add_argument("--prompt", default=str(ROOT / "prompts" / "scenario.md"))
+    build_cmd.add_argument("--retries", type=int, default=2)
     build_cmd.set_defaults(func=cmd_build)
 
     return parser

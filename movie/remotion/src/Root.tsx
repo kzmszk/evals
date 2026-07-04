@@ -1,4 +1,7 @@
 import React from 'react';
+import '@fontsource/noto-sans-jp/400.css';
+import '@fontsource/noto-sans-jp/700.css';
+import '@fontsource/noto-sans-jp/900.css';
 import {
   AbsoluteFill,
   Audio,
@@ -20,22 +23,31 @@ type Utterance = {
   emphasis?: {text: string; startSec: number; endSec: number; fallback?: boolean}[];
 };
 
+type OnScreen = {
+  headline?: string;
+  subhead?: string;
+  question?: string;
+  options?: string[];
+  items?: string[];
+  sources?: string[];
+  badge?: string;
+  mark?: string;
+  title?: string;
+  heading?: string;
+  subtitle?: string;
+  note?: string;
+  description?: string;
+  points?: string[];
+  references?: string[];
+};
+
 type Scene = {
   id: string;
   type: 'title' | 'hook' | 'quiz' | 'answer' | 'explain' | 'myth_bust' | 'takeaway' | 'sources';
   startSec: number;
   endSec: number;
   evidence?: {level: string; note: string; raw: string}[];
-  onScreen: {
-    headline?: string;
-    subhead?: string;
-    question?: string;
-    options?: string[];
-    items?: string[];
-    sources?: string[];
-    badge?: string;
-    mark?: string;
-  };
+  onScreen: OnScreen;
   utterances: Utterance[];
 };
 
@@ -44,6 +56,7 @@ type Timeline = {
   totalSec: number;
   audio: string;
   meta: {title?: string; accentColor?: string};
+  credits?: string[];
   scenes: Scene[];
 };
 
@@ -90,7 +103,8 @@ const HealthVideo: React.FC<Timeline> = (timeline) => {
       <TopBar title={timeline.meta.title ?? 'Health Video'} accent={timeline.meta.accentColor ?? '#5CD6A4'} />
       {timeline.scenes.map((scene) => {
         const start = secToFrame(scene.startSec, fps);
-        const duration = Math.max(1, secToFrame(scene.endSec - scene.startSec, fps));
+        const end = secToFrame(scene.endSec, fps);
+        const duration = Math.max(1, end - start);
         return (
           <Sequence key={scene.id} from={start} durationInFrames={duration}>
             <SceneFrame scene={scene} accent={timeline.meta.accentColor ?? '#5CD6A4'} />
@@ -111,14 +125,15 @@ const TopBar: React.FC<{title: string; accent: string}> = ({title, accent}) => (
 const SceneFrame: React.FC<{scene: Scene; accent: string}> = ({scene, accent}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const normalized = normalizeScene(scene);
   const localSec = frame / fps;
   const enter = spring({frame, fps, config: {damping: 180, stiffness: 90}});
   const opacity = interpolate(frame, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
-  const activeSpeaker = activeSpeakerAt(scene, scene.startSec + localSec);
+  const activeSpeaker = activeSpeakerAt(normalized, normalized.startSec + localSec);
   return (
     <AbsoluteFill style={{...styles.scene, opacity}}>
       <div style={{...styles.pulse, transform: `scale(${0.9 + enter * 0.1})`, borderColor: accent}} />
-      {renderSceneContent(scene, accent, localSec)}
+      {renderSceneContent(normalized, accent, localSec)}
       <SpeakerRail active={activeSpeaker} accent={accent} />
     </AbsoluteFill>
   );
@@ -144,11 +159,16 @@ const renderSceneContent = (scene: Scene, accent: string, localSec: number) => {
 };
 
 const DefaultScene: React.FC<{scene: Scene; accent: string; localSec: number}> = ({scene, accent, localSec}) => {
-  const headline = activeEmphasis(scene, scene.startSec + localSec) ?? scene.onScreen.headline;
+  const headline = scene.onScreen.headline ?? '';
+  const active = activeEmphasis(scene, scene.startSec + localSec);
+  const isHeadlineActive = active?.text === headline;
   return (
     <div style={styles.main}>
       {scene.onScreen.badge ? <Badge label={scene.onScreen.badge} accent={accent} /> : null}
-      <h1 style={styles.headline}>{headline}</h1>
+      <h1 style={{...styles.headline, fontSize: fontSizeFor(headline, 112, 62), color: isHeadlineActive ? accent : '#eef7f3'}}>
+        {headline}
+      </h1>
+      {active && !isHeadlineActive ? <div style={{...styles.activeKeyword, color: accent}}>{active.text}</div> : null}
       {scene.onScreen.subhead ? <p style={styles.subhead}>{scene.onScreen.subhead}</p> : null}
       <Evidence evidence={scene.evidence} />
     </div>
@@ -157,10 +177,10 @@ const DefaultScene: React.FC<{scene: Scene; accent: string; localSec: number}> =
 
 const QuizScene: React.FC<{scene: Scene; accent: string}> = ({scene, accent}) => (
   <div style={styles.quiz}>
-    <h1 style={styles.question}>{scene.onScreen.question}</h1>
+    <h1 style={{...styles.question, fontSize: fontSizeFor(scene.onScreen.question ?? '', 58, 42)}}>{scene.onScreen.question}</h1>
     <div style={styles.options}>
       {(scene.onScreen.options ?? []).slice(0, 6).map((option, index) => (
-        <div key={option} style={{...styles.option, borderColor: index % 2 === 0 ? accent : '#3d4b55'}}>
+        <div key={option} style={{...styles.option, fontSize: fontSizeFor(option, 31, 23), borderColor: index % 2 === 0 ? accent : '#3d4b55'}}>
           {option}
         </div>
       ))}
@@ -171,14 +191,14 @@ const QuizScene: React.FC<{scene: Scene; accent: string}> = ({scene, accent}) =>
 const AnswerScene: React.FC<{scene: Scene; accent: string}> = ({scene, accent}) => (
   <div style={styles.answer}>
     <div style={{...styles.answerMark, color: accent}}>{scene.onScreen.mark ?? '○'}</div>
-    <h1 style={styles.answerHeadline}>{scene.onScreen.headline}</h1>
+    <h1 style={{...styles.answerHeadline, fontSize: fontSizeFor(scene.onScreen.headline ?? '', 74, 46)}}>{scene.onScreen.headline}</h1>
   </div>
 );
 
 const MythScene: React.FC<{scene: Scene; accent: string}> = ({scene, accent}) => (
   <div style={styles.main}>
     <div style={styles.kiri}>ぶった斬り</div>
-    <h1 style={styles.myth}>{scene.onScreen.headline}</h1>
+    <h1 style={{...styles.myth, fontSize: fontSizeFor(scene.onScreen.headline ?? '', 90, 56)}}>{scene.onScreen.headline}</h1>
     <div style={{...styles.strike, background: accent}} />
     <p style={styles.subhead}>{scene.onScreen.subhead}</p>
   </div>
@@ -190,7 +210,7 @@ const TakeawayScene: React.FC<{scene: Scene; accent: string}> = ({scene, accent}
     {(scene.onScreen.items ?? []).slice(0, 3).map((item, index) => (
       <div key={item} style={styles.takeawayRow}>
         <span style={{...styles.takeawayNum, background: accent}}>{index + 1}</span>
-        <span>{item}</span>
+        <span style={{fontSize: fontSizeFor(item, 42, 30)}}>{item}</span>
       </div>
     ))}
   </div>
@@ -238,6 +258,21 @@ const Speaker: React.FC<{label: string; active: boolean; accent: string}> = ({la
   </div>
 );
 
+const normalizeScene = (scene: Scene): Scene => {
+  const onScreen = scene.onScreen ?? {};
+  return {
+    ...scene,
+    onScreen: {
+      ...onScreen,
+      headline: onScreen.headline ?? onScreen.title ?? onScreen.heading,
+      subhead: onScreen.subhead ?? onScreen.subtitle ?? onScreen.note ?? onScreen.description,
+      items: onScreen.items ?? onScreen.points,
+      sources: onScreen.sources ?? onScreen.references,
+      mark: onScreen.mark ?? (scene.type === 'answer' ? '○ / ×' : undefined),
+    },
+  };
+};
+
 const activeSpeakerAt = (scene: Scene, absoluteSec: number) => {
   return scene.utterances.find((utterance) => absoluteSec >= utterance.startSec && absoluteSec <= utterance.endSec)?.speaker;
 };
@@ -246,11 +281,22 @@ const activeEmphasis = (scene: Scene, absoluteSec: number) => {
   for (const utterance of scene.utterances) {
     for (const emphasis of utterance.emphasis ?? []) {
       if (absoluteSec >= emphasis.startSec && absoluteSec <= emphasis.endSec) {
-        return emphasis.text;
+        return emphasis;
       }
     }
   }
   return undefined;
+};
+
+const fontSizeFor = (text: string, base: number, min: number) => {
+  const length = text.replace(/\s+/g, '').length;
+  if (length <= 18) {
+    return base;
+  }
+  if (length <= 28) {
+    return Math.max(min, base - (length - 18) * 3);
+  }
+  return min;
 };
 
 const styles: Record<string, React.CSSProperties> = {
@@ -300,6 +346,13 @@ const styles: Record<string, React.CSSProperties> = {
     margin: '22px 0',
     maxWidth: 1380,
     letterSpacing: 0,
+  },
+  activeKeyword: {
+    marginTop: -6,
+    marginBottom: 22,
+    fontSize: 46,
+    lineHeight: 1.15,
+    fontWeight: 900,
   },
   subhead: {
     fontSize: 44,

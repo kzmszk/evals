@@ -60,19 +60,34 @@ def _iter_utterances(script: dict[str, object]) -> list[tuple[dict[str, object],
     return out
 
 
-def _emphasis_timing(text: str, emphasis: str, absolute_start: float, timings: list[dict[str, object]]) -> dict[str, object]:
+def _emphasis_timing(text: str, emphasis: str, absolute_start: float, absolute_end: float, timings: list[dict[str, object]]) -> dict[str, object]:
     index = text.find(emphasis)
     if index < 0 or not timings:
-        return {"text": emphasis, "startSec": absolute_start, "endSec": absolute_start + min(0.9, max(0.35, len(emphasis) * 0.08)), "fallback": True}
+        return {"text": emphasis, "startSec": absolute_start, "endSec": min(absolute_end, absolute_start + 2.0), "fallback": True}
     compact_before = re.sub(r"\s+", "", text[:index])
+    compact_text = re.sub(r"\s+", "", text)
     compact_emphasis = re.sub(r"\s+", "", emphasis)
-    start_mora = min(len(timings) - 1, len(compact_before))
-    end_mora = min(len(timings) - 1, start_mora + max(1, len(compact_emphasis)) - 1)
+    start_ratio = len(compact_before) / max(1, len(compact_text))
+    end_ratio = (len(compact_before) + len(compact_emphasis)) / max(1, len(compact_text))
+    start_mora = min(len(timings) - 1, max(0, round(start_ratio * (len(timings) - 1))))
+    end_mora = min(len(timings) - 1, max(start_mora, round(end_ratio * (len(timings) - 1))))
+    start_sec = absolute_start + float(timings[start_mora]["startSec"])
+    end_sec = absolute_start + float(timings[end_mora]["endSec"])
     return {
         "text": emphasis,
-        "startSec": absolute_start + float(timings[start_mora]["startSec"]),
-        "endSec": absolute_start + float(timings[end_mora]["endSec"]),
+        "startSec": start_sec,
+        "endSec": min(absolute_end, max(end_sec, start_sec + 1.5)),
     }
+
+
+def _voicevox_credits(speakers: dict[str, object]) -> list[str]:
+    credits: list[str] = []
+    for speaker in speakers.get("speakers", {}).values():
+        if isinstance(speaker, dict) and speaker.get("voicevoxCredit"):
+            credit = str(speaker["voicevoxCredit"])
+            if credit not in credits:
+                credits.append(credit)
+    return credits
 
 
 def build_audio_and_timeline(
@@ -153,7 +168,7 @@ def build_audio_and_timeline(
         start = cursor
         end = cursor + float(item["durationSec"])
         emphasis = [
-            _emphasis_timing(str(item["text"]), str(value), start, item["moraTimings"])
+            _emphasis_timing(str(item["text"]), str(value), start, end, item["moraTimings"])
             for value in (utterance.get("emphasis") or [])
         ]
         scene_map[scene_id]["utterances"].append(
@@ -199,6 +214,24 @@ def build_audio_and_timeline(
         warnings.append(f"narration total {measured_total:.3f}s differs from timeline {cursor:.3f}s")
         cursor = measured_total
 
+    target_sec = float(script.get("meta", {}).get("targetSec", 300) or 300)
+    min_sec = float(script.get("meta", {}).get("minSec", 280) or 280)
+    max_sec = float(script.get("meta", {}).get("maxSec", 320) or 320)
+    if cursor < min_sec or cursor > max_sec:
+        warnings.append(f"timeline duration {cursor:.1f}s is outside the target window {min_sec:.0f}-{max_sec:.0f}s (target {target_sec:.0f}s)")
+
+    credits = _voicevox_credits(speakers)
+    if credits:
+        for scene in scenes:
+            if scene.get("type") == "sources":
+                on_screen = scene.setdefault("onScreen", {})
+                sources = on_screen.setdefault("sources", [])
+                if isinstance(sources, list):
+                    for credit in credits:
+                        if credit not in sources:
+                            sources.append(credit)
+                break
+
     timeline = {
         "schemaVersion": 1,
         "fps": fps,
@@ -206,6 +239,7 @@ def build_audio_and_timeline(
         "audio": "narration.wav",
         "meta": script.get("meta", {}),
         "speakers": script.get("speakers", {}),
+        "credits": credits,
         "pronunciation": {"wordCount": len(pronunciation.get("words", []))},
         "scenes": scenes,
         "warnings": warnings,

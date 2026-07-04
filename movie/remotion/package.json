@@ -8,14 +8,18 @@
     "render": "remotion render src/index.ts HealthVideo"
   },
   "dependencies": {
+    "@fontsource/noto-sans-jp": "^5.1.0",
     "@remotion/cli": "^4.0.300",
     "@remotion/layout-utils": "^4.0.300",
-    "remotion": "^4.0.300",
-    "typescript": "^5.5.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "remotion": "^4.0.300",
+    "typescript": "^5.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3"
+  },
   "allowScripts": {
     "esbuild@0.28.1": true
   }

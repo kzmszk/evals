@@ -67,6 +67,8 @@ def apply_speaker_settings(query: dict[str, object], settings: dict[str, object]
     for key in ("speedScale", "pitchScale", "intonationScale", "volumeScale", "prePhonemeLength", "postPhonemeLength"):
         if key in settings:
             query[key] = settings[key]
+    query["outputSamplingRate"] = int(settings.get("outputSamplingRate", 24000))
+    query["outputStereo"] = bool(settings.get("outputStereo", False))
     return query
 
 

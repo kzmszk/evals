@@ -305,18 +305,40 @@ def generate_script(draft: dict[str, object], target_sec: float = 300) -> dict[s
     }
 
 
-def generate_script_with_claude(draft: dict[str, object], prompt_path: Path, target_sec: float = 300) -> dict[str, object]:
+def _extract_json(value: str) -> dict[str, object]:
+    value = value.strip()
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError:
+        fence = re.search(r"```(?:json)?\s*(.*?)\s*```", value, flags=re.DOTALL)
+        if fence:
+            value = fence.group(1).strip()
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            start = value.find("{")
+            end = value.rfind("}")
+            if start < 0 or end <= start:
+                raise
+            parsed = json.loads(value[start : end + 1])
+    if not isinstance(parsed, dict):
+        raise ValueError("Claude output JSON must be an object")
+    return parsed
+
+
+def generate_script_with_claude(draft: dict[str, object], prompt_path: Path, target_sec: float = 300, feedback: str | None = None) -> dict[str, object]:
     prompt = prompt_path.read_text(encoding="utf-8")
     payload = json.dumps(draft, ensure_ascii=False)
+    feedback_text = f"\n\n修正指示:\n{feedback}" if feedback else ""
     completed = subprocess.run(
-        ["claude", "-p", f"{prompt}\n\n入力 draft.json:\n{payload}", "--output-format", "json"],
+        ["claude", "-p", f"{prompt}{feedback_text}\n\n入力 draft.json:\n{payload}", "--output-format", "json"],
         check=True,
         text=True,
         capture_output=True,
     )
-    raw = json.loads(completed.stdout)
+    raw = _extract_json(completed.stdout)
     if isinstance(raw, dict) and "result" in raw and isinstance(raw["result"], str):
-        script = json.loads(raw["result"])
+        script = _extract_json(raw["result"])
     else:
         script = raw
     script.setdefault("meta", {})["targetSec"] = target_sec

@@ -8,7 +8,10 @@
       "intonationScale": 1.0,
       "volumeScale": 1.0,
       "prePhonemeLength": 0.1,
-      "postPhonemeLength": 0.1
+      "postPhonemeLength": 0.1,
+      "outputSamplingRate": 24000,
+      "outputStereo": false,
+      "voicevoxCredit": "VOICEVOX:四国めたん"
     },
     "student": {
       "label": "生徒",
@@ -18,7 +21,10 @@
       "intonationScale": 1.12,
       "volumeScale": 1.0,
       "prePhonemeLength": 0.08,
-      "postPhonemeLength": 0.08
+      "postPhonemeLength": 0.08,
+      "outputSamplingRate": 24000,
+      "outputStereo": false,
+      "voicevoxCredit": "VOICEVOX:ずんだもん"
     }
   }
 }
