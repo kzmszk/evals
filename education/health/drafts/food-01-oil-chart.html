@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>「低脂肪の時代」に何が起きたか — 米国 1960–2018</title>
+<style>
+  .viz-root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --series-1: #2a78d6; /* 肥満率 */
+    --series-2: #1baf7a; /* 脂肪由来カロリー% */
+    --series-3: #eda100; /* 低カロリー・低脂肪製品の利用者% */
+    --border: rgba(11,11,11,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    .viz-root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --series-1: #3987e5;
+      --series-2: #199e70;
+      --series-3: #c98500;
+      --border: rgba(255,255,255,0.10);
+    }
+  }
+  html, body { margin: 0; background: var(--page); }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .viz-root {
+    max-width: 860px; margin: 24px auto; padding: 20px 24px 16px;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; color: var(--text-primary); background-color: var(--surface-1);
+  }
+  h1 { font-size: 17px; margin: 0 0 4px; }
+  .sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 14px; line-height: 1.5; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 6px; }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .swatch { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; }
+  .tooltip {
+    position: absolute; pointer-events: none; display: none;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--text-primary);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18); min-width: 150px; z-index: 2;
+  }
+  .tooltip .tt-year { font-weight: 600; margin-bottom: 4px; }
+  .tooltip .tt-row { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); margin-top: 2px; }
+  .tooltip .tt-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .tooltip .tt-val { margin-left: auto; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .notes { font-size: 11.5px; color: var(--text-muted); line-height: 1.7; margin-top: 10px; }
+  details { margin-top: 10px; font-size: 12.5px; color: var(--text-secondary); }
+  summary { cursor: pointer; }
+  table { border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  th, td { padding: 4px 10px; border-bottom: 1px solid var(--grid); text-align: right; font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--text-muted); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <h1>「低脂肪の時代」に何が起きたか — 米国 1960–2018</h1>
+  <p class="sub">低脂肪・低カロリー製品を使う人は爆発的に増え、カロリーに占める脂肪の割合は下がった。その間に、肥満の割合はおよそ3倍になった。<strong>これは相関であり、因果の証明ではない</strong> — ただし「脂肪を減らせば痩せる」という単純な絵が現実に敗北したことは、この1枚で足りる。</p>
+  <div class="legend" id="legend"></div>
+  <div class="chart-wrap" id="wrap">
+    <svg id="chart" viewBox="0 0 860 460" role="img" aria-label="米国の肥満率、脂肪由来カロリー割合、低カロリー製品利用者割合の推移(1960〜2018年)"></svg>
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+  <p class="notes">
+    出典: 肥満率(BMI≥30、20〜74歳、年齢調整)= CDC/NCHS Health E-Stats(NHANES)。脂肪由来カロリー = CDC MMWR 2004「Trends in Intake of Energy and Macronutrients, 1971–2000」(男女の値の平均。男性 36.9%→32.8%、女性 36.1%→32.8%。同期間に総摂取カロリーはむしろ増加: 男性 2,450→2,618 kcal、女性 1,542→1,877 kcal)。低カロリー・低脂肪製品の利用者 = Calorie Control Council(Heini &amp; Weinsier, Am J Med 1997 より)。<br>
+    ※ 脂肪由来カロリーと製品利用者の線は、公表データが両端の2時点のみのため点間を直線でつないでいる。
+  </p>
+  <details>
+    <summary>データ表を見る</summary>
+    <table id="dataTable"></table>
+  </details>
+</div>
+
+<script>
+(function () {
+  const series = [
+    { name: '肥満の割合(BMI≥30、成人)', unit: '%', varName: '--series-1',
+      pts: [[1961,13.4],[1972.5,14.5],[1978,15.0],[1991,23.2],[1999.5,30.9],[2001.5,31.2],[2003.5,32.9],[2005.5,35.1],[2007.5,34.3],[2009.5,36.1],[2011.5,35.3],[2013.5,38.2],[2015.5,40.0],[2017.5,42.8]],
+      periods: ['1960–62','1971–74','1976–80','1988–94','1999–2000','2001–02','2003–04','2005–06','2007–08','2009–10','2011–12','2013–14','2015–16','2017–18'] },
+    { name: 'カロリーに占める脂肪の割合', unit: '%', varName: '--series-2',
+      pts: [[1972.5,36.5],[1999.5,32.8]],
+      periods: ['1971–74','1999–2000'] },
+    { name: '低カロリー・低脂肪製品を使う人の割合', unit: '%', varName: '--series-3',
+      pts: [[1978,19],[1991,76]],
+      periods: ['1978','1991'] },
+  ];
+
+  const css = getComputedStyle(document.querySelector('.viz-root'));
+  const color = v => css.getPropertyValue(v).trim();
+
+  const W = 860, H = 460, M = { top: 28, right: 30, bottom: 40, left: 46 };
+  const X0 = 1958, X1 = 2021, Y0 = 0, Y1 = 80;
+  const px = x => M.left + (x - X0) / (X1 - X0) * (W - M.left - M.right);
+  const py = y => H - M.bottom - (y - Y0) / (Y1 - Y0) * (H - M.top - M.bottom);
+
+  const svg = document.getElementById('chart');
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => {
+    const e = document.createElementNS(ns, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    (parent || svg).appendChild(e); return e;
+  };
+
+  // gridlines + y ticks
+  for (let y = 0; y <= Y1; y += 20) {
+    el('line', { x1: M.left, x2: W - M.right, y1: py(y), y2: py(y),
+                 stroke: y === 0 ? color('--axis') : color('--grid'), 'stroke-width': 1 });
+    el('text', { x: M.left - 8, y: py(y) + 4, 'text-anchor': 'end', 'font-size': 11,
+                 fill: color('--text-muted') }).textContent = y + '%';
+  }
+  // x ticks
+  for (let x = 1960; x <= 2020; x += 10) {
+    el('text', { x: px(x), y: H - M.bottom + 18, 'text-anchor': 'middle', 'font-size': 11,
+                 fill: color('--text-muted') }).textContent = x;
+  }
+
+  // annotation: 1977 dietary goals
+  el('line', { x1: px(1977), x2: px(1977), y1: py(Y1), y2: py(0),
+               stroke: color('--axis'), 'stroke-width': 1 });
+  const ann = el('text', { x: px(1977) - 6, y: py(Y1) + 12, 'text-anchor': 'end', 'font-size': 11,
+                           fill: color('--text-secondary') });
+  ann.textContent = '1977 米国「食事目標」が低脂肪を推奨 →';
+
+  // series lines + markers
+  series.forEach(s => {
+    const c = color(s.varName);
+    const d = s.pts.map((p, i) => (i ? 'L' : 'M') + px(p[0]) + ' ' + py(p[1])).join(' ');
+    el('path', { d, fill: 'none', stroke: c, 'stroke-width': 2,
+                 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    s.pts.forEach(p => {
+      el('circle', { cx: px(p[0]), cy: py(p[1]), r: 6, fill: color('--surface-1') }); // surface ring
+      el('circle', { cx: px(p[0]), cy: py(p[1]), r: 4, fill: c });
+    });
+  });
+
+  // selective direct labels (end values)
+  const label = (x, y, text, anchor) => {
+    const t = el('text', { x, y, 'text-anchor': anchor || 'start', 'font-size': 12,
+                           'font-weight': 600, fill: color('--text-primary') });
+    t.textContent = text; return t;
+  };
+  label(px(2017.5) + 10, py(42.8) + 4, '42.8%');            // obesity end
+  label(px(1961) - 10, py(13.4) + 4, '13.4%', 'end');       // obesity start
+  label(px(1999.5) + 10, py(32.8) - 8, '32.8%');            // fat end
+  label(px(1991) + 10, py(76) + 4, '76%');                  // products end
+  label(px(1978) - 10, py(19) + 4, '19%', 'end');           // products start
+
+  // legend
+  const legend = document.getElementById('legend');
+  series.forEach(s => {
+    const k = document.createElement('span'); k.className = 'key';
+    const sw = document.createElement('span'); sw.className = 'swatch';
+    sw.style.background = color(s.varName);
+    k.appendChild(sw); k.appendChild(document.createTextNode(s.name));
+    legend.appendChild(k);
+  });
+
+  // hover: crosshair + tooltip snapped to nearest survey x
+  const xs = [...new Set(series.flatMap(s => s.pts.map(p => p[0])))].sort((a, b) => a - b);
+  const cross = el('line', { y1: py(Y1), y2: py(0), stroke: color('--text-muted'),
+                             'stroke-width': 1, opacity: 0 });
+  const wrap = document.getElementById('wrap');
+  const tip = document.getElementById('tooltip');
+  const yearLabel = x => {
+    for (const s of series) {
+      const i = s.pts.findIndex(p => p[0] === x);
+      if (i >= 0) return s.periods[i];
+    }
+    return String(x);
+  };
+  svg.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect();
+    const mx = (ev.clientX - r.left) / r.width * W;
+    let best = xs[0];
+    for (const x of xs) if (Math.abs(px(x) - mx) < Math.abs(px(best) - mx)) best = x;
+    if (Math.abs(px(best) - mx) > 40) { cross.setAttribute('opacity', 0); tip.style.display = 'none'; return; }
+    cross.setAttribute('x1', px(best)); cross.setAttribute('x2', px(best));
+    cross.setAttribute('opacity', 0.5);
+    const rows = series.map(s => {
+      const p = s.pts.find(q => q[0] === best);
+      return p ? `<div class="tt-row"><span class="tt-dot" style="background:${color(s.varName)}"></span>${s.name}<span class="tt-val">${p[1]}%</span></div>` : '';
+    }).join('');
+    tip.innerHTML = `<div class="tt-year">${yearLabel(best)}</div>${rows}`;
+    tip.style.display = 'block';
+    const wr = wrap.getBoundingClientRect();
+    const ttw = tip.offsetWidth;
+    let left = px(best) / W * wr.width + 14;
+    if (left + ttw > wr.width - 8) left = px(best) / W * wr.width - ttw - 14;
+    tip.style.left = left + 'px';
+    tip.style.top = Math.max(4, ev.clientY - wr.top - 40) + 'px';
+  });
+  svg.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); tip.style.display = 'none'; });
+
+  // data table
+  const tbl = document.getElementById('dataTable');
+  let html = '<tr><th>系列</th><th>時点</th><th>値</th></tr>';
+  series.forEach(s => {
+    s.pts.forEach((p, i) => {
+      html += `<tr><td>${i === 0 ? s.name : ''}</td><td>${s.periods[i]}</td><td>${p[1]}%</td></tr>`;
+    });
+  });
+  tbl.innerHTML = html;
+})();
+</script>
+</body>
+</html>

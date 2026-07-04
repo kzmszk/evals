@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15年でこう変わった — 黒船来航から明治改元まで</title>
+<style>
+  :root{
+    --bg:#12151b; --bg2:#171b22; --panel:#1b2028; --panel2:#212836;
+    --line:#2c3340; --line2:#39424f;
+    --ink:#e4e8ef; --mut:#98a1b0; --dim:#6b7482;
+    --gold:#c9a24b; --gold2:#e0be6e;
+    --t-pol:#e0925a;   /* 政治・幕府 */
+    --t-dip:#5aa9e0;   /* 外交 */
+    --t-soc:#7fc072;   /* 社会・経済 */
+    --t-wor:#b487d9;   /* 世界 */
+    --bakufu:#3f74ab; --tobaku:#c0504d; --kobu:#8b95a3; --court:#c9a24b;
+    --radius:12px;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.6;}
+  a{color:var(--gold2)}
+  .wrap{max-width:1400px;margin:0 auto;padding:22px 26px 80px;}
+
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap;}
+  header.top h1{font-size:26px;margin:0 0 4px;letter-spacing:.02em;font-weight:700}
+  header.top h1 .accent{color:var(--gold)}
+  header.top .sub{color:var(--mut);font-size:13.5px;margin:0;max-width:620px}
+  .clock{text-align:right;min-width:250px}
+  .clock .yr{font-size:34px;font-weight:800;letter-spacing:.01em;line-height:1;
+    font-variant-numeric:tabular-nums;color:#fff}
+  .clock .yr small{font-size:18px;font-weight:600;color:var(--mut)}
+  .clock .gengo{font-size:14px;color:var(--gold2);margin-top:6px;letter-spacing:.14em}
+
+  /* controls */
+  .controls{display:flex;align-items:center;gap:14px;margin:6px 0 16px;flex-wrap:wrap}
+  button.ctl{background:var(--panel2);color:var(--ink);border:1px solid var(--line2);
+    border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;transition:.15s;font-family:inherit}
+  button.ctl:hover{border-color:var(--gold);color:var(--gold2)}
+  button.play{min-width:96px;font-weight:600}
+  .spd{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:12.5px}
+  .spd input{accent-color:var(--gold)}
+  .hint{color:var(--dim);font-size:11.5px;margin-left:auto}
+  .hint kbd{background:var(--panel2);border:1px solid var(--line2);border-radius:4px;
+    padding:1px 6px;font-size:10.5px;color:var(--mut)}
+
+  /* timeline scrubber */
+  .tl-box{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);
+    padding:10px 6px 4px;margin-bottom:22px}
+  #timeline{display:block;width:100%;height:auto;touch-action:none;cursor:ew-resize;user-select:none}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;padding:8px 16px 4px;color:var(--mut);font-size:12px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* main grid */
+  .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px}
+  @media(max-width:1080px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .card h2{font-size:15px;margin:0 0 12px;letter-spacing:.05em;color:var(--ink);
+    display:flex;align-items:center;gap:9px}
+  .card h2::before{content:"";width:4px;height:16px;background:var(--gold);border-radius:2px;display:inline-block}
+
+  /* map */
+  #map{display:block;width:100%;height:auto}
+  .map-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);margin-top:8px}
+  .map-legend span{display:inline-flex;align-items:center;gap:6px}
+  .map-legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .campaign-note{margin-top:10px;min-height:20px;font-size:12.5px;color:var(--tobaku)}
+  .campaign-note b{color:var(--gold2)}
+
+  /* now panel */
+  #nowlist{display:flex;flex-direction:column;gap:9px;min-height:120px}
+  .ev{border-left:3px solid var(--line2);padding:6px 4px 6px 12px;transition:.2s}
+  .ev .eh{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .ev .date{font-size:11.5px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:82px}
+  .ev .ttl{font-size:14px;font-weight:600}
+  .ev .tag{font-size:10px;padding:1px 7px;border-radius:10px;color:#0d0f13;font-weight:700}
+  .ev .desc{font-size:12.5px;color:var(--mut);margin-top:3px}
+  .ev.pol{border-color:var(--t-pol)} .ev.dip{border-color:var(--t-dip)}
+  .ev.soc{border-color:var(--t-soc)} .ev.wor{border-color:var(--t-wor)}
+  .tag.pol{background:var(--t-pol)} .tag.dip{background:var(--t-dip)}
+  .tag.soc{background:var(--t-soc)} .tag.wor{background:var(--t-wor)}
+  .empty{color:var(--dim);font-size:13px;padding:20px 4px}
+
+  /* myth card */
+  #myth{min-height:180px}
+  .myth-inner{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line2);
+    border-radius:10px;overflow:hidden}
+  @media(max-width:520px){.myth-inner{grid-template-columns:1fr}}
+  .myth-col{padding:13px 15px}
+  .myth-col.learn{background:#20242c;border-right:1px solid var(--line2)}
+  .myth-col.res{background:#1d2530}
+  .myth-col .lbl{font-size:11px;letter-spacing:.1em;font-weight:700;margin-bottom:7px;text-transform:uppercase}
+  .learn .lbl{color:var(--dim)} .res .lbl{color:var(--gold2)}
+  .myth-col p{margin:0;font-size:13px;color:var(--ink)}
+  .learn p{color:var(--mut)}
+  .myth-topic{font-size:14px;font-weight:700;margin:0 0 11px;color:#fff}
+  .myth-topic .em{color:var(--gold2)}
+  .myth-nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  .myth-nav button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);
+    border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:inherit;transition:.15s}
+  .myth-nav button:hover{border-color:var(--gold);color:var(--gold2)}
+  .myth-nav button.on{background:var(--gold);color:#12151b;border-color:var(--gold);font-weight:700}
+
+  /* causal chain */
+  .causal{margin-top:22px}
+  .chain{display:flex;align-items:stretch;gap:0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
+  .cnode{flex:1 1 0;min-width:150px;position:relative;padding:0 6px}
+  .cnode .box{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;
+    padding:11px 12px;height:100%;cursor:pointer;transition:.25s;opacity:.45}
+  .cnode.lit .box{opacity:1;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 4px 18px -8px rgba(201,162,75,.6)}
+  .cnode .num{font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:.1em}
+  .cnode .cttl{font-size:13.5px;font-weight:700;margin:3px 0 5px;color:#fff}
+  .cnode .cmech{font-size:11.5px;color:var(--mut);line-height:1.5}
+  .cnode .arr{position:absolute;right:-9px;top:50%;transform:translateY(-50%);z-index:2;
+    color:var(--line2);font-size:20px;transition:.25s}
+  .cnode.lit .arr{color:var(--gold)}
+  .cnode:last-child .arr{display:none}
+
+  footer{margin-top:30px;color:var(--dim);font-size:11.5px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>15年でこう変わった — <span class="accent">黒船来航</span>から<span class="accent">明治改元</span>まで</h1>
+      <p class="sub">なぜ260年続いた徳川幕府は、わずか15年で倒れたのか。時間を動かして、政治・外交・経済・世界の4つの流れがどう連動したかを追う。</p>
+    </div>
+    <div class="clock">
+      <div class="yr" id="clkYear">1853<small>年 6月</small></div>
+      <div class="gengo" id="clkGengo">嘉永</div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button class="ctl play" id="btnPlay">▶ 再生</button>
+    <div class="spd">速さ
+      <input type="range" id="spd" min="0.3" max="3" step="0.1" value="1">
+      <span id="spdv">1.0×</span>
+    </div>
+    <div class="hint">
+      <kbd>◀</kbd><kbd>▶</kbd> 1か月　<kbd>▲</kbd><kbd>▼</kbd> 1年　<kbd>Space</kbd> 再生／停止　・　帯やドットをクリックでその時点へ
+    </div>
+  </div>
+
+  <div class="tl-box">
+    <svg id="timeline" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet" tabindex="0" aria-label="年表スクラバー"></svg>
+    <div class="legend">
+      <span><i style="background:var(--t-pol)"></i>政治・幕府</span>
+      <span><i style="background:var(--t-dip)"></i>外交</span>
+      <span><i style="background:var(--t-soc)"></i>社会・経済</span>
+      <span><i style="background:var(--t-wor)"></i>世界</span>
+      <span style="color:var(--dim)">— 現在時刻より前のできごとは点灯、これから先は淡色</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: map -->
+    <div class="card">
+      <h2>勢力図 — 諸藩・幕府・朝廷の立場</h2>
+      <svg id="map" viewBox="0 0 720 560" preserveAspectRatio="xMidYMid meet" aria-label="日本勢力図"></svg>
+      <div class="map-legend">
+        <span><i style="background:var(--bakufu)"></i>幕府・佐幕</span>
+        <span><i style="background:var(--kobu)"></i>中立・公武合体・動揺</span>
+        <span><i style="background:var(--tobaku)"></i>反幕・倒幕陣営</span>
+        <span><i style="background:var(--court)"></i>朝廷（京都）</span>
+      </div>
+      <div class="campaign-note" id="campaign"></div>
+    </div>
+
+    <!-- RIGHT: now + myth -->
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <h2>いま起きていること</h2>
+        <div id="nowlist"></div>
+      </div>
+      <div class="card" id="myth">
+        <h2>学校ではこう習った → 最新の研究では</h2>
+        <div class="myth-topic" id="mythTopic"></div>
+        <div class="myth-inner">
+          <div class="myth-col learn"><div class="lbl">学校ではこう習った</div><p id="mythLearn"></p></div>
+          <div class="myth-col res"><div class="lbl">最新の研究では</div><p id="mythRes"></p></div>
+        </div>
+        <div class="myth-nav" id="mythNav"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- causal chain -->
+  <div class="card causal">
+    <h2>因果の糸 — 「不平等条約」から「倒幕」まで</h2>
+    <div class="chain" id="chain"></div>
+  </div>
+
+  <footer>
+    日付は原則として当時の和暦(旧暦)にもとづく（西暦とは最大で約1〜2か月ずれる）。元号名は改元月をまたぐと切り替わる。
+    「最新の研究では」の内容は、鎖国概念の再検討・別段風説書によるペリー来航の予告・攘夷の経済的背景・幕府側の近代化事業など、歴史学界で共有されている知見にもとづく。教材・評価目的の可視化であり、細部の解釈には諸説がある。
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+/* ===== 時間モデル: 西暦を小数で表す (year + (month-1)/12) ===== */
+const T0 = 1853 + 5/12;      // 1853年6月
+const T1 = 1868 + 8.6/12;    // 1868年9月すぎ(明治改元を含む)
+const ym = (y,m)=> y + (m-1)/12;
+let t = T0;                   // 現在時刻
+let selected = null;          // クリック選択されたイベント
+
+/* ===== 元号(旧暦の改元月で切替) ===== */
+const ERAS = [
+  {name:"嘉永", s:0},
+  {name:"安政", s:ym(1854,11)},
+  {name:"万延", s:ym(1860,3)},
+  {name:"文久", s:ym(1861,2)},
+  {name:"元治", s:ym(1864,2)},
+  {name:"慶応", s:ym(1865,4)},
+  {name:"明治", s:ym(1868,9)},
+];
+function eraAt(x){ let e=ERAS[0]; for(const er of ERAS){ if(x>=er.s) e=er; } return e.name; }
+
+/* ===== イベント(全4トラック / 合計54件) ===== */
+// tr: pol=政治・幕府 / dip=外交 / soc=社会・経済 / wor=世界
+const EV = [
+  // --- 政治・幕府 ---
+  [1858,4,"pol","井伊直弼 大老就任","譜代筆頭・彦根藩主。将軍継嗣問題と条約勅許問題の紛糾を強権で収拾しようとした。"],
+  [1858,9,"pol","安政の大獄 始まる","反対派の公家・大名・志士を弾圧。翌年、吉田松陰・橋本左内らが死罪に。処罰は約100名に及んだ。"],
+  [1860,3,"pol","桜田門外の変","水戸・薩摩浪士が井伊直弼を暗殺。大老が江戸城門前で討たれ、幕府の絶対的権威が失墜した。"],
+  [1861,10,"pol","和宮 江戸へ（公武合体）","孝明天皇の妹和宮を将軍家茂に降嫁。朝廷と幕府の融和で権威を回復しようとした。婚儀は翌1862年2月。"],
+  [1862,1,"pol","坂下門外の変","老中安藤信正が水戸浪士に襲撃され負傷・失脚。公武合体策も動揺した。"],
+  [1862,7,"pol","文久の改革","松平慶永が政事総裁職、一橋慶喜が将軍後見職に。京都守護職(会津・松平容保)を新設。参勤交代も緩和。"],
+  [1863,3,"pol","将軍家茂 上洛","229年ぶりの将軍上洛。攘夷実行を朝廷に約束させられ、幕府の主導権低下が露呈した。"],
+  [1863,8,"pol","八月十八日の政変","会津・薩摩が長州と急進派公家を京都から追放。尊王攘夷派が一時後退した。"],
+  [1864,7,"pol","禁門の変（蛤御門の変）","京都復権を狙う長州が挙兵し敗北。長州は「朝敵」となった。"],
+  [1864,8,"pol","第一次長州征討","幕府が長州追討を号令。長州は恭順し、戦わずに同年末に終結した。"],
+  [1866,1,"pol","薩長同盟 成立","坂本龍馬・中岡慎太郎の仲介で薩摩と長州が秘密の軍事同盟を結ぶ。倒幕の中核が形成された。"],
+  [1866,6,"pol","第二次長州征討（四境戦争）","幕府軍が長州へ侵攻するも各地で敗退。幕府の軍事的無力が露呈した。"],
+  [1866,7,"pol","将軍家茂 死去","大坂城で病死(21歳)。長州征討は事実上中止に追い込まれた。"],
+  [1866,12,"pol","徳川慶喜 将軍就任／孝明天皇 崩御","最後の将軍慶喜が就任。同月、公武合体を支えた孝明天皇が急死し、情勢が一気に流動化した。"],
+  [1867,10,"pol","大政奉還","慶喜が政権を朝廷へ返上。武力倒幕派から挙兵の名分を先んじて奪う狙いだった。"],
+  [1867,12,"pol","王政復古の大号令","薩摩・岩倉らがクーデタで新政府樹立を宣言。将軍・摂関を廃止し、小御所会議で慶喜に辞官納地を要求した。"],
+  [1868,1,"pol","鳥羽・伏見の戦い","旧幕府軍と薩長軍が交戦し旧幕府軍が敗北。戊辰戦争が始まり、慶喜は江戸へ退いた。"],
+  [1868,4,"pol","江戸無血開城","勝海舟と西郷隆盛の会談などにより、江戸城を戦火を交えず明け渡した。"],
+  [1868,9,"pol","明治改元","一世一元の制を定め、慶応4年を明治元年と改元した。"],
+  // --- 外交 ---
+  [1853,6,"dip","ペリー来航（浦賀）","米東インド艦隊司令長官ペリーが黒船4隻で来航、開国を要求。国書を受理し翌年の再来を約した。"],
+  [1853,7,"dip","プチャーチン来航（長崎）","ロシア使節が長崎に来航し、開国と国境画定を要求した。"],
+  [1854,3,"dip","日米和親条約","下田・箱館の開港や領事駐在などを定め、対外統制の体制(いわゆる鎖国)が崩れ始めた。"],
+  [1854,8,"dip","日英・日露和親条約","英・露とも和親条約を締結。日露では択捉島と得撫島の間を国境とした。"],
+  [1858,6,"dip","日米修好通商条約","勅許なく調印。自由貿易を認めたが、領事裁判権を認め関税自主権を欠く不平等条約。蘭露英仏とも同様(安政五カ国条約)。"],
+  [1860,1,"dip","遣米使節団 出発","条約批准書交換のため渡米。護衛艦咸臨丸に勝海舟・福沢諭吉らが乗り太平洋を横断した。"],
+  [1861,3,"dip","対馬占領事件（ポサドニック号）","ロシア軍艦が対馬を占拠。英国の圧力もあって退去。列強の日本進出を象徴する事件。"],
+  [1862,8,"dip","生麦事件","薩摩藩の行列を横切った英国人を藩士が殺傷。薩英対立の引き金となった。"],
+  [1863,5,"dip","長州藩 外国船を砲撃","朝廷が命じた攘夷決行日に、下関で米仏蘭の船を砲撃し海峡封鎖を試みた。"],
+  [1863,7,"dip","薩英戦争","生麦事件の報復で英艦隊が鹿児島を砲撃。薩摩は攘夷の非現実を悟り、開明化へ転換した。"],
+  [1864,8,"dip","四国艦隊下関砲撃事件","英仏蘭米の連合艦隊が下関を攻撃・占領。長州も攘夷の限界を思い知る。"],
+  [1865,10,"dip","条約勅許","兵庫沖に列強艦隊が迫るなか、朝廷がついに通商条約を勅許。攘夷の建前が公式に崩れた。"],
+  [1867,4,"dip","パリ万博","幕府と薩摩藩が別々に出展。薩摩が国際社会に独自勢力として印象づけた。"],
+  // --- 社会・経済 ---
+  [1855,10,"soc","安政江戸地震","直下型地震で江戸に甚大な被害。藤田東湖らが死亡し、世情不安が広がった。"],
+  [1858,8,"soc","安政コレラの流行","長崎から広がったコレラが江戸で大流行。数万人が死亡したとされ、社会不安が高まった。"],
+  [1859,6,"soc","横浜・長崎・箱館 開港","自由貿易が始まり、生糸と茶が主要輸出品となった。"],
+  [1859,7,"soc","金の海外流出","内外の金銀比価差(国内は金1:銀5、国外は1:15)を突かれ、大量の金貨が国外へ流出した。"],
+  [1860,1,"soc","生糸・茶の輸出急増","輸出需要で国内が品薄となり、諸物価が高騰。庶民の生活を圧迫した。"],
+  [1860,4,"soc","万延小判の改鋳","金流出対策で小判の金含有量を大幅に減らす。かえって物価高騰に拍車をかけた。"],
+  [1863,1,"soc","天誅の横行（京都）","尊攘派浪士による暗殺(天誅)が京都で頻発し、治安が悪化した。"],
+  [1865,9,"soc","横須賀製鉄所 起工","小栗忠順が主導し、フランス人技師ヴェルニーの指導で造船所を建設。幕府による近代化事業。"],
+  [1866,5,"soc","打ちこわし・物価急騰","凶作と輸入インフレで米価が暴騰。各地の都市で打ちこわしが多発した。"],
+  [1866,6,"soc","武州世直し一揆","武蔵・上野で大規模な世直し騒動。社会不安が頂点に達した。"],
+  [1867,8,"soc","ええじゃないか","東海・畿内で「ええじゃないか」と唱えて乱舞する民衆現象が流行。世情の高揚を映した。"],
+  // --- 世界 ---
+  [1853,6,"wor","太平天国の乱（清）","洪秀全の反乱で清が動揺(1851〜64)。列強の中国関与が深まっていた。"],
+  [1853,10,"wor","クリミア戦争 勃発","露と英仏・オスマンが交戦(〜1856)。ロシアの東アジア進出の背景となった。"],
+  [1856,10,"wor","アロー戦争（第二次アヘン戦争）","英仏が清と開戦(〜1860)。隣国が半植民地化される様は日本に衝撃を与えた。"],
+  [1857,5,"wor","インド大反乱","セポイの反乱。翌年ムガル帝国が滅び、英による直接統治へ向かった。"],
+  [1860,10,"wor","英仏軍 北京占領","円明園を焼き払う。清の敗北は幕府・志士の危機感を一段と高めた。"],
+  [1861,3,"wor","ロシア農奴解放令","アレクサンドル2世が農奴を解放。列強の近代化改革の一例。"],
+  [1861,4,"wor","アメリカ南北戦争","米が内戦(〜1865)。対日圧力が一時緩み、英仏の影響が相対的に増した。"],
+  [1863,1,"wor","奴隷解放宣言（米）","リンカーンが発布。南北戦争の転機となった。"],
+  [1867,3,"wor","米、アラスカを買収","ロシアから購入。列強の勢力再編が進む。"],
+  [1867,9,"wor","マルクス『資本論』第1巻","資本主義を分析・批判する書が刊行された。"],
+].map(e=>({y:e[0],m:e[1],tr:e[2],ttl:e[3],desc:e[4],t:ym(e[0],e[1])}));
+
+const TR = {pol:{i:0,name:"政治・幕府",c:"var(--t-pol)"},dip:{i:1,name:"外交",c:"var(--t-dip)"},
+  soc:{i:2,name:"社会・経済",c:"var(--t-soc)"},wor:{i:3,name:"世界",c:"var(--t-wor)"}};
+const TRC = {pol:"#e0925a",dip:"#5aa9e0",soc:"#7fc072",wor:"#b487d9"};
+
+/* ===== 「学校 → 研究」カード(8件) ===== */
+const MYTH = [
+  {at:ym(1854,3),topic:"「鎖国」という理解",
+   learn:"江戸幕府は「鎖国」で200年以上も国を閉ざし、外国と完全に断絶していた。ペリーがそれをこじ開けた。",
+   res:"「鎖国」という語自体が後世のもの(志筑忠雄が1801年に訳語として用いたのが早い例)。実際は長崎(オランダ・清)・対馬(朝鮮)・薩摩(琉球)・松前(アイヌ)の『四つの口』で交易と外交が管理されていた。孤立ではなく、幕府が対外関係を統制する体制だった。"},
+  {at:ym(1853,6),topic:"黒船来航は「寝耳に水」だったのか",
+   learn:"黒船来航は突然で、幕府は何も知らず大パニックに陥った。",
+   res:"オランダ商館が毎年出す海外情報『別段風説書』で、前年(1852年)にペリー派遣計画が幕府へ伝えられていた。来航は予告されていたが、幕府は方針を決められないまま当日を迎えた。問題は情報の欠如ではなく意思決定にあった。"},
+  {at:ym(1860,3),topic:"桜田門外の変の意味",
+   learn:"桜田門外の変は、井伊直弼という悪役が暗殺された一つの事件にすぎない。",
+   res:"単なるテロではなく幕政の転換点。大老が白昼、江戸城の門前で討たれた衝撃で幕府の絶対的権威は崩れた。以後、幕府は朝廷や雄藩との協調(公武合体)へ路線転換せざるを得なくなり、一強支配の時代が終わった。"},
+  {at:ym(1860,1),topic:"攘夷派は「無知」だったのか",
+   learn:"攘夷派は世界を知らない無知な排外主義者で、開国派だけが進歩的だった。",
+   res:"攘夷熱の底には開港後の深刻な経済混乱があった。金銀比価差による金貨の大量流出、生糸・茶の輸出急増による物価高騰が庶民生活を直撃。攘夷は無知というより生活破壊への反発という現実的側面をもつ。攘夷派の多くも後に開国の必要を認めていった。"},
+  {at:ym(1865,9),topic:"幕府は「反動的」だったのか",
+   learn:"幕府は旧態依然で無能。進歩的な薩長に倒されるべくして倒れた。",
+   res:"幕府は横須賀製鉄所(造船所)の建設、フランス式の軍制改革(慶応の改革)、遣欧使節や留学生の派遣など積極的に近代化を進めていた。『幕府＝反動、薩長＝進歩』という図式は勝者の視点による後付けの面が大きい。改革を担った小栗忠順ら有能な官僚も少なくなかった。"},
+  {at:ym(1866,1),topic:"薩長同盟と坂本龍馬",
+   learn:"坂本龍馬がほぼ単身で薩長を結びつけ、維新を成し遂げた最大の立役者だった。",
+   res:"龍馬・中岡慎太郎の仲介は事実だが、同盟の本質は両藩の利害一致(長州は武器・軍需、薩摩は兵糧米と政治的立場)にある。龍馬の役割は後世の小説などで拡大された面もあり、木戸孝允・西郷・大久保ら藩指導部の決断こそが要だった。近年は龍馬像の相対化が進んでいる。"},
+  {at:ym(1868,4),topic:"江戸無血開城の要因",
+   learn:"勝海舟と西郷隆盛の会談で江戸城は平和裏に明け渡された。二人の英断の物語。",
+   res:"会談は重要だが要因は複合的。英公使パークスが総攻撃に反対して新政府に圧力をかけたこと、山岡鉄舟による事前交渉、旧幕府側が主戦論を抑えたこと、江戸を戦火から守る現実的判断などが重なった。英雄二人の美談だけには還元できない。"},
+  {at:ym(1868,9),topic:"明治維新は「民衆革命」か",
+   learn:"明治維新は封建制を倒した市民革命・民衆革命だった。",
+   res:"変革を主導したのは下級武士や公家であり、フランス革命のように市民階級が主体となった革命ではない。世直し一揆や『ええじゃないか』は社会不安を示すが、それが政権を倒したわけではない。支配層の内部で権力が移動した性格が強い(『維新は革命か』自体が今も論点)。"},
+];
+
+/* ===== 因果の糸 ===== */
+const CHAIN = [
+  {n:"01",at:ym(1858,6),ttl:"不平等条約",mech:"勅許なく通商条約に調印。領事裁判権・関税自主権を欠き、条約は幕府の弱腰の象徴に。"},
+  {n:"02",at:ym(1859,6),ttl:"開国・自由貿易",mech:"横浜などが開港し貿易開始。生糸・茶が流出し、外圧が日常の経済に直結する。"},
+  {n:"03",at:ym(1860,1),ttl:"経済ショック",mech:"金貨流出と輸出インフレで物価が高騰。庶民生活が破壊され攘夷感情が沸騰。"},
+  {n:"04",at:ym(1863,3),ttl:"政治的動揺",mech:"攘夷を実行できぬ幕府の権威が失墜。朝廷・雄藩が発言力を増し、テロと政変が続く。"},
+  {n:"05",at:ym(1866,1),ttl:"幕府の孤立",mech:"長州征討に失敗し軍事的無力を露呈。薩長が同盟し、雄藩連合が幕府を包囲する。"},
+  {n:"06",at:ym(1867,12),ttl:"倒幕・王政復古",mech:"大政奉還と王政復古で幕府は消滅。戊辰戦争を経て新政府が国家を掌握する。"},
+];
+
+/* =======================================================================
+   TIMELINE (scrubber)
+   ======================================================================= */
+const svgNS="http://www.w3.org/2000/svg";
+const tl=document.getElementById("timeline");
+const TLW=1200, GUT=118, PX0=GUT, PX1=1176, PLOTW=PX1-PX0;
+const ROWY=[70,132,194,256], ROWH=48;
+function xOf(time){ return PX0 + (time-T0)/(T1-T0)*PLOTW; }
+function timeOfX(px){ return T0 + (px-PX0)/PLOTW*(T1-T0); }
+function el(tag,attrs){ const e=document.createElementNS(svgNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function buildTimeline(){
+  // era bands (top strip)
+  for(let i=0;i<ERAS.length;i++){
+    const s=Math.max(ERAS[i].s,T0), e=(i+1<ERAS.length?ERAS[i+1].s:T1);
+    if(e<=T0) continue; const s2=Math.max(s,T0);
+    const x=xOf(s2), w=xOf(Math.min(e,T1))-x;
+    tl.appendChild(el("rect",{x:x,y:26,width:w,height:20,fill:(i%2?"#20262f":"#252c37"),stroke:"#2c3340"}));
+    if(w>34){ const tx=el("text",{x:x+w/2,y:40,"text-anchor":"middle",fill:"#c9a24b","font-size":"12","font-weight":"600","letter-spacing":"2"}); tx.textContent=ERAS[i].name; tl.appendChild(tx);}
+  }
+  // year gridlines + labels
+  for(let y=1854;y<=1868;y++){
+    const x=xOf(y);
+    tl.appendChild(el("line",{x1:x,y1:48,x2:x,y2:290,stroke:"#232935","stroke-width":"1"}));
+    const tx=el("text",{x:x,y:60,"text-anchor":"middle",fill:"#6b7482","font-size":"10.5"}); tx.textContent=y; tl.appendChild(tx);
+  }
+  // track rows + labels
+  const rowKeys=["pol","dip","soc","wor"];
+  rowKeys.forEach((k,i)=>{
+    const yc=ROWY[i];
+    tl.appendChild(el("rect",{x:PX0,y:yc-ROWH/2,width:PLOTW,height:ROWH,fill:(i%2?"#161a21":"#141821"),rx:4}));
+    tl.appendChild(el("line",{x1:PX0,y1:yc,x2:PX1,y2:yc,stroke:"#222834","stroke-width":"1"}));
+    tl.appendChild(el("rect",{x:8,y:yc-ROWH/2,width:4,height:ROWH,fill:TRC[k],rx:2}));
+    const lb=el("text",{x:20,y:yc-3,fill:"#c3cad6","font-size":"12.5","font-weight":"600"}); lb.textContent=TR[k].name; tl.appendChild(lb);
+    const rng=el("text",{x:20,y:yc+13,fill:"#5b6472","font-size":"10"});
+    rng.textContent=({pol:"幕政の攻防",dip:"列強との交渉",soc:"暮らしと経済",wor:"同時代の世界"})[k]; tl.appendChild(rng);
+  });
+  // events (dots)
+  EV.forEach((e,idx)=>{
+    const row=TR[e.tr].i, yc=ROWY[row];
+    let ex=xOf(e.t); ex=Math.max(PX0+3,Math.min(PX1-3,ex));
+    const g=el("g",{class:"evdot","data-i":idx,style:"cursor:pointer"});
+    const halo=el("circle",{cx:ex,cy:yc,r:9,fill:TRC[e.tr],opacity:"0",class:"halo"});
+    const dot=el("circle",{cx:ex,cy:yc,r:5,fill:TRC[e.tr],stroke:"#12151b","stroke-width":"1.4",class:"dot"});
+    g.appendChild(halo); g.appendChild(dot);
+    g.addEventListener("click",(ev)=>{ ev.stopPropagation(); selected=idx; setTime(e.t); });
+    e._g=g; e._dot=dot; e._halo=halo; e._x=ex; e._yc=yc;
+    tl.appendChild(g);
+  });
+  // playhead
+  playhead=el("g",{});
+  phLine=el("line",{x1:xOf(t),y1:24,x2:xOf(t),y2:290,stroke:"#f0e4c0","stroke-width":"1.6"});
+  phTop=el("path",{d:"",fill:"#f0e4c0"});
+  playhead.appendChild(phLine); playhead.appendChild(phTop);
+  tl.appendChild(playhead);
+}
+let playhead,phLine,phTop;
+function updatePlayhead(){
+  const x=xOf(t);
+  phLine.setAttribute("x1",x); phLine.setAttribute("x2",x);
+  phTop.setAttribute("d",`M ${x-6} 20 L ${x+6} 20 L ${x} 28 Z`);
+}
+const HW=0.14; // ハイライト窓 ≈ 1.7か月
+function updateDots(){
+  EV.forEach((e,idx)=>{
+    const near = Math.abs(e.t - t) < HW;
+    const past = e.t <= t + 0.01;
+    let r=5, op=1, halo=0;
+    if(idx===selected){ r=7; halo=.55; }
+    else if(near){ r=6.5; halo=.4; }
+    else if(!past){ op=.32; }
+    e._dot.setAttribute("r",r);
+    e._dot.setAttribute("opacity",op);
+    e._halo.setAttribute("opacity",halo);
+  });
+}
+
+/* =======================================================================
+   MAP (勢力図)
+   ======================================================================= */
+const map=document.getElementById("map");
+// 地形(デフォルメ) + 藩ノード
+const DOMAINS=[
+  {id:"ezo",  x:610,y:70, r:15, label:"蝦夷地(松前)", stance:()=>"bakufu"},
+  {id:"aizu", x:520,y:205,r:15, label:"会津", stance:()=>"bakufu"},
+  {id:"edo",  x:560,y:295,r:19, label:"江戸(幕府)", stance:()=>"bakufu"},
+  {id:"yoko", x:572,y:330,r:10, label:"横須賀", stance:(x)=> x>=ym(1865,9)?"bakufu":"none"},
+  {id:"mito", x:585,y:250,r:11, label:"水戸", stance:()=>"kobu"},
+  {id:"kyoto",x:320,y:290,r:17, label:"京都(朝廷)", stance:(x)=> x>=ym(1867,12)?"tobaku":"court"},
+  {id:"osaka",x:305,y:318,r:12, label:"大坂", stance:()=>"bakufu"},
+  {id:"tosa", x:330,y:430,r:15, label:"土佐", stance:(x)=> x>=ym(1867,11)?"tobaku":"kobu"},
+  {id:"choshu",x:120,y:330,r:16,label:"長州", stance:(x)=>{
+      if(x<ym(1862,5))return "kobu";
+      if(x<ym(1864,7))return "tobaku";       // 尊攘急進
+      if(x<ym(1865,3))return "bakufu";        // 禁門敗北→恭順(俗論党)
+      return "tobaku";                        // 高杉挙兵→倒幕
+    }},
+  {id:"hizen",x:120,y:430,r:14, label:"肥前(佐賀)", stance:(x)=> x>=ym(1868,1)?"tobaku":"kobu"},
+  {id:"satsuma",x:150,y:505,r:17,label:"薩摩", stance:(x)=>{
+      if(x<ym(1866,1))return "kobu";          // 公武合体主導
+      return "tobaku";                        // 薩長同盟以降
+    }},
+  {id:"naga", x:88,y:452,r:9, label:"長崎", stance:()=>"bakufu"},
+];
+const STC={bakufu:"#3f74ab",tobaku:"#c0504d",kobu:"#8b95a3",court:"#c9a24b",none:"#2a3038"};
+const domNodes={};
+function buildMap(){
+  // 海
+  map.appendChild(el("rect",{x:0,y:0,width:720,height:560,fill:"#10131a"}));
+  // うっすら緯度線的な装飾
+  for(let i=1;i<6;i++) map.appendChild(el("line",{x1:0,y1:i*93,x2:720,y2:i*93,stroke:"#151922","stroke-width":"1"}));
+  // 陸地(デフォルメした4島)
+  const land="#242c37", ls="#323b48";
+  // 本州(北東→南西の帯)
+  map.appendChild(el("path",{d:"M640 55 C 690 90,675 150,635 190 C 600 225,560 235,540 265 C 515 300,470 300,420 305 C 360 312,320 300,285 305 C 235 312,175 320,120 345 C 92 358,80 345,92 322 C 108 292,150 285,205 282 C 285 278,330 282,375 275 C 445 264,505 245,548 205 C 585 170,588 110,610 78 C 620 63,628 55,640 55 Z",fill:land,stroke:ls,"stroke-width":"1.5","stroke-linejoin":"round"}));
+  // 蝦夷地
+  map.appendChild(el("path",{d:"M585 40 C 630 25,675 40,665 80 C 658 108,620 108,600 95 C 578 82,565 52,585 40 Z",fill:land,stroke:ls,"stroke-width":"1.5"}));
+  // 四国
+  map.appendChild(el("path",{d:"M280 405 C 340 392,400 400,398 428 C 396 452,330 460,290 452 C 258 445,250 415,280 405 Z",fill:land,stroke:ls,"stroke-width":"1.5"}));
+  // 九州
+  map.appendChild(el("path",{d:"M150 388 C 205 385,215 425,195 470 C 180 508,150 540,120 520 C 92 502,88 470,100 435 C 110 405,120 390,150 388 Z",fill:land,stroke:ls,"stroke-width":"1.5"}));
+
+  // 交戦オーバーレイ用グループ(前面手前だがノードより後ろ)
+  campG=el("g",{}); map.appendChild(campG);
+
+  // ノード
+  DOMAINS.forEach(d=>{
+    const g=el("g",{});
+    const glow=el("circle",{cx:d.x,cy:d.y,r:d.r+6,fill:"none",stroke:"none",class:"glow"});
+    const c=el("circle",{cx:d.x,cy:d.y,r:d.r,fill:"#333",stroke:"#0d0f13","stroke-width":"2"});
+    const label=el("text",{x:d.x,y:d.y-d.r-5,"text-anchor":"middle",fill:"#c3cad6","font-size":"12","font-weight":"600","paint-order":"stroke",stroke:"#10131a","stroke-width":"3px"});
+    label.textContent=d.label;
+    g.appendChild(glow); g.appendChild(c); g.appendChild(label);
+    map.appendChild(g);
+    domNodes[d.id]={c,glow,label};
+  });
+}
+let campG;
+function arrow(x1,y1,x2,y2,color){
+  const a=Math.atan2(y2-y1,x2-x1); const L=10;
+  const g=el("g",{});
+  g.appendChild(el("line",{x1,y1,x2:x2-Math.cos(a)*6,y2:y2-Math.sin(a)*6,stroke:color,"stroke-width":"3.2","stroke-linecap":"round",opacity:".9"}));
+  g.appendChild(el("path",{d:`M ${x2} ${y2} L ${x2-L*Math.cos(a-0.4)} ${y2-L*Math.sin(a-0.4)} L ${x2-L*Math.cos(a+0.4)} ${y2-L*Math.sin(a+0.4)} Z`,fill:color}));
+  return g;
+}
+function updateMap(){
+  DOMAINS.forEach(d=>{
+    const st=d.stance(t);
+    const node=domNodes[d.id];
+    if(st==="none"){ node.c.setAttribute("opacity","0.12"); node.label.setAttribute("opacity",".3"); node.glow.setAttribute("stroke","none"); return; }
+    node.c.setAttribute("opacity","1"); node.label.setAttribute("opacity","1");
+    node.c.setAttribute("fill",STC[st]);
+    // 直近で立場が変わったノードを軽く強調
+    node.glow.setAttribute("stroke","none");
+  });
+  // 交戦オーバーレイ
+  while(campG.firstChild) campG.removeChild(campG.firstChild);
+  const note=document.getElementById("campaign");
+  note.innerHTML="";
+  const red="#e06b56", blue="#6ea8e0";
+  if(t>=ym(1864,7)&&t<ym(1865,1)){
+    // 第一次長州征討: 幕府側→長州
+    campG.appendChild(arrow(300,300,150,332,blue));
+    campG.appendChild(arrow(300,340,150,340,blue));
+    note.innerHTML="<b>第一次長州征討</b>　幕府が諸藩を動員し長州を包囲。長州は恭順して開戦回避。";
+  } else if(t>=ym(1866,6)&&t<ym(1866,10)){
+    // 第二次長州征討: 四方から→長州、ただし撃退
+    campG.appendChild(arrow(250,320,150,328,blue));
+    campG.appendChild(arrow(200,430,150,360,blue));
+    note.innerHTML="<b>第二次長州征討(四境戦争)</b>　幕府軍が四方から侵攻するも、装備で勝る長州が各地で撃退。幕府の無力が露呈。";
+  } else if(t>=ym(1868,1)&&t<ym(1868,4)){
+    campG.appendChild(arrow(300,300,520,295,red)); // 京都→江戸(東征)
+    note.innerHTML="<b>戊辰戦争(鳥羽・伏見→東征)</b>　新政府軍が京都・大坂で旧幕府軍を破り、江戸へ進撃。";
+  } else if(t>=ym(1868,4)&&t<ym(1868,8)){
+    campG.appendChild(arrow(540,285,520,215,red)); // 江戸→会津(北)
+    note.innerHTML="<b>戊辰戦争(東北へ)</b>　江戸無血開城の後、戦線は会津・東北へ北上する。";
+  } else {
+    note.innerHTML="";
+  }
+}
+
+/* =======================================================================
+   PANELS
+   ======================================================================= */
+function updateClock(){
+  const y=Math.floor(t); let m=Math.round((t-y)*12)+1; let yy=y; if(m>12){m=1;yy++;}
+  document.getElementById("clkYear").innerHTML=`${yy}<small>年 ${m}月</small>`;
+  document.getElementById("clkGengo").textContent=eraAt(t);
+}
+function updateNow(){
+  const box=document.getElementById("nowlist");
+  box.innerHTML="";
+  let list;
+  if(selected!=null){
+    // 選択イベント + 同時期
+    list=EV.filter(e=>Math.abs(e.t-t)<HW);
+    if(!list.includes(EV[selected])) list.unshift(EV[selected]);
+  } else {
+    list=EV.filter(e=> e.t<=t+0.01 && e.t> t-0.20 ); // 直近約2.4か月に起きたこと
+    if(list.length===0){
+      // 直前のできごとを1件
+      const prior=EV.filter(e=>e.t<=t+0.01).sort((a,b)=>b.t-a.t)[0];
+      if(prior) list=[prior];
+    }
+  }
+  list.sort((a,b)=>b.t-a.t);
+  list=list.slice(0,5);
+  if(list.length===0){ box.innerHTML='<div class="empty">この時点の主要なできごとはまだありません。時間を進めてください。</div>'; return; }
+  list.forEach(e=>{
+    const d=document.createElement("div"); d.className="ev "+e.tr;
+    d.innerHTML=`<div class="eh"><span class="date">${e.y}年${e.m}月</span>
+      <span class="ttl">${e.ttl}</span>
+      <span class="tag ${e.tr}">${TR[e.tr].name}</span></div>
+      <div class="desc">${e.desc}</div>`;
+    box.appendChild(d);
+  });
+}
+
+let mythIdx=0, mythAuto=true;
+function buildMythNav(){
+  const nav=document.getElementById("mythNav"); nav.innerHTML="";
+  MYTH.forEach((mm,i)=>{
+    const b=document.createElement("button"); b.textContent=(i+1);
+    b.title=mm.topic;
+    b.addEventListener("click",()=>{ mythAuto=false; mythIdx=i; renderMyth(); });
+    nav.appendChild(b);
+  });
+}
+function renderMyth(){
+  if(mythAuto){
+    // 現在時刻以前で最も新しいアンカーのカードを表示
+    let best=0;
+    MYTH.forEach((mm,i)=>{ if(mm.at<=t+0.02) best=i; });
+    mythIdx=best;
+  }
+  const mm=MYTH[mythIdx];
+  document.getElementById("mythTopic").innerHTML=`<span class="em">論点${mythIdx+1}／${MYTH.length}</span>　${mm.topic}`;
+  document.getElementById("mythLearn").textContent=mm.learn;
+  document.getElementById("mythRes").textContent=mm.res;
+  [...document.getElementById("mythNav").children].forEach((b,i)=>b.classList.toggle("on",i===mythIdx));
+}
+
+/* causal chain */
+function buildChain(){
+  const c=document.getElementById("chain"); c.innerHTML="";
+  CHAIN.forEach((n,i)=>{
+    const d=document.createElement("div"); d.className="cnode"; d.dataset.i=i;
+    d.innerHTML=`<div class="box"><div class="num">STEP ${n.n}</div>
+      <div class="cttl">${n.ttl}</div><div class="cmech">${n.mech}</div></div>
+      <div class="arr">→</div>`;
+    d.querySelector(".box").addEventListener("click",()=>{ selected=null; setTime(n.at); });
+    c.appendChild(d); n._el=d;
+  });
+}
+function updateChain(){
+  CHAIN.forEach(n=> n._el.classList.toggle("lit", n.at<=t+0.02));
+}
+
+/* =======================================================================
+   DRIVE
+   ======================================================================= */
+function setTime(nt){
+  t=Math.max(T0,Math.min(T1,nt));
+  refresh();
+}
+function refresh(){
+  updatePlayhead(); updateDots(); updateMap(); updateClock(); updateNow();
+  renderMyth(); updateChain();
+}
+
+/* pointer drag on timeline */
+let dragging=false;
+function pointerToTime(evt){
+  const r=tl.getBoundingClientRect();
+  const px=(evt.clientX-r.left)/r.width*TLW;
+  return timeOfX(px);
+}
+tl.addEventListener("pointerdown",e=>{
+  if(e.target.closest(".evdot")) return; // ドットは自前のclick
+  dragging=true; playing&&pause(); tl.setPointerCapture(e.pointerId);
+  selected=null; setTime(pointerToTime(e));
+});
+tl.addEventListener("pointermove",e=>{ if(dragging) setTime(pointerToTime(e)); });
+tl.addEventListener("pointerup",e=>{ dragging=false; });
+tl.addEventListener("pointercancel",()=>{ dragging=false; });
+
+/* keyboard */
+window.addEventListener("keydown",e=>{
+  if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," "].includes(e.key)){
+    if(e.target.tagName==="INPUT") return;
+    e.preventDefault();
+  }
+  if(e.key==="ArrowRight"){ selected=null; setTime(t+1/12); }
+  else if(e.key==="ArrowLeft"){ selected=null; setTime(t-1/12); }
+  else if(e.key==="ArrowUp"){ selected=null; setTime(t+1); }
+  else if(e.key==="ArrowDown"){ selected=null; setTime(t-1); }
+  else if(e.key===" "){ playing?pause():play(); }
+});
+
+/* play/pause */
+let playing=false, raf=null, last=0, speed=1;
+const btn=document.getElementById("btnPlay");
+function play(){
+  if(t>=T1-1e-4){ t=T0; }
+  playing=true; btn.textContent="❚❚ 一時停止"; mythAuto=true; selected=null;
+  last=performance.now(); raf=requestAnimationFrame(loop);
+}
+function pause(){
+  playing=false; btn.textContent="▶ 再生"; if(raf) cancelAnimationFrame(raf); raf=null;
+}
+function loop(now){
+  let dt=(now-last)/1000; last=now;
+  dt=Math.min(dt,0.05);              // タブ復帰時の巨大dtをクランプ
+  t+=dt*speed*0.9;                   // 0.9 (年/秒) を基準に速度倍率
+  if(t>=T1){ t=T1; refresh(); pause(); return; }
+  refresh();
+  raf=requestAnimationFrame(loop);
+}
+btn.addEventListener("click",()=> playing?pause():play());
+const spd=document.getElementById("spd");
+spd.addEventListener("input",()=>{ speed=parseFloat(spd.value); document.getElementById("spdv").textContent=speed.toFixed(1)+"×"; });
+
+/* init */
+buildTimeline(); buildMap(); buildChain(); buildMythNav();
+refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>15年でこう変わった — 黒船来航から明治改元まで</title>
+  <style>
+    :root {
+      --bg: #090d12;
+      --panel: #101722;
+      --panel-2: #151e2a;
+      --ink: #eef4f8;
+      --muted: #9aa9b6;
+      --line: rgba(255,255,255,.13);
+      --line-strong: rgba(255,255,255,.28);
+      --gold: #e4bf67;
+      --red: #d56d60;
+      --blue: #6fa8dc;
+      --teal: #5fb8b2;
+      --green: #8fbf77;
+      --violet: #a78bd7;
+      --orange: #d99b55;
+      --gray: #70808f;
+      --shadow: 0 18px 50px rgba(0,0,0,.34);
+      color-scheme: dark;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Yu Gothic UI", Meiryo, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-width: 1180px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(95,184,178,.13), transparent 32%),
+        radial-gradient(circle at 82% 12%, rgba(228,191,103,.10), transparent 28%),
+        linear-gradient(180deg, #090d12 0%, #0d1218 54%, #080b0f 100%);
+      color: var(--ink);
+    }
+
+    body {
+      overflow-x: auto;
+    }
+
+    .app {
+      width: 1280px;
+      margin: 0 auto;
+      padding: 28px 28px 36px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.18;
+      letter-spacing: 0;
+      font-weight: 760;
+    }
+
+    .lead {
+      margin: 12px 0 0;
+      max-width: 760px;
+      color: #c7d2dc;
+      font-size: 15px;
+      line-height: 1.78;
+    }
+
+    .date-readout {
+      border: 1px solid var(--line);
+      background: rgba(16,23,34,.76);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .era {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .current-date {
+      margin-top: 4px;
+      font-size: 30px;
+      font-weight: 780;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .current-summary {
+      margin-top: 8px;
+      min-height: 44px;
+      color: #d7e0e8;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .control-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 52px 1fr 58px;
+      gap: 14px;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(9,13,18,.88);
+      backdrop-filter: blur(16px);
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 12px 42px rgba(0,0,0,.28);
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.18);
+      background: #172332;
+      color: var(--ink);
+      border-radius: 8px;
+      min-height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:hover, button:focus-visible {
+      border-color: rgba(228,191,103,.72);
+      outline: none;
+    }
+
+    .range-wrap {
+      position: relative;
+      height: 48px;
+      display: grid;
+      align-content: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .range-ticks {
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      color: #7f8e9d;
+      font-size: 10px;
+      pointer-events: none;
+    }
+
+    .range-ticks span {
+      border-left: 1px solid rgba(255,255,255,.14);
+      padding-left: 4px;
+      height: 13px;
+    }
+
+    .speed {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+      line-height: 1.2;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 792px 404px;
+      gap: 24px;
+      margin-top: 22px;
+      align-items: start;
+    }
+
+    section, .panel {
+      border: 1px solid var(--line);
+      background: rgba(16,23,34,.74);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-title {
+      margin: 0;
+      color: #e8eef3;
+      font-size: 15px;
+      font-weight: 720;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .timeline-panel {
+      padding: 18px;
+    }
+
+    .timeline-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px 12px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .timeline {
+      position: relative;
+      height: 548px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.055) 0 1px, transparent 1px calc(100% / 15)),
+        linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+      overflow: hidden;
+    }
+
+    .year-axis {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 28px;
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      color: #7f8e9d;
+      font-size: 10px;
+      pointer-events: none;
+    }
+
+    .year-axis span {
+      padding: 7px 0 0 6px;
+      border-left: 1px solid rgba(255,255,255,.08);
+    }
+
+    .scrub-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, var(--gold) 10%, var(--gold) 88%, transparent);
+      box-shadow: 0 0 16px rgba(228,191,103,.42);
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 120px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .track:nth-of-type(1) { top: 30px; }
+    .track:nth-of-type(2) { top: 152px; }
+    .track:nth-of-type(3) { top: 274px; }
+    .track:nth-of-type(4) { top: 396px; }
+
+    .track-label {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      width: 112px;
+      color: #dfe7ee;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .events-layer {
+      position: absolute;
+      left: 126px;
+      right: 8px;
+      top: 0;
+      bottom: 0;
+    }
+
+    .event {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--w);
+      min-width: 8px;
+      transform: translateX(-1px);
+      border-left: 3px solid var(--c);
+      border-radius: 6px;
+      padding: 5px 7px 6px 8px;
+      background: rgba(15,22,31,.84);
+      color: #dce6ee;
+      font-size: 11px;
+      line-height: 1.28;
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+      opacity: .64;
+      transition: opacity .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .event .ym {
+      display: block;
+      color: #91a1af;
+      font-variant-numeric: tabular-nums;
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+
+    .event.near {
+      opacity: 1;
+      transform: translateX(-1px) translateY(-2px);
+      background: rgba(34,45,59,.96);
+      box-shadow: 0 0 0 1px rgba(228,191,103,.38), 0 12px 24px rgba(0,0,0,.34);
+      z-index: 8;
+    }
+
+    .event.active {
+      border-left-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(228,191,103,.74), 0 0 20px rgba(228,191,103,.28);
+    }
+
+    .right-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .map-panel {
+      padding: 16px;
+    }
+
+    .map-wrap {
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(95,184,178,.06), rgba(255,255,255,.018));
+      overflow: hidden;
+    }
+
+    svg text {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+    }
+
+    .land {
+      fill: #1a2633;
+      stroke: rgba(255,255,255,.20);
+      stroke-width: 1;
+    }
+
+    .route {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 8 7;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+
+    .route.visible { opacity: .9; }
+
+    .node circle {
+      stroke: rgba(255,255,255,.82);
+      stroke-width: 1.5;
+      transition: r .2s ease, fill .2s ease, opacity .2s ease;
+    }
+
+    .node text {
+      fill: #e9f0f5;
+      font-size: 12px;
+      font-weight: 680;
+      paint-order: stroke;
+      stroke: rgba(8,11,15,.82);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+    }
+
+    .stance-note {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #b7c5d0;
+    }
+
+    .stance-note span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 22px;
+    }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .causal-panel {
+      padding: 16px 16px 18px;
+    }
+
+    .flow {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      position: relative;
+    }
+
+    .flow::before {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 24px;
+      height: 2px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .flow-progress {
+      position: absolute;
+      left: 8%;
+      top: 24px;
+      height: 2px;
+      width: var(--flow-width, 0%);
+      background: linear-gradient(90deg, var(--gold), var(--red));
+      box-shadow: 0 0 12px rgba(228,191,103,.35);
+      transition: width .2s ease;
+    }
+
+    .flow-node {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.35;
+      min-height: 96px;
+    }
+
+    .flow-dot {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.18);
+      background: #111a25;
+      border-radius: 50%;
+      color: #dbe5ed;
+      font-weight: 780;
+      font-size: 14px;
+      transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+    }
+
+    .flow-node.on {
+      color: #edf4f8;
+    }
+
+    .flow-node.on .flow-dot {
+      background: rgba(228,191,103,.20);
+      border-color: rgba(228,191,103,.72);
+      color: var(--gold);
+      box-shadow: 0 0 18px rgba(228,191,103,.24);
+    }
+
+    .flow-caption {
+      margin: 6px 0 0;
+      color: #c3ced8;
+      font-size: 12px;
+      min-height: 38px;
+      line-height: 1.55;
+    }
+
+    .compare-panel {
+      margin-top: 24px;
+      padding: 18px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .card {
+      min-height: 196px;
+      border: 1px solid rgba(255,255,255,.13);
+      background: rgba(15,22,31,.78);
+      border-radius: 8px;
+      padding: 12px;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .card.focused {
+      border-color: rgba(228,191,103,.72);
+      background: rgba(34,45,59,.92);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 9px;
+      color: #f2f6f9;
+      font-weight: 730;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .lesson {
+      border-left: 2px solid rgba(255,255,255,.24);
+      padding-left: 8px;
+      margin-bottom: 10px;
+      color: #aebcca;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .research {
+      border-left: 2px solid var(--teal);
+      padding-left: 8px;
+      color: #d6e4ea;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .note-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .note {
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 8px;
+      background: rgba(15,22,31,.56);
+      padding: 12px;
+      color: #b8c5ce;
+      font-size: 12px;
+      line-height: 1.72;
+    }
+
+    .event-panel {
+      padding: 16px;
+    }
+
+    .event-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .event-line {
+      border-left: 3px solid var(--c);
+      padding: 6px 8px 7px;
+      background: rgba(255,255,255,.035);
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #d5e0e8;
+    }
+
+    .event-line b {
+      color: #fff5d6;
+      font-weight: 760;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>15年でこう変わった — 黒船来航から明治改元まで</h1>
+        <p class="lead">幕末を「人物暗記」ではなく、圧力・お金・権威・軍事力の配置がどう組み替わったかとして見るための年表です。各月へ動かすと、出来事・勢力図・因果の糸が同時に変わります。</p>
+      </div>
+      <div class="date-readout" aria-live="polite">
+        <div class="era" id="eraLabel">表示は新暦（グレゴリオ暦）の月単位。旧暦日付は注記で補足。</div>
+        <div class="current-date" id="dateLabel">1853年6月</div>
+        <div class="current-summary" id="currentSummary"></div>
+      </div>
+    </header>
+
+    <div class="control-bar">
+      <button id="playButton" type="button" aria-label="再生または一時停止">▶</button>
+      <div class="range-wrap">
+        <input id="scrubber" type="range" min="0" max="184" value="0" step="1" aria-label="1853年6月から1868年10月までの時間スライダー">
+        <div class="range-ticks" aria-hidden="true">
+          <span>1853</span><span>54</span><span>55</span><span>56</span><span>57</span><span>58</span><span>59</span><span>60</span><span>61</span><span>62</span><span>63</span><span>64</span><span>65</span><span>66</span><span>67</span><span>68</span>
+        </div>
+      </div>
+      <div class="speed">自動<br>1秒=2か月</div>
+    </div>
+
+    <main>
+      <section class="timeline-panel">
+        <div class="timeline-head">
+          <div>
+            <h2 class="section-title">同期する多層タイムライン</h2>
+            <p class="subtitle">現在月に最も近い出来事が強調されます。横軸は1853年6月から1868年10月。</p>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--blue)"></i>政治・幕府</span>
+            <span><i style="background:var(--teal)"></i>外交</span>
+            <span><i style="background:var(--orange)"></i>社会・経済</span>
+            <span><i style="background:var(--violet)"></i>世界</span>
+          </div>
+        </div>
+        <div class="timeline" id="timeline" tabindex="0" aria-label="出来事タイムライン">
+          <div class="year-axis" aria-hidden="true">
+            <span>1853</span><span>1854</span><span>1855</span><span>1856</span><span>1857</span><span>1858</span><span>1859</span><span>1860</span><span>1861</span><span>1862</span><span>1863</span><span>1864</span><span>1865</span><span>1866</span><span>1867</span><span>1868</span>
+          </div>
+          <div class="scrub-line" id="scrubLine"></div>
+        </div>
+      </section>
+
+      <div class="right-stack">
+        <section class="map-panel">
+          <h2 class="section-title">勢力図：権威と軍事力の置き場</h2>
+          <p class="subtitle">地理は模式図です。東西南北と主要勢力の相対位置を優先しています。</p>
+          <div class="map-wrap">
+            <svg id="powerMap" viewBox="0 0 390 345" width="100%" height="345" role="img" aria-label="幕末の日本勢力図">
+              <path class="land" d="M314 39 C342 66 350 96 334 125 C319 152 289 147 274 126 C259 105 267 69 314 39 Z"/>
+              <path class="land" d="M264 112 C294 127 313 157 302 188 C292 217 261 223 238 209 C218 197 205 169 219 143 C227 127 243 117 264 112 Z"/>
+              <path class="land" d="M198 163 C228 174 242 201 231 224 C218 249 183 249 164 230 C146 212 150 184 174 169 C181 164 188 162 198 163 Z"/>
+              <path class="land" d="M102 181 C129 176 151 188 153 209 C155 231 129 246 99 243 C69 241 51 222 58 203 C64 190 80 184 102 181 Z"/>
+              <path class="land" d="M70 242 C93 248 111 266 103 292 C95 317 61 324 35 309 C11 295 13 266 36 251 C45 245 56 241 70 242 Z"/>
+              <path class="land" d="M106 234 C128 232 147 244 146 262 C145 281 122 291 99 285 C77 279 69 260 82 246 C88 239 96 236 106 234 Z"/>
+              <path class="land" d="M18 114 C39 105 55 116 55 136 C54 157 31 171 13 160 C-4 150 -2 125 18 114 Z"/>
+              <path id="choshuExpedition" class="route" stroke="#d99b55" d="M245 170 C208 169 166 182 124 197"/>
+              <path id="boshinRoute" class="route" stroke="#d56d60" d="M198 183 C225 176 253 167 283 153"/>
+              <g id="mapNodes"></g>
+            </svg>
+          </div>
+          <div class="stance-note">
+            <span><i class="swatch" style="background:var(--blue)"></i>幕府・佐幕</span>
+            <span><i class="swatch" style="background:var(--gold)"></i>朝廷の政治的重み</span>
+            <span><i class="swatch" style="background:var(--red)"></i>倒幕へ傾く雄藩</span>
+            <span><i class="swatch" style="background:var(--gray)"></i>揺れる・中立・地域権力</span>
+          </div>
+        </section>
+
+        <section class="causal-panel">
+          <h2 class="section-title">崩壊へつながる因果の糸</h2>
+          <p class="subtitle">一つの原因だけで倒れたのではなく、外圧が国内制度の弱点を増幅しました。</p>
+          <div class="flow" id="causalFlow">
+            <div class="flow-progress" id="flowProgress"></div>
+          </div>
+          <p class="flow-caption" id="flowCaption"></p>
+        </section>
+
+        <section class="event-panel">
+          <h2 class="section-title">いま近い出来事</h2>
+          <p class="subtitle">各トラックで現在月に近いものを抽出。</p>
+          <div class="event-list" id="nearestList"></div>
+        </section>
+      </div>
+    </main>
+
+    <section class="compare-panel">
+      <h2 class="section-title">学校ではこう習った → 最新の研究では</h2>
+      <p class="subtitle">単純化されやすい論点を、現在の高校・大学入門レベルの理解に近づけます。該当時期に近づくとカードが強調されます。</p>
+      <div class="cards" id="cards"></div>
+      <div class="note-row">
+        <div class="note">日付の扱い：この画面の位置合わせは新暦（グレゴリオ暦）月単位です。幕末当時の日本は旧暦を用いたため、王政復古（旧暦1867年12月9日＝新暦1868年1月3日）のように月がずれる出来事があります。歴史叙述で慣用的に使われる年月と異なる場合は注記を優先してください。</div>
+        <div class="note">見方：開国そのものを善悪で評価するのではなく、通商条件・貨幣制度・朝廷と幕府の権威関係・諸藩の軍事近代化が同時に動いたことに注目します。幕府も近代化を進め、倒幕側も最初から一枚岩ではありませんでした。</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const START = { year: 1853, month: 6 };
+    const END = { year: 1868, month: 10 };
+    const TOTAL_MONTHS = monthIndex("1868-10");
+
+    const trackMeta = {
+      politics: { label: "政治・幕府", color: "#6fa8dc", y: 30 },
+      diplomacy: { label: "外交", color: "#5fb8b2", y: 152 },
+      society: { label: "社会・経済", color: "#d99b55", y: 274 },
+      world: { label: "世界", color: "#a78bd7", y: 396 }
+    };
+
+    const events = [
+      { id:"abe-consult", track:"politics", ym:"1853-06", title:"阿部正弘が諸大名へ意見を求める", detail:"外交判断を幕府単独で抱えきれず、政治参加の期待と幕威低下が同時に生まれる。" },
+      { id:"kanagawa", track:"politics", ym:"1854-03", title:"日米和親条約", detail:"下田・箱館を補給港として開く。通商ではなく、まずは避難・薪水・領事駐在の枠組み。" },
+      { id:"ansei-era", track:"politics", ym:"1854-11", title:"安政へ改元", detail:"災害と外圧の時期に入る。政権は安定の演出と現実対応の両方を迫られる。" },
+      { id:"ii-tairo", track:"politics", ym:"1858-04", title:"井伊直弼が大老に就任", detail:"将軍継嗣と条約勅許問題をめぐり、強い集権的判断へ傾く。" },
+      { id:"ansei-purge", track:"politics", ym:"1858-09", title:"安政の大獄が本格化", detail:"反対派公卿・大名・志士を処罰。短期的秩序と長期的反発が結びつく。" },
+      { id:"sakuradamon", track:"politics", ym:"1860-03", title:"桜田門外の変", detail:"大老暗殺で幕府中枢の威信が傷つき、政治暴力が現実の選択肢になる。" },
+      { id:"kobugattai", track:"politics", ym:"1862-02", title:"和宮降嫁と公武合体", detail:"朝廷権威を取り込んで幕府再建を図るが、朝廷の政治的位置をさらに高める。" },
+      { id:"bunkyu-reform", track:"politics", ym:"1862-08", title:"文久の改革", detail:"参勤交代緩和などを実施。統制をゆるめて協力を得ようとした分、諸藩の自立性も増す。" },
+      { id:"iemochi-kyoto", track:"politics", ym:"1863-03", title:"将軍家茂が上洛", detail:"徳川将軍として久々の京都入り。政治の中心が江戸だけではなくなる。" },
+      { id:"joi-deadline", track:"politics", ym:"1863-05", title:"攘夷決行期限", detail:"朝廷の圧力のもとで攘夷が政治スローガンから軍事行動へ移る。" },
+      { id:"kinmon", track:"politics", ym:"1864-08", title:"禁門の変", detail:"長州勢が京都で敗れ、朝敵とされる。ここで倒幕の道筋はいったん潰れたように見えた。" },
+      { id:"first-choshu", track:"politics", ym:"1864-09", title:"第一次長州征討", detail:"幕府は長州を処分するが、戦闘回避の妥協で決着。権威回復は限定的だった。" },
+      { id:"hyogo-pressure", track:"politics", ym:"1865-11", title:"兵庫開港要求と条約勅許", detail:"列強艦隊の圧力で朝廷が条約を追認。幕府・朝廷・列強の力関係が露わになる。" },
+      { id:"satcho", track:"politics", ym:"1866-01", title:"薩長同盟", detail:"対立していた薩摩と長州が連携。幕府の軍事的優位を崩す政治的な組み替え。" },
+      { id:"second-choshu", track:"politics", ym:"1866-06", title:"第二次長州征討", detail:"近代化した長州軍に幕府側が苦戦。諸藩の協力も鈍く、統制力の限界が見える。" },
+      { id:"iemochi-death", track:"politics", ym:"1866-08", title:"将軍家茂死去", detail:"長州征討のさなかに将軍が死去し、作戦は停止へ向かう。" },
+      { id:"yoshinobu", track:"politics", ym:"1867-01", title:"徳川慶喜が将軍に", detail:"慶喜は制度改革で巻き返すが、時間は短く、反幕勢力も再編を進める。" },
+      { id:"taisei", track:"politics", ym:"1867-10", title:"大政奉還", detail:"政権返上で内戦回避と徳川家の政治的生存を狙う。倒幕側は次の手を急ぐ。" },
+      { id:"osei", track:"politics", ym:"1868-01", title:"王政復古の大号令", detail:"旧暦1867年12月9日。新政府は徳川を排除する形で発足し、軍事衝突へ進む。" },
+      { id:"toba", track:"politics", ym:"1868-01", title:"鳥羽・伏見の戦い", detail:"新政府軍が勝利し、慶喜は朝敵化。権威と軍事の流れが一気に反転する。" },
+      { id:"edo-surrender", track:"politics", ym:"1868-04", title:"江戸無血開城", detail:"交渉と軍事判断の結果、江戸の大規模市街戦は避けられた。" },
+      { id:"meiji-era", track:"politics", ym:"1868-10", title:"明治改元", detail:"旧暦9月8日をもって明治へ。政治変動は制度変革の段階に入る。" },
+
+      { id:"perry", track:"diplomacy", ym:"1853-07", title:"ペリー艦隊が浦賀に来航", detail:"軍事的威圧を伴う交渉。突然の黒船というより、情報は事前に入っていた。" },
+      { id:"putyatin", track:"diplomacy", ym:"1853-08", title:"ロシアのプチャーチンが長崎へ", detail:"アメリカだけでなく、複数列強が東アジアで競いながら日本へ接近。" },
+      { id:"perry-return", track:"diplomacy", ym:"1854-02", title:"ペリー再来航", detail:"より大きな艦隊で再交渉。幕府は軍事衝突回避を優先する。" },
+      { id:"anglo-friend", track:"diplomacy", ym:"1854-10", title:"日英和親条約", detail:"クリミア戦争下で英国も対日関係を確保。日本外交は多国間問題になる。" },
+      { id:"shimoda", track:"diplomacy", ym:"1855-02", title:"日露和親条約", detail:"下田条約。国境・領事・港の問題が日露間でも制度化される。" },
+      { id:"harris-arrival", track:"diplomacy", ym:"1856-08", title:"ハリスが下田に着任", detail:"通商条約交渉が本格化。条約の是非が国内政治の中心問題になる。" },
+      { id:"harris-treaty", track:"diplomacy", ym:"1858-07", title:"日米修好通商条約", detail:"領事裁判権・関税自主権制限などを含む不平等条約。勅許なし調印が政争を激化させる。" },
+      { id:"ansei-five", track:"diplomacy", ym:"1858-08", title:"安政五カ国条約へ拡大", detail:"蘭・露・英、続いて仏とも通商条約。最恵国待遇で条件が横並び化する。" },
+      { id:"ports-open", track:"diplomacy", ym:"1859-07", title:"横浜・長崎・箱館で貿易開始", detail:"開港場経済が急成長し、国内の物価・貨幣制度へ波及する。" },
+      { id:"embassy-us", track:"diplomacy", ym:"1860-02", title:"遣米使節が出発", detail:"批准書交換と条約改正の手がかりを求める。咸臨丸も太平洋を横断。" },
+      { id:"embassy-eu", track:"diplomacy", ym:"1862-01", title:"遣欧使節", detail:"開市開港延期交渉などを行う。幕府も国際交渉で時間を稼ごうとした。" },
+      { id:"namamugi", track:"diplomacy", ym:"1862-09", title:"生麦事件", detail:"大名行列と外国人保護の論理が衝突。条約体制の現実が国内慣行とぶつかる。" },
+      { id:"shimonoseki-fire", track:"diplomacy", ym:"1863-06", title:"長州が外国船砲撃", detail:"攘夷実行として関門海峡を通る外国船を攻撃。列強の軍事介入を招く。" },
+      { id:"kagoshima", track:"diplomacy", ym:"1863-08", title:"薩英戦争", detail:"鹿児島砲撃後、薩摩は英国の軍事力を痛感し、むしろ接近と近代化へ向かう。" },
+      { id:"allied-shimonoseki", track:"diplomacy", ym:"1864-09", title:"四国艦隊下関砲撃", detail:"長州も列強の火力を経験。攘夷実戦は現実的な軍事近代化へ転じる契機になった。" },
+      { id:"tariff-conv", track:"diplomacy", ym:"1866-06", title:"改税約書", detail:"関税率はさらに低く抑えられ、通商を国内政策で調整する余地は狭まる。" },
+      { id:"paris-expo", track:"diplomacy", ym:"1867-04", title:"パリ万博と各勢力の外交", detail:"幕府・薩摩・佐賀などが欧州と接点を持ち、外交は中央独占ではなくなる。" },
+
+      { id:"tokai-quake", track:"society", ym:"1854-12", title:"安政東海・南海地震", detail:"沿岸被害と社会不安。外圧と災害が重なり、政治判断の余力を削る。" },
+      { id:"naval-school", track:"society", ym:"1855-08", title:"長崎海軍伝習所", detail:"幕府はオランダの協力で海軍教育を開始。近代化は倒幕側だけの専売ではない。" },
+      { id:"edo-quake", track:"society", ym:"1855-11", title:"安政江戸地震", detail:"江戸の被害と物価不安。災害絵や世直し感覚も広がる。" },
+      { id:"cholera", track:"society", ym:"1858-08", title:"コレラ流行", detail:"開港前後の感染症不安が社会心理を揺さぶる。外国への恐怖とも結びついた。" },
+      { id:"trade-shock", track:"society", ym:"1859-07", title:"開港場の貿易急拡大", detail:"生糸輸出などで利益も生まれたが、品不足や価格上昇が生活へ響く。" },
+      { id:"gold-outflow", track:"society", ym:"1860-04", title:"金流出と貨幣改鋳", detail:"金銀比価の差で金が国外へ流れ、改鋳・物価上昇が人々の不満を増幅する。" },
+      { id:"price-rise", track:"society", ym:"1861-12", title:"物価騰貴が都市生活を圧迫", detail:"賃金・米価・輸出品価格のずれが、攘夷感情を単なる観念でなく生活問題にした。" },
+      { id:"namamugi-social", track:"society", ym:"1862-09", title:"街道秩序と条約秩序の衝突", detail:"生麦事件は、身分制社会の儀礼と外国人の移動権が両立しにくいことを示した。" },
+      { id:"tenchugumi", track:"society", ym:"1863-09", title:"天誅組の変", detail:"尊攘派の挙兵は地域社会を巻き込み、朝廷権威の政治化を可視化する。" },
+      { id:"mito", track:"society", ym:"1864-05", title:"天狗党の乱", detail:"水戸藩内外の尊攘運動が武装化。思想運動は内戦的な亀裂へ進む。" },
+      { id:"yokosuka", track:"society", ym:"1865-09", title:"横須賀製鉄所の建設開始", detail:"幕府が仏人技師ヴェルニーらと進めた近代工業計画。国家的インフラの先駆け。" },
+      { id:"riots-1866", track:"society", ym:"1866-05", title:"米価高騰と打ちこわし", detail:"第二次長州征討期の財政・物価不安が各地の民衆行動を誘発する。" },
+      { id:"eejanaika", track:"society", ym:"1867-08", title:"ええじゃないか", detail:"札降り・踊り・祝祭的熱狂が広域化。政治変動の足元で社会も揺れる。" },
+      { id:"tokyo", track:"society", ym:"1868-09", title:"江戸を東京へ改称", detail:"政治中心の移動が都市の意味を変える。旧幕府都市は新国家の首都へ組み替えられる。" },
+
+      { id:"crimean", track:"world", ym:"1853-10", title:"クリミア戦争", detail:"欧州列強の対立が東アジアにも影を落とし、ロシア・英国の対日接近を促す。" },
+      { id:"arrow-war", track:"world", ym:"1856-10", title:"アロー戦争", detail:"清への圧力は、日本側に不平等条約体制の現実を意識させた。" },
+      { id:"india-revolt", track:"world", ym:"1857-05", title:"インド大反乱", detail:"帝国支配への抵抗と鎮圧のニュースは、アジアの国際秩序を考える背景になる。" },
+      { id:"peking", track:"world", ym:"1860-10", title:"北京条約", detail:"清はさらなる開港・賠償を迫られる。日本の交渉者にも強い警戒材料となった。" },
+      { id:"serf", track:"world", ym:"1861-03", title:"ロシア農奴解放令", detail:"同時代の諸国家も制度改革を迫られていた。幕末は世界的な国家再編の時代でもある。" },
+      { id:"civil-war", track:"world", ym:"1861-04", title:"アメリカ南北戦争", detail:"米国の東アジア関与が一時弱まり、英国・仏国の存在感が相対的に増す。" },
+      { id:"emancipation", track:"world", ym:"1863-01", title:"奴隷解放宣言", detail:"近代国家の理念と戦争が結びつく時代。日本の変革も世界の同時代史に置ける。" },
+      { id:"gettysburg", track:"world", ym:"1863-11", title:"ゲティスバーグ演説", detail:"国民国家の理念が再定義される一方、日本では統一権力の所在が争われる。" },
+      { id:"civil-war-end", track:"world", ym:"1865-04", title:"南北戦争終結", detail:"米国の太平洋関与が再び可能になり、列強環境は変わり続ける。" },
+      { id:"austro-prussian", track:"world", ym:"1866-06", title:"普墺戦争", detail:"徴兵・鉄道・近代兵器が欧州の勢力図を変える。軍事近代化の説得力が増す。" },
+      { id:"canada", track:"world", ym:"1867-07", title:"カナダ自治領成立", detail:"英帝国の再編。日本が向き合う列強も固定的な存在ではなかった。" },
+      { id:"second-french", track:"world", ym:"1867-01", title:"仏軍事顧問団が幕府を支援", detail:"幕府はフランス式軍制で改革を進める。国際関係は倒幕側だけの資源ではない。" }
+    ];
+
+    const comparisons = [
+      {
+        id:"sakoku-card",
+        eventIds:["abe-consult","kanagawa"],
+        title:"「鎖国」は完全な閉鎖だった？",
+        school:"日本は江戸時代、海外とほぼ断絶していた。",
+        research:"現在は「四つの口」つまり長崎・対馬・薩摩琉球・松前蝦夷地を通じた管理貿易と情報流入として捉える。閉鎖ではなく、統制された接続だった。"
+      },
+      {
+        id:"perry-card",
+        eventIds:["perry"],
+        title:"黒船は寝耳に水だった？",
+        school:"ペリー来航で幕府は突然パニックになった。",
+        research:"オランダ風説書・別段風説書などで米艦隊接近の情報は事前に入っていた。驚きはあったが、問題は情報不足より軍事力差と意思決定だった。"
+      },
+      {
+        id:"joi-card",
+        eventIds:["ports-open","gold-outflow","price-rise","joi-deadline"],
+        title:"攘夷は無知な排外主義？",
+        school:"外国を知らない人々が感情的に排斥した。",
+        research:"開港後の物価高、金流出、商流変化は生活と財政を直撃した。攘夷は観念だけでなく、条約体制が生んだ経済ショックへの政治的反応でもあった。"
+      },
+      {
+        id:"bakufu-modern-card",
+        eventIds:["naval-school","yokosuka","yoshinobu"],
+        title:"幕府は古くて動けなかった？",
+        school:"旧幕府は近代化に背を向け、倒幕側だけが新しかった。",
+        research:"幕府は海軍伝習所、横須賀製鉄所、フランス式軍制、慶応改革などを進めた。崩壊は近代化の有無だけでなく、権威・財政・諸藩統制の失敗だった。"
+      },
+      {
+        id:"restoration-card",
+        eventIds:["satcho","taisei","osei","toba"],
+        title:"明治維新は民衆革命？",
+        school:"国民的な革命で新時代が始まった。",
+        research:"政治変革の主導権は薩長土肥などの藩士層、公家、旧幕臣を含むエリート連合にあった。民衆運動は背景として重要だが、制度設計は上層主導だった。"
+      },
+      {
+        id:"edo-card",
+        eventIds:["edo-surrender"],
+        title:"江戸無血開城は一人の英雄譚？",
+        school:"勝海舟と西郷隆盛の会談で江戸は救われた。",
+        research:"会談は重要だが、徳川側の軍事劣勢、新政府側の補給・統治計算、江戸市民被害、列強介入への警戒など複数要因が重なった結果だった。"
+      },
+      {
+        id:"satcho-card",
+        eventIds:["kagoshima","allied-shimonoseki","satcho"],
+        title:"薩長は最初から倒幕同盟？",
+        school:"薩摩と長州が協力して一直線に幕府を倒した。",
+        research:"禁門の変では薩摩は長州と敵対した。列強との衝突、長州処分、幕府への警戒、仲介者の働きが重なり、1866年前後に連携へ転じた。"
+      }
+    ];
+
+    const mapNodes = [
+      { id:"bakufu", name:"幕府\n江戸", x:284, y:154, base:18 },
+      { id:"court", name:"朝廷\n京都", x:205, y:184, base:11 },
+      { id:"satsuma", name:"薩摩", x:50, y:286, base:11 },
+      { id:"choshu", name:"長州", x:122, y:203, base:11 },
+      { id:"tosa", name:"土佐", x:111, y:260, base:9 },
+      { id:"hizen", name:"肥前\n佐賀", x:54, y:254, base:9 },
+      { id:"aizu", name:"会津", x:270, y:124, base:9 },
+      { id:"mito", name:"水戸", x:302, y:164, base:8 },
+      { id:"echizen", name:"越前", x:216, y:156, base:8 },
+      { id:"matsumae", name:"松前", x:315, y:73, base:7 }
+    ];
+
+    const causal = [
+      { id:"treaty", label:"不平等条約", ym:"1858-07", caption:"領事裁判権と関税自主権の制限が、主権と財政の問題として残る。" },
+      { id:"opening", label:"開国", ym:"1859-07", caption:"開港場を通じて貿易が急増し、国内の物流と価格形成が変わる。" },
+      { id:"shock", label:"経済ショック", ym:"1860-04", caption:"金流出・改鋳・物価高が生活不安を増幅し、攘夷論に現実味を与える。" },
+      { id:"instability", label:"政治的動揺", ym:"1863-05", caption:"朝廷・幕府・諸藩が互いの正統性を争い、政治暴力と軍事行動が増える。" },
+      { id:"overthrow", label:"倒幕", ym:"1868-01", caption:"幕府が諸藩を統制できないことが明らかになり、新政府軍の勝利で権力が移る。" }
+    ];
+
+    const trackOffsets = {
+      politics: [20, 48, 76, 42, 88],
+      diplomacy: [20, 48, 76, 40, 88],
+      society: [20, 48, 76, 38, 88],
+      world: [20, 48, 76, 38, 88]
+    };
+
+    const timeline = document.getElementById("timeline");
+    const scrubber = document.getElementById("scrubber");
+    const scrubLine = document.getElementById("scrubLine");
+    const dateLabel = document.getElementById("dateLabel");
+    const currentSummary = document.getElementById("currentSummary");
+    const nearestList = document.getElementById("nearestList");
+    const playButton = document.getElementById("playButton");
+    const flow = document.getElementById("causalFlow");
+    const flowProgress = document.getElementById("flowProgress");
+    const flowCaption = document.getElementById("flowCaption");
+    const cardsEl = document.getElementById("cards");
+    const mapNodeLayer = document.getElementById("mapNodes");
+    let timer = null;
+
+    scrubber.max = String(TOTAL_MONTHS);
+
+    function monthIndex(ym) {
+      const [year, month] = ym.split("-").map(Number);
+      return (year - START.year) * 12 + (month - START.month);
+    }
+
+    function fromIndex(index) {
+      const absolute = START.year * 12 + (START.month - 1) + index;
+      return { year: Math.floor(absolute / 12), month: absolute % 12 + 1 };
+    }
+
+    function formatMonth(index) {
+      const { year, month } = fromIndex(index);
+      return `${year}年${month}月`;
+    }
+
+    function eventColor(track) {
+      return trackMeta[track].color;
+    }
+
+    function setupTimeline() {
+      Object.values(trackMeta).forEach(meta => {
+        const track = document.createElement("div");
+        track.className = "track";
+        track.style.top = `${meta.y}px`;
+        track.innerHTML = `<div class="track-label">${meta.label}</div><div class="events-layer" data-track="${meta.label}"></div>`;
+        timeline.appendChild(track);
+      });
+
+      const layers = [...document.querySelectorAll(".events-layer")];
+      const byTrack = Object.keys(trackMeta).reduce((acc, key) => (acc[key] = 0, acc), {});
+      events.forEach(event => {
+        const layer = layers[Object.keys(trackMeta).indexOf(event.track)];
+        const index = monthIndex(event.ym);
+        const el = document.createElement("div");
+        const offsetList = trackOffsets[event.track];
+        const y = offsetList[byTrack[event.track] % offsetList.length];
+        const width = event.title.length > 12 ? 112 : 96;
+        byTrack[event.track] += 1;
+        el.className = "event";
+        el.dataset.id = event.id;
+        el.style.setProperty("--x", `${index / TOTAL_MONTHS * 100}%`);
+        el.style.setProperty("--y", `${y}px`);
+        el.style.setProperty("--w", `${width}px`);
+        el.style.setProperty("--c", eventColor(event.track));
+        el.innerHTML = `<span class="ym">${event.ym}</span>${event.title}`;
+        layer.appendChild(el);
+      });
+    }
+
+    function setupCards() {
+      comparisons.forEach(card => {
+        const el = document.createElement("article");
+        el.className = "card";
+        el.dataset.id = card.id;
+        el.innerHTML = `
+          <div class="card-title"><span>${card.title}</span><span class="tag">再考</span></div>
+          <div class="lesson"><b>学校では：</b>${card.school}</div>
+          <div class="research"><b>研究では：</b>${card.research}</div>
+        `;
+        cardsEl.appendChild(el);
+      });
+    }
+
+    function setupCausal() {
+      causal.forEach((item, i) => {
+        const node = document.createElement("div");
+        node.className = "flow-node";
+        node.dataset.id = item.id;
+        node.innerHTML = `<div class="flow-dot">${i + 1}</div><div>${item.label}</div>`;
+        flow.appendChild(node);
+      });
+    }
+
+    function setupMap() {
+      mapNodes.forEach(node => {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "node");
+        g.dataset.id = node.id;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", node.x);
+        circle.setAttribute("cy", node.y);
+        circle.setAttribute("r", node.base);
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", node.x);
+        text.setAttribute("y", node.y - node.base - 7);
+        text.setAttribute("text-anchor", "middle");
+        node.name.split("\n").forEach((line, i) => {
+          const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+          tspan.setAttribute("x", node.x);
+          tspan.setAttribute("dy", i ? "1.15em" : "0");
+          tspan.textContent = line;
+          text.appendChild(tspan);
+        });
+        g.append(circle, text);
+        mapNodeLayer.appendChild(g);
+      });
+    }
+
+    function phase(index) {
+      if (index < monthIndex("1858-07")) return "pressure";
+      if (index < monthIndex("1863-05")) return "opening";
+      if (index < monthIndex("1866-01")) return "joi";
+      if (index < monthIndex("1868-01")) return "alliance";
+      return "war";
+    }
+
+    function nodeState(id, index) {
+      const p = phase(index);
+      const states = {
+        pressure: {
+          bakufu:["#6fa8dc", 1.05], court:["#e4bf67", .72], satsuma:["#70808f", .72], choshu:["#70808f", .72], tosa:["#70808f", .65], hizen:["#70808f", .65], aizu:["#6fa8dc", .70], mito:["#70808f", .72], echizen:["#70808f", .68], matsumae:["#70808f", .58]
+        },
+        opening: {
+          bakufu:["#6fa8dc", .95], court:["#e4bf67", .95], satsuma:["#70808f", .82], choshu:["#70808f", .86], tosa:["#70808f", .72], hizen:["#70808f", .74], aizu:["#6fa8dc", .76], mito:["#d99b55", .80], echizen:["#70808f", .72], matsumae:["#70808f", .58]
+        },
+        joi: {
+          bakufu:["#6fa8dc", .86], court:["#e4bf67", 1.10], satsuma:["#d99b55", .96], choshu:["#d56d60", 1.02], tosa:["#70808f", .78], hizen:["#70808f", .78], aizu:["#6fa8dc", .90], mito:["#d99b55", .86], echizen:["#70808f", .75], matsumae:["#70808f", .58]
+        },
+        alliance: {
+          bakufu:["#6fa8dc", .78], court:["#e4bf67", 1.18], satsuma:["#d56d60", 1.12], choshu:["#d56d60", 1.12], tosa:["#d99b55", .88], hizen:["#d99b55", .88], aizu:["#6fa8dc", .96], mito:["#70808f", .70], echizen:["#70808f", .78], matsumae:["#70808f", .58]
+        },
+        war: {
+          bakufu:["#6fa8dc", .58], court:["#e4bf67", 1.30], satsuma:["#d56d60", 1.22], choshu:["#d56d60", 1.22], tosa:["#d56d60", .96], hizen:["#d56d60", .96], aizu:["#6fa8dc", 1.08], mito:["#70808f", .68], echizen:["#70808f", .72], matsumae:["#70808f", .58]
+        }
+      };
+      return states[p][id];
+    }
+
+    function nearestEvents(index) {
+      const sorted = [...events].sort((a, b) => {
+        const da = Math.abs(monthIndex(a.ym) - index);
+        const db = Math.abs(monthIndex(b.ym) - index);
+        return da - db || monthIndex(a.ym) - monthIndex(b.ym);
+      });
+      const closest = Math.abs(monthIndex(sorted[0].ym) - index);
+      return sorted.filter(e => Math.abs(monthIndex(e.ym) - index) === closest).slice(0, 6);
+    }
+
+    function updateTimeline(index) {
+      const near = nearestEvents(index);
+      const nearIds = new Set(near.map(e => e.id));
+      document.querySelectorAll(".event").forEach(el => {
+        const event = events.find(e => e.id === el.dataset.id);
+        const diff = Math.abs(monthIndex(event.ym) - index);
+        el.classList.toggle("near", diff <= 2);
+        el.classList.toggle("active", nearIds.has(event.id));
+      });
+      scrubLine.style.left = `${index / TOTAL_MONTHS * 100}%`;
+      nearestList.innerHTML = near.map(e => `
+        <div class="event-line" style="--c:${eventColor(e.track)}">
+          <b>${trackMeta[e.track].label}</b> ${e.ym}　${e.title}<br>${e.detail}
+        </div>
+      `).join("");
+      currentSummary.textContent = near[0] ? `${near[0].title}：${near[0].detail}` : "";
+    }
+
+    function updateCausal(index) {
+      let active = 0;
+      causal.forEach((item, i) => {
+        const isOn = index >= monthIndex(item.ym);
+        if (isOn) active = i + 1;
+        const node = flow.querySelector(`.flow-node[data-id="${item.id}"]`);
+        node.classList.toggle("on", isOn);
+      });
+      const width = active <= 1 ? 0 : (active - 1) / (causal.length - 1) * 84;
+      flowProgress.style.setProperty("--flow-width", `${width}%`);
+      const current = causal[Math.max(0, active - 1)];
+      flowCaption.textContent = active ? current.caption : "まだ条約問題は表面化していません。外圧への備えと政治判断の形が問われ始めています。";
+    }
+
+    function updateCards(index) {
+      const near = nearestEvents(index);
+      const nearIds = new Set(near.map(e => e.id));
+      comparisons.forEach(card => {
+        const focused = card.eventIds.some(id => nearIds.has(id) || Math.abs(monthIndex(events.find(e => e.id === id).ym) - index) <= 3);
+        const el = cardsEl.querySelector(`.card[data-id="${card.id}"]`);
+        el.classList.toggle("focused", focused);
+      });
+    }
+
+    function updateMap(index) {
+      mapNodes.forEach(node => {
+        const [color, power] = nodeState(node.id, index);
+        const g = mapNodeLayer.querySelector(`.node[data-id="${node.id}"]`);
+        const circle = g.querySelector("circle");
+        circle.setAttribute("fill", color);
+        circle.setAttribute("r", (node.base * power).toFixed(1));
+        circle.setAttribute("opacity", power < .62 ? ".72" : "1");
+      });
+      document.getElementById("choshuExpedition").classList.toggle("visible", index >= monthIndex("1864-09") && index <= monthIndex("1866-08"));
+      document.getElementById("boshinRoute").classList.toggle("visible", index >= monthIndex("1868-01") && index <= monthIndex("1868-05"));
+    }
+
+    function update(index) {
+      index = Math.max(0, Math.min(TOTAL_MONTHS, Number(index)));
+      scrubber.value = String(index);
+      dateLabel.textContent = formatMonth(index);
+      updateTimeline(index);
+      updateCausal(index);
+      updateCards(index);
+      updateMap(index);
+    }
+
+    function play() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        playButton.textContent = "▶";
+        return;
+      }
+      playButton.textContent = "Ⅱ";
+      timer = setInterval(() => {
+        const next = Number(scrubber.value) + 2;
+        if (next > TOTAL_MONTHS) {
+          update(0);
+        } else {
+          update(next);
+        }
+      }, 1000);
+    }
+
+    scrubber.addEventListener("input", e => update(e.target.value));
+    playButton.addEventListener("click", play);
+    timeline.addEventListener("click", e => {
+      const rect = timeline.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+      update(Math.round(x / rect.width * TOTAL_MONTHS));
+    });
+    timeline.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        update(Number(scrubber.value) + (e.key === "ArrowRight" ? 1 : -1));
+      }
+    });
+    window.addEventListener("keydown", e => {
+      if (document.activeElement === scrubber || document.activeElement === timeline) return;
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        update(Number(scrubber.value) + (e.key === "ArrowRight" ? 1 : -1));
+      }
+    });
+
+    setupTimeline();
+    setupCards();
+    setupCausal();
+    setupMap();
+    update(0);
+  </script>
+</body>
+</html>

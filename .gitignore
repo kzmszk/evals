@@ -9,6 +9,7 @@ scratchpad/
 # Generated artifacts and verification output
 output/
 3DCG/mls-mpm-snow/results/
+infographics/bakumatsu-timeline/results/
 
 # secrets
 .env

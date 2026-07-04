@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15年でこう変わった — 黒船来航から明治改元まで</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%E2%9B%B5%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#101318; --panel:#171b23; --panel2:#1d222d; --line:#2a3140;
+  --ink:#d8d4ca; --muted:#8d94a4; --faint:#5d6474;
+  --accent:#d4574a; --gold:#c9a227;
+  --c-baku:#5f8fc0; --c-kob:#9a7fc9; --c-jyo:#d9a13b; --c-tob:#d4574a;
+  --c-teki:#7d4a44; --c-neu:#7d8797; --c-cho:#c9a227;
+  --t0:#7ba7d4; --t1:#c9a860; --t2:#6fbfb0; --t3:#cf8f5e; --t4:#9a92c9;
+  --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
+  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scrollbar-color:#39404f var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.7;
+  background-image:radial-gradient(ellipse 900px 400px at 50% -100px,#1a2030 0%,transparent 60%)}
+.wrap{max-width:1360px;margin:0 auto;padding:28px 32px 80px}
+a{color:var(--t2)}
+h1{font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:.06em;line-height:1.4}
+h1 .sub{display:block;font-size:13px;color:var(--muted);letter-spacing:.28em;margin-bottom:6px;font-family:var(--sans)}
+h2{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.1em;margin:0 0 4px;
+  display:flex;align-items:center;gap:10px}
+h2::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:1px;transform:rotate(45deg);flex:none}
+.h2note{color:var(--muted);font-size:12px;margin:0 0 14px 18px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+  border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:18px}
+.lede{max-width:460px;color:var(--muted);font-size:12.5px;text-align:left}
+.lede b{color:var(--ink);font-weight:600}
+
+/* ---- controls ---- */
+.controls{display:flex;align-items:center;gap:16px;margin:6px 0 2px}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:6px;
+  padding:7px 16px;font-size:13px;cursor:pointer;font-family:var(--sans);letter-spacing:.05em}
+.btn:hover{border-color:#3d4658;background:#232936}
+.btn.primary{background:#33231f;border-color:#6e3a32;color:#f0c9c2}
+.btn.primary:hover{background:#41291f}
+.readout{font-family:var(--serif);font-size:24px;letter-spacing:.05em;min-width:220px}
+.readout small{font-size:13px;color:var(--gold);margin-left:10px;letter-spacing:.1em}
+.kbdhint{color:var(--faint);font-size:11.5px;margin-left:auto}
+.kbdhint kbd{border:1px solid var(--line);border-radius:3px;padding:0 5px;background:var(--panel2);font-size:10.5px}
+
+/* ---- timeline ---- */
+.tl{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px 10px;margin-top:10px}
+.tl-scrub{margin-left:112px;position:relative}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:pointer;display:block}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;
+  background:linear-gradient(90deg,#3a3226 0%,#443029 55%,#4d2b28 100%)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:#e8e2d4;border:3px solid var(--accent);margin-top:-5px;box-shadow:0 0 8px rgba(212,87,74,.6)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:#443029}
+input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:#e8e2d4;border:3px solid var(--accent)}
+.eras{position:relative;height:16px;margin:2px 0 4px}
+.eras span{position:absolute;top:0;font-size:10px;color:var(--faint);letter-spacing:.08em;
+  border-left:1px solid #383f4e;padding-left:4px;height:14px;line-height:14px;white-space:nowrap}
+.ticks{position:relative;height:16px}
+.ticks span{position:absolute;transform:translateX(-50%);font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lanes{position:relative;margin-top:6px}
+.lane{display:flex;border-top:1px solid #222835}
+.lane:last-child{border-bottom:1px solid #222835}
+.lname{flex:0 0 112px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;
+  letter-spacing:.08em;font-family:var(--serif)}
+.lname i{width:8px;height:8px;border-radius:2px;flex:none}
+.lbody{position:relative;flex:1;height:66px;cursor:crosshair;overflow:hidden}
+.gridlayer{position:absolute;left:112px;right:0;top:0;bottom:0;pointer-events:none}
+.gridlayer i{position:absolute;top:0;bottom:0;width:1px;background:#1c212c}
+.playhead{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--accent);pointer-events:none;
+  box-shadow:0 0 10px rgba(212,87,74,.55);z-index:5}
+.playhead::after{content:"";position:absolute;top:-5px;left:-4px;border:5px solid transparent;border-top-color:var(--accent)}
+.dot{position:absolute;top:50%;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);
+  cursor:pointer;z-index:3;border:1.5px solid rgba(0,0,0,.5)}
+.dot:hover{transform:translate(-50%,-50%) scale(1.5)}
+.dot.on{box-shadow:0 0 0 3px rgba(216,212,202,.18),0 0 12px currentColor;transform:translate(-50%,-50%) scale(1.35)}
+.dot.sel{box-shadow:0 0 0 3px var(--accent)}
+.dot.card::after{content:"";position:absolute;inset:-4.5px;border:1px dashed rgba(216,212,202,.5);border-radius:50%}
+.bar{position:absolute;top:50%;height:7px;transform:translateY(-50%);border-radius:4px;opacity:.42;cursor:pointer;z-index:2}
+.bar.on{opacity:.95;box-shadow:0 0 10px currentColor}
+.bar.sel{outline:2px solid var(--accent)}
+.elab{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--faint);white-space:nowrap;
+  pointer-events:none;letter-spacing:.02em;z-index:4}
+.elab.r0{top:2px}.elab.r1{top:14px}.elab.r2{bottom:14px}.elab.r3{bottom:2px}
+.elab.on{color:var(--ink);font-weight:600;text-shadow:0 0 6px #000;z-index:6}
+.tl-foot{color:var(--faint);font-size:11px;margin:8px 0 2px 112px}
+
+/* ---- narrative bar ---- */
+.narr{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-top:16px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px}
+.box h3{font-family:var(--serif);font-size:14px;color:var(--gold);letter-spacing:.15em;font-weight:600;margin-bottom:8px}
+#phaseTitle{font-family:var(--serif);font-size:18px;margin-bottom:6px;letter-spacing:.05em}
+#phaseText{color:#b9b4a8;font-size:13px}
+#nearby{display:flex;flex-direction:column;gap:4px;max-height:150px;overflow-y:auto}
+#nearby button{all:unset;cursor:pointer;font-size:12.5px;color:var(--muted);display:flex;gap:10px;padding:2px 4px;border-radius:4px}
+#nearby button:hover{background:var(--panel2);color:var(--ink)}
+#nearby .nd{color:var(--faint);font-variant-numeric:tabular-nums;flex:none;width:112px}
+#nearby i{width:7px;height:7px;border-radius:50%;flex:none;margin-top:6px}
+
+/* ---- main grid: map + detail ---- */
+.main{display:grid;grid-template-columns:600px 1fr;gap:16px;margin-top:16px}
+.mapbox svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.legend .lteki i{border:1px dashed #c9827a;background:var(--c-teki)}
+.board{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.brow{display:grid;grid-template-columns:58px 118px 1fr;gap:10px;align-items:baseline;
+  padding:6.5px 4px;border-top:1px solid #222835;font-size:12.5px}
+.brow:first-child{border-top:none}
+.brow .bn{font-family:var(--serif);letter-spacing:.1em}
+.brow .bs{font-size:11px;padding:1px 8px;border-radius:9px;color:#0e1013;font-weight:600;
+  justify-self:start;white-space:nowrap;letter-spacing:.03em}
+.brow .bt{color:var(--muted);font-size:12px;line-height:1.55}
+
+/* detail */
+.detail{min-height:220px}
+#dDate{color:var(--gold);font-size:12.5px;letter-spacing:.1em;font-variant-numeric:tabular-nums}
+#dTrack{display:inline-block;font-size:10.5px;border:1px solid var(--line);border-radius:9px;padding:0 8px;
+  margin-left:8px;color:var(--muted);vertical-align:1px}
+#dThread{display:inline-block;font-size:10.5px;border-radius:9px;padding:0 8px;margin-left:6px;
+  background:#33231f;color:#e8a99d;vertical-align:1px}
+#dTitle{font-family:var(--serif);font-size:20px;margin:4px 0 8px;letter-spacing:.04em}
+#dBody{color:#c3beb2;font-size:13.5px}
+.cardpair{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.cardpair .cp-h{font-size:12px;color:var(--accent);letter-spacing:.15em;margin-bottom:8px;font-weight:600}
+.cp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cp>div{background:var(--panel2);border-radius:8px;padding:12px 14px;font-size:12.5px;color:#b9b4a8}
+.cp b{display:block;font-size:11.5px;letter-spacing:.12em;margin-bottom:6px;font-weight:600}
+.cp .old b{color:var(--muted)}
+.cp .new{border:1px solid #4d3a30}
+.cp .new b{color:var(--gold)}
+
+/* ---- thread ---- */
+.thread{margin-top:26px}
+.chain{display:grid;grid-template-columns:repeat(10,1fr);gap:0;margin-top:12px}
+.cnode{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:12px 12px 10px;margin-right:22px;cursor:pointer;transition:border-color .15s}
+.cnode:last-child{margin-right:0}
+.cnode:hover{border-color:#5a4038}
+.cnode.on{border-color:var(--accent);background:#1d1a1e;box-shadow:0 0 14px rgba(212,87,74,.25)}
+.cnode:not(:last-child)::after{content:"";position:absolute;right:-17px;top:50%;transform:translateY(-50%);
+  border:6px solid transparent;border-left:10px solid #4d3a34}
+.cnode .cy{font-size:10px;color:var(--gold);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.cnode .cn{font-family:var(--serif);font-size:13.5px;line-height:1.45;margin:3px 0 6px;letter-spacing:.02em}
+.cnode .cl{font-size:10.5px;color:var(--faint);line-height:1.5}
+.threadnote{color:var(--muted);font-size:12px;margin-top:10px}
+.threadnote i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin:0 4px;vertical-align:-1px}
+
+/* ---- cards section ---- */
+.cards{margin-top:30px}
+.cardgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.bigcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.bigcard h4{font-family:var(--serif);font-size:16px;letter-spacing:.04em;margin-bottom:2px}
+.bigcard .bc-ev{font-size:11.5px;color:var(--gold);letter-spacing:.08em;margin-bottom:10px}
+.bigcard .cp{margin-top:6px}
+.bigcard .jump{margin-top:10px;font-size:11.5px;color:var(--t2);background:none;border:none;cursor:pointer;
+  padding:0;text-decoration:underline;text-underline-offset:3px}
+.bigcard .jump:hover{color:#a7e6da}
+
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;color:var(--faint);font-size:11.5px}
+footer p{margin-bottom:6px;max-width:1000px}
+
+/* map svg */
+.land{stroke:#2b3342;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.landfill{fill:#2b3342}
+.sea-label{fill:#3a4152;font-size:10px}
+.city{fill:#8d94a4}
+.citylab{fill:#79808f;font-size:9.5px;letter-spacing:.05em}
+.star{fill:#c9a227}
+.actor circle{stroke:rgba(0,0,0,.55);stroke-width:1.5;transition:fill .3s}
+.actor.teki circle{stroke:#d9958a;stroke-dasharray:3 2.5}
+.actor text{fill:#f2ede1;font-size:13px;font-family:var(--serif);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.actor .aname{font-size:9.5px;fill:#9aa1b0;font-family:var(--sans)}
+.battle{display:none}
+.battle.show{display:block}
+.battle .ring{fill:none;stroke:#e06a5a;stroke-width:2;transform-origin:center;animation:pulse 1.6s ease-out infinite}
+.battle .ring2{fill:#e06a5a}
+.battle text{fill:#eda99a;font-size:10.5px;paint-order:stroke;stroke:#101318;stroke-width:3px;font-weight:600}
+.battle.peace .ring,.battle.peace .ring2{stroke:#8fc7a8;fill:none}
+.battle.peace .ring2{fill:#8fc7a8}
+.battle.peace text{fill:#a9d9bf}
+@keyframes pulse{0%{opacity:.9;r:6}100%{opacity:0;r:20}}
+.port{display:none}
+.port.show{display:block}
+.port circle{fill:#6fbfb0}
+.port text{fill:#6fbfb0;font-size:9px}
+.front{stroke:#d4574a;stroke-width:2.5;stroke-dasharray:6 5;fill:none;display:none;opacity:.85;marker-end:url(#arrw)}
+.front.show{display:block}
+.warrow{stroke:#d9a13b;stroke-width:2;fill:none;marker-end:url(#arrw2);display:none}
+.warrow.show{display:block}
+@media (max-width:1180px){.main{grid-template-columns:1fr}.chain{grid-template-columns:repeat(5,1fr);row-gap:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1><span class="sub">大人の学び直し日本史 — インタラクティブ年表</span>15年でこう変わった<br>— 黒船来航から明治改元まで —</h1>
+  <p class="lede">1853年、江戸幕府は260年続く安定の上にいた。1868年、それは消滅していた。<b>なぜ、わずか15年で?</b><br>
+  年月スクラバーを動かすと、年表・勢力図・情勢解説が連動します。破線リングのついた出来事には<b>「学校ではこう習った → 最新の研究では」</b>カードがあります。</p>
+</header>
+
+<div class="controls">
+  <button class="btn primary" id="playBtn">▶ 再生</button>
+  <button class="btn" id="speedBtn">速度 ×1</button>
+  <button class="btn" id="resetBtn">⟲ 最初へ</button>
+  <div class="readout"><span id="roY">1853年6月</span><small id="roE">嘉永6年</small></div>
+  <div class="kbdhint"><kbd>←</kbd><kbd>→</kbd> 1か月 / <kbd>Shift</kbd>+<kbd>←→</kbd> 1年 / <kbd>Space</kbd> 再生</div>
+</div>
+
+<div class="tl">
+  <div class="tl-scrub">
+    <input type="range" id="scrub" min="0" max="186" step="1" value="0" aria-label="年月スクラバー 1853年6月から1868年12月">
+    <div class="ticks" id="ticks"></div>
+    <div class="eras" id="eras"></div>
+  </div>
+  <div class="lanes" id="lanes"></div>
+  <p class="tl-foot">※国内の出来事は旧暦(天保暦)の年月、海外の出来事は西暦。●=単発の出来事 / ━=継続する出来事 / 破線リング=「学校では→最新研究では」カード付き。イベントをクリックすると詳細、帯の空白部分をクリックするとその時点へ移動します。</p>
+</div>
+
+<div class="narr">
+  <div class="box">
+    <h3>いま、なにが起きているか</h3>
+    <div id="phaseTitle"></div>
+    <div id="phaseText"></div>
+  </div>
+  <div class="box">
+    <h3>この時期の出来事(クリックで詳細)</h3>
+    <div id="nearby"></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="box mapbox">
+    <h3>勢力図 — スクラバーに連動</h3>
+    <svg id="map" viewBox="88 48 462 428" role="img" aria-label="幕末勢力図(デフォルメ日本地図)">
+      <defs>
+        <marker id="arrw" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 z" fill="#d4574a"/>
+        </marker>
+        <marker id="arrw2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 z" fill="#d9a13b"/>
+        </marker>
+      </defs>
+      <!-- 陸地(デフォルメ) -->
+      <path class="land" stroke-width="42" d="M463 95 C480 84 505 82 521 97"/>
+      <path class="land" stroke-width="46" d="M505 138 C472 168 452 196 430 216 C400 246 372 264 332 284 C302 296 262 307 213 315"/>
+      <path class="land" stroke-width="26" d="M259 352 L315 340"/>
+      <path class="land" stroke-width="42" d="M168 353 C160 383 158 405 160 428"/>
+      <circle class="landfill" cx="150" cy="299" r="5"/>
+      <text class="citylab" x="158" y="296">対馬</text>
+      <!-- 街 -->
+      <g id="cities"></g>
+      <!-- 開港場 -->
+      <g id="ports"></g>
+      <!-- 戊辰戦争の戦線 -->
+      <path class="front" id="front1" d="M330 288 C360 268 390 252 408 242"/>
+      <path class="front" id="front2" d="M422 224 C435 208 444 194 450 184"/>
+      <path class="front" id="front3" d="M456 164 C464 146 470 128 476 116"/>
+      <!-- 征討の矢印 -->
+      <path class="warrow" id="w-ch1" d="M248 306 L222 313"/>
+      <path class="warrow" id="w-ch2a" d="M248 306 L222 313"/>
+      <path class="warrow" id="w-ch2b" d="M178 348 L200 334"/>
+      <!-- 交戦マーカー -->
+      <g id="battles"></g>
+      <!-- 勢力 -->
+      <g id="actors"></g>
+    </svg>
+    <div class="legend">
+      <span><i style="background:var(--c-baku)"></i>幕府方・佐幕</span>
+      <span><i style="background:var(--c-kob)"></i>公武合体・公議</span>
+      <span><i style="background:var(--c-jyo)"></i>攘夷急進</span>
+      <span><i style="background:var(--c-tob)"></i>倒幕・新政府</span>
+      <span class="lteki"><i></i>朝敵</span>
+      <span><i style="background:var(--c-neu)"></i>中立・恭順</span>
+      <span><i style="background:var(--c-cho)"></i>朝廷</span>
+      <span><i style="background:#6fbfb0;border-radius:2px"></i>開港場</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="box" style="margin-bottom:16px">
+      <h3>各勢力のいま</h3>
+      <div class="board" id="board"></div>
+    </div>
+    <div class="box detail">
+      <h3>出来事の詳細</h3>
+      <div><span id="dDate"></span><span id="dTrack"></span><span id="dThread" hidden></span></div>
+      <div id="dTitle"></div>
+      <div id="dBody"></div>
+      <div id="dCard"></div>
+    </div>
+  </div>
+</div>
+
+<section class="thread">
+  <h2>因果の糸 — なぜ260年の幕府が15年で倒れたのか</h2>
+  <p class="h2note">各ステップをクリックすると、その時代へ移動します。年表上で<span style="color:var(--accent)">赤い「糸」バッジ</span>のつく出来事が、この連鎖の結節点です。</p>
+  <div class="chain" id="chain"></div>
+  <p class="threadnote">要するに — 軍事圧力(黒船)が<i></i>幕府に「勅許なき条約」を強い、それが<i></i>天皇の権威を政治化した。開港は<i></i>経済ショックを生んで攘夷運動の燃料になり、テロと争乱が<i></i>幕府の権威を削った。攘夷の実戦で懲りた薩長が近代軍備で結び、<i></i>征長失敗で「幕府は武力でも勝てない」ことが露呈。あとは政権の枠組みを誰が設計するかの競争であり、それは<i></i>大政奉還・王政復古・戊辰戦争で決着した。単独の「悪役」も「英雄」もいない、連鎖の物語である。</p>
+</section>
+
+<section class="cards">
+  <h2>学校ではこう習った → 最新の研究では</h2>
+  <p class="h2note">教科書の記述も研究の進展で変わり続けています。以下は近年の歴史学で定着しつつある見直しの例(出典は末尾)。</p>
+  <div class="cardgrid" id="cardgrid"></div>
+</section>
+
+<footer>
+  <p>【凡例・注記】国内の出来事の年月は旧暦(天保暦)。海外の出来事は西暦。明治改元(慶応4年9月8日)は西暦では1868年10月23日にあたる。慶応4年=明治元年。戊辰戦争の終結(箱館・五稜郭開城)は明治2年(1869)5月で、本教材の対象期間外のため注記に留めた。</p>
+  <p>【おもな参考文献】三谷博『維新史再考 — 公議・王政から集権・脱身分化へ』(NHK出版)/井上勝生『幕末・維新』(岩波新書)/荒野泰典『「鎖国」を見直す』(岩波現代文庫)/家近良樹『徳川慶喜』(吉川弘文館)・『江戸幕府崩壊』(講談社学術文庫)/保谷徹『幕末日本と対外戦争の危機』(吉川弘文館)/佐々木克『幕末政治と薩摩藩』(吉川弘文館)ほか。</p>
+  <p>本ページは学習用に事実関係を簡略化して図示しています。諸説ある事項(薩長同盟の性格、討幕の密勅の真正性など)は本文中にその旨を記しました。</p>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+/* ========= 時間軸 ========= */
+const N = 186;                                  // 1853/6 = 0, 1868/12 = 186
+const M = (y, m) => (y - 1853) * 12 + (m - 6);  // 年月 → index
+function ym(t){ const tot = t + 5; return [1853 + Math.floor(tot / 12), tot % 12 + 1]; }
+const ERAS = [
+  [0, "嘉永", 1848], [M(1854,11), "安政", 1854], [M(1860,3), "万延", 1860],
+  [M(1861,2), "文久", 1861], [M(1864,2), "元治", 1864], [M(1865,4), "慶応", 1865],
+  [M(1868,9), "明治", 1868]
+];
+function eraLabel(t){
+  let e = ERAS[0];
+  for (const x of ERAS) if (x[0] <= t) e = x;
+  const y = ym(t)[0], n = y - e[2] + 1;
+  return e[1] + (n === 1 ? "元" : n) + "年";
+}
+
+/* ========= トラック ========= */
+const TRACKS = [
+  { n:"幕府・江戸",  c:"var(--t0)" },
+  { n:"朝廷・雄藩",  c:"var(--t1)" },
+  { n:"外交",        c:"var(--t2)" },
+  { n:"社会・経済",  c:"var(--t3)" },
+  { n:"世界",        c:"var(--t4)" },
+];
+
+/* ========= イベント =========
+   tr:トラック / y,mo(+day):年月(+日) / y2,mo2:継続イベントの終わり
+   s:短縮ラベル / t:題 / dl:日付表示の上書き / x:解説 / c:カードID / th:因果の糸ステップ */
+const EV = [
+/* --- 幕府・江戸 --- */
+{tr:0,y:1853,mo:7,s:"幕府諮問",t:"阿部正弘、国書への対応を諸大名・幕臣に諮問",x:"老中首座・阿部正弘は前例を破り、大名から庶民に至るまで広く意見を求めた。挙国的な合意形成の試みだったが、結果として「国政はみなで論じるもの」という空気を生み、幕府独裁の終わりの始まりともなった。"},
+{tr:0,y:1853,mo:8,s:"台場築造",t:"品川台場の築造開始",x:"江川英龍の設計で江戸湾に洋式砲台を急造。同年9月には大船建造の禁も解かれ、幕府・諸藩の軍備近代化が一斉に始まる。"},
+{tr:0,y:1855,mo:10,s:"海軍伝習所",dl:"1855年(安政2)",t:"長崎海軍伝習所を開設",x:"オランダ士官を教官として幕臣・諸藩士に航海術・砲術・造船を教育。勝海舟・榎本武揚・五代友厚らを輩出し、のちの日本海軍の源流となる。"},
+{tr:0,y:1858,mo:4,day:23,s:"井伊大老",t:"井伊直弼、大老に就任",x:"条約勅許問題と将軍継嗣問題(紀州慶福か一橋慶喜か)という二重の危機のさなかに登場。南紀派の勝利で家茂が継嗣となり、一橋派は排除されていく。"},
+{tr:0,y:1858,mo:9,y2:1859,mo2:10,s:"安政の大獄",t:"安政の大獄(1858/9〜1859/10)",x:"条約調印と継嗣決定に反発した一橋派・尊攘派を大量処罰。連座は100名超、吉田松陰・橋本左内らが刑死した。弾圧の苛烈さが復讐の連鎖を生む。",th:5},
+{tr:0,y:1860,mo:3,day:3,s:"桜田門外",t:"桜田門外の変 — 井伊大老、暗殺",x:"水戸脱藩浪士らが登城中の大老を白昼に殺害。現職大老の横死は「幕府は自らの門前すら守れない」ことを天下に示し、幕威は決定的に傷ついた。",th:5},
+{tr:0,y:1862,mo:1,day:15,s:"坂下門外",t:"坂下門外の変 — 老中安藤信正、負傷",x:"和宮降嫁を推進した老中が水戸浪士らに襲撃され負傷、失脚。公武合体策すらテロの標的となり、幕閣の人材が政治的暴力で削られていく。"},
+{tr:0,y:1862,mo:2,day:11,s:"和宮婚儀",t:"皇女和宮、将軍家茂と婚儀(公武合体)",x:"孝明天皇の妹を将軍正室に迎え、朝廷との融和を演出。ただし降嫁の事実上の交換条件は「攘夷の実行」であり、実行不可能な約束が幕府自身を縛っていく。"},
+{tr:0,y:1862,mo:7,s:"文久の改革",t:"文久の改革はじまる",x:"島津久光と勅使の圧力の下、一橋慶喜を将軍後見職、松平慶永を政事総裁職に任命。閏8月には参勤交代を大幅緩和し、大名統制という幕藩体制の背骨が緩んだ。",th:6},
+{tr:0,y:1864,mo:8,y2:1864,mo2:12,s:"征長Ⅰ",t:"第一次長州征討(1864/8〜12)",x:"禁門の変を受け、幕府は35藩に出兵を命令。参謀・西郷隆盛の周旋もあり、長州は三家老の切腹などで恭順し、戦火を交えず年内に撤兵となった。"},
+{tr:0,y:1866,mo:6,y2:1866,mo2:8,s:"征長Ⅱ",t:"第二次長州征討(1866/6〜8)— 幕府敗退",x:"幕府軍は大島口・芸州口・石州口・小倉口の四境すべてで劣勢。7月20日に将軍家茂が大坂城で死去(21歳)し、勅命による休戦で事実上の敗北に終わった。「幕府は武力でも勝てない」ことが天下に露呈した転換点。",th:7},
+{tr:0,y:1866,mo:12,day:5,s:"慶喜将軍",t:"徳川慶喜、15代将軍に",x:"家茂死後、4か月余りの将軍空位を経て就任。将軍就任前から幕政の立て直しに着手していた。"},
+{tr:0,y:1867,mo:1,s:"慶応の改革",t:"慶応の改革 — 幕府最後の近代化",x:"仏公使ロッシュの助言も得て、老中の職掌専任化、フランス軍事顧問団による陸軍改革、財政・外交機構の再編を断行。幕府は「無為に滅んだ」のではなく、最後まで近代化を競っていた。"},
+{tr:0,y:1867,mo:10,day:14,s:"大政奉還",t:"大政奉還 — 慶喜、政権を朝廷に返上",x:"土佐藩(後藤象二郎ら)の建白を容れ、二条城で政権返上を上表、翌15日に勅許。260年の幕府は制度上ここで終わる。ただし慶喜には次の一手があった(カード参照)。",c:"H",th:8},
+{tr:0,y:1868,mo:4,day:11,s:"江戸開城",t:"江戸無血開城",x:"勝海舟と西郷隆盛の交渉(3月13〜14日)により、予定されていた3月15日の総攻撃は中止。4月11日、江戸城は新政府へ引き渡され、100万都市は戦火を免れた。徳川家は後に駿府70万石へ。",c:"F",th:9},
+{tr:0,y:1868,mo:5,day:3,s:"奥羽越",dl:"慶応4年閏4月〜5月",t:"奥羽越列藩同盟の成立",x:"会津・庄内への追討命令に反発した東北25藩が閏4月に同盟、5月に北越6藩が加わり31藩に。「もう一つの公議」を掲げたが、結束には濃淡があり、秋までに切り崩されていく。"},
+{tr:0,y:1868,mo:5,day:15,s:"上野戦争",t:"上野戦争 — 彰義隊、一日で壊滅",x:"大村益次郎の指揮する新政府軍が、上野寛永寺に拠る彰義隊をわずか1日で撃破。佐賀藩のアームストロング砲が威力を示した。"},
+{tr:0,y:1868,mo:8,day:19,s:"榎本脱走",t:"榎本武揚、旧幕府艦隊を率い品川を脱出",x:"開陽丸以下8隻が北へ向かう。10月に蝦夷地を占領し箱館・五稜郭に拠るが、明治2年(1869)5月に降伏し、戊辰戦争は完全終結する。"},
+{tr:0,y:1868,mo:9,day:22,s:"会津開城",t:"会津若松城、開城",x:"約1か月の籠城戦の末に降伏。戊辰戦争最大の激戦であり、白虎隊の悲劇でも知られる。会津処分の苛烈さは、その後の東北の対政府感情に長い影を落とした。"},
+
+/* --- 朝廷・雄藩 --- */
+{tr:1,y:1858,mo:3,s:"勅許拒否",t:"朝廷、通商条約の勅許を与えず",x:"老中堀田正睦が自ら上京して働きかけたが失敗。「天皇の意思」が現実政治を左右した画期であり、以後、京都が政局の中心に浮上する。",th:2},
+{tr:1,y:1862,mo:4,s:"久光上京",t:"島津久光、兵を率いて上京",x:"無位無官の「国父」が約1000の兵を率いて朝廷を動かし、幕政改革を要求。道中の寺田屋では自藩の急進派を粛清した(寺田屋事件)。雄藩が武力を背景に国政へ介入する先例となる。",th:6},
+{tr:1,y:1862,mo:9,s:"京都守護職",dl:"文久2年閏8月",t:"松平容保、京都守護職に就任",x:"「天誅」と称する暗殺が横行する京都の治安維持のため、会津藩主が就任。新選組を配下に置く。会津藩を悲劇へと運命づけた任命だった。"},
+{tr:1,y:1863,mo:6,s:"奇兵隊",t:"高杉晋作、奇兵隊を結成",x:"下関敗戦の直後、武士と庶民の混成部隊を創設。「身分ではなく志と実力」で兵を集める発想は、幕藩体制の軍事の常識を覆した。"},
+{tr:1,y:1863,mo:8,day:18,s:"八月十八日政変",t:"八月十八日の政変 — 長州、京都から追放",x:"薩摩・会津が結んで宮中の主導権を奪回。長州藩と三条実美ら急進派公卿は京都を追われた(七卿落ち)。攘夷急進路線はいったん頓挫する。"},
+{tr:1,y:1864,mo:6,day:5,s:"池田屋事件",t:"池田屋事件",x:"新選組が京都・池田屋に集った尊攘派志士を襲撃、吉田稔麿ら多数が死亡。長州藩内の強硬論を勢いづかせ、翌月の禁門の変の引き金の一つとなった。"},
+{tr:1,y:1864,mo:7,day:19,s:"禁門の変",t:"禁門の変(蛤御門の変)— 長州、朝敵に",x:"京都に攻め上った長州軍が御所周辺で薩摩・会津らと交戦し敗走。御所に発砲した長州は「朝敵」となり、京都市街は大火(どんどん焼け)に見舞われた。"},
+{tr:1,y:1864,mo:12,day:15,s:"功山寺挙兵",t:"高杉晋作、功山寺に挙兵",x:"恭順一辺倒の藩政府に対し、わずか80人で決起。内戦を制した倒幕派は藩権力を掌握し、長州は「表向き恭順・内実は軍拡」(武備恭順)へ転換する。"},
+{tr:1,y:1866,mo:1,day:21,s:"薩長同盟",t:"薩長同盟 — 犬猿の両藩が結ぶ",x:"坂本龍馬・中岡慎太郎らの仲介で、木戸孝允と西郷隆盛が6か条を密約。禁門の変で干戈を交えた両藩の提携は、幕府包囲網の核となった。武器・艦船は亀山社中などを介し長州へ流れた。",th:7},
+{tr:1,y:1866,mo:12,day:25,s:"孝明天皇崩御",t:"孝明天皇、崩御",x:"攘夷論者だが討幕には強く反対し、幕府(とりわけ慶喜・会津)を信任していた天皇の死で、政局の前提が崩れた。翌慶応3年1月、満14歳の睦仁親王(明治天皇)が践祚する。"},
+{tr:1,y:1867,mo:10,day:13,s:"密勅",t:"「討幕の密勅」薩長に下る",x:"10月13日に薩摩、14日に長州へ。ただし正規の手続きを欠いた文書で、真正性には当時から疑義があり「偽勅」とする議論が続く。大政奉還の上表により、実行はいったん沙汰止みとなった。"},
+{tr:1,y:1867,mo:11,day:15,s:"近江屋",t:"坂本龍馬・中岡慎太郎、暗殺される",x:"京都・近江屋にて。実行者は京都見廻組とする説が有力。大政奉還からわずか1か月後だった。"},
+{tr:1,y:1867,mo:12,day:9,s:"王政復古",t:"王政復古の大号令 — 新政府樹立クーデタ",x:"薩摩ら5藩の兵が御所を封鎖し、摂関・幕府の廃止と総裁・議定・参与の三職設置を宣言。同夜の小御所会議で慶喜に辞官納地を要求した。ただし直後には慶喜の議定就任も取り沙汰されるなど、政局はなお流動的だった。",th:8},
+{tr:1,y:1868,mo:1,day:3,s:"鳥羽伏見",t:"鳥羽・伏見の戦い — 戊辰戦争はじまる",x:"旧幕府軍約1万5千が新政府軍約5千に敗北。仁和寺宮に錦旗が与えられ、旧幕府側は「賊軍」となった。慶喜は大坂城を密かに脱し、江戸で恭順に転じる。",th:9},
+{tr:1,y:1868,mo:3,day:14,s:"五箇条",t:"五箇条の誓文",x:"「広ク会議ヲ興シ万機公論ニ決スヘシ」。新政府は公議の理念を掲げ、同時期に対外的には開国和親を宣言した。攘夷は新国家の看板から静かに外された。"},
+{tr:1,y:1868,mo:7,day:17,s:"東京改称",t:"江戸を東京と改称",x:"「江戸ヲ称シテ東京ト為ス」詔書。9月には天皇の東幸が始まり、政治の重心は京都から東へ移っていく。"},
+{tr:1,y:1868,mo:9,day:8,s:"明治改元",t:"明治改元 — 一世一元の制",x:"慶応4年9月8日(西暦1868年10月23日)、「明治」に改元し、天皇一代に元号一つの制を定めた。ペリー来航から15年3か月。260年の幕府は、歴史になった。",th:10},
+
+/* --- 外交 --- */
+{tr:2,y:1853,mo:6,day:3,s:"ペリー来航",t:"ペリー、浦賀に来航",x:"米東インド艦隊4隻(うち蒸気軍艦2隻)が江戸湾口に投錨。フィルモア大統領の国書を提出し、回答を求めて「1年後の再来」を予告して去った。目的は捕鯨船の補給・漂流民保護・対清貿易の中継港確保。",c:"B",th:1},
+{tr:2,y:1853,mo:7,day:18,s:"プチャーチン",t:"ロシア使節プチャーチン、長崎に来航",x:"国境画定と通商を要求。幕府は米露を天秤にかけながら時間を稼ぐ交渉術で応じた。ロシアとの交渉はクリミア戦争の影響で断続する。"},
+{tr:2,y:1854,mo:1,day:16,s:"ペリー再来航",t:"ペリー再来航 — 7隻で江戸湾へ",x:"予告より早い再来。艦隊は最終的に9隻に増強された。幕府は横浜村に応接所を設けて交渉に入る。"},
+{tr:2,y:1854,mo:3,day:3,s:"日米和親条約",t:"日米和親条約(神奈川条約)調印",x:"下田・箱館の開港、薪水・食料の給与、漂流民の保護、領事駐在を認めた。通商は含まれていない。英・露・蘭とも同様の条約を結ぶ。",c:"A"},
+{tr:2,y:1854,mo:12,day:21,s:"日露和親条約",t:"日露和親条約(下田)調印",x:"択捉島以南を日本領、得撫島以北をロシア領とし、樺太は国境を定めず雑居とした。交渉中に安政東海地震の津波でロシア艦ディアナ号が大破している。"},
+{tr:2,y:1856,mo:7,day:21,s:"ハリス着任",t:"米総領事ハリス、下田に着任",x:"初代駐日総領事。アロー戦争の戦況を背景に「英仏の武力が来る前に、穏健な米国と条約を結ぶべきだ」と説き、通商条約交渉を進めた。"},
+{tr:2,y:1858,mo:6,day:19,s:"通商条約",t:"日米修好通商条約 — 勅許なきまま調印",x:"神奈川ほかの開港、協定関税(関税自主権の制約)、領事裁判権などを規定。勅許を得ないままの調印に孝明天皇は激怒し、政局の焦点は一気に京都へ移った。",c:"G",th:2},
+{tr:2,y:1858,mo:7,y2:1858,mo2:9,s:"五カ国条約",t:"安政の五カ国条約(蘭・露・英・仏)",x:"7月に蘭・露・英、9月に仏とも同内容の条約を調印。日本は5か国と通商条約で結ばれ、条約体制に組み込まれた。"},
+{tr:2,y:1859,mo:6,day:2,s:"横浜開港",t:"横浜・長崎・箱館で貿易開始",x:"輸出の主力は生糸と茶。開港からわずか数年で日本は世界市場に直結し、国内の物流と物価の構造が一変する。",th:3},
+{tr:2,y:1860,mo:1,s:"遣米使節",t:"遣米使節、渡米 — 咸臨丸も太平洋横断",x:"条約批准書交換のため新見正興らがワシントンへ。護衛の咸臨丸には勝海舟・福澤諭吉・ジョン万次郎らが乗り組み、日本人による初の太平洋横断航海となった。"},
+{tr:2,y:1861,mo:2,s:"対馬事件",t:"対馬事件 — 露艦、対馬を占拠",x:"ロシア軍艦ポサドニック号が対馬に居座り、租借を要求。幕府は解決できず、英国艦隊の示威によって約半年後に退去した。列強同士の牽制が日本の領土を守った皮肉な事例。"},
+{tr:2,y:1862,mo:8,day:21,s:"生麦事件",t:"生麦事件",x:"江戸からの帰途、島津久光の行列を騎馬で横切った英国人商人らを薩摩藩士が殺傷。幕府は賠償に応じたが薩摩は拒否し、翌年の薩英戦争を招く。"},
+{tr:2,y:1863,mo:5,day:10,s:"下関攘夷戦",t:"長州、下関で外国船砲撃 — 「攘夷実行」",x:"朝廷と幕府が約束させられた「攘夷期限」の当日、長州藩は米商船を皮切りに仏・蘭艦も砲撃。全国でただ一藩、攘夷を文字通り実行した。まもなく米仏の報復を受ける。"},
+{tr:2,y:1863,mo:7,day:2,s:"薩英戦争",t:"薩英戦争",x:"生麦事件の賠償を巡り英艦隊7隻が鹿児島湾へ。市街の約1割が焼失した一方、英側も旗艦艦長ら60人超の死傷を出した。戦後、薩摩と英国は急速に接近し、留学生派遣・武器取引へと進む。"},
+{tr:2,y:1864,mo:8,day:5,s:"四国艦隊",t:"四国連合艦隊、下関を砲撃",x:"英仏蘭米の17隻が下関砲台を占拠・破壊。長州は「攘夷は不可能」を実地に学び、講和使節に高杉晋作を立てた。以後の長州は開国路線の軍近代化へ転じていく。"},
+{tr:2,y:1865,mo:10,day:5,s:"条約勅許",t:"朝廷、ついに条約を勅許",x:"英仏蘭の艦隊が兵庫沖に迫る中での決断(兵庫開港は不許可のまま)。「天皇が認めていない条約を破棄せよ」という破約攘夷の大義名分は、ここで消滅した。"},
+{tr:2,y:1866,mo:5,day:13,s:"改税約書",t:"改税約書 — 関税一律5%に",x:"下関戦争の賠償問題と絡めて、輸入関税を一律5%の従量税へ引き下げ。実は「極端な低関税」はここから本格化する。貿易は拡大し、国内産業と幕府財政への圧迫が強まった。",th:4},
+{tr:2,y:1867,mo:5,day:24,s:"兵庫勅許",t:"兵庫開港、勅許される",x:"慶喜が徹夜の朝議で押し切った外交的勝利。だがこの「強すぎる慶喜」への警戒が、薩摩を武力倒幕路線へ傾ける一因になった。開港自体は12月7日(西暦1868年1月1日)。"},
+{tr:2,y:1868,mo:1,day:11,s:"神戸・堺事件",t:"神戸事件・堺事件と「開国和親」布告",x:"新政府側の藩兵と外国兵の衝突が続発(神戸事件1月、堺事件2月)。新政府は1月15日、攘夷を放棄し開国和親を列国に布告。「攘夷」は倒幕の旗から静かに降ろされた。"},
+
+/* --- 社会・経済 --- */
+{tr:3,y:1854,mo:11,day:4,s:"東海南海地震",t:"安政東海地震・南海地震",x:"11月4日と5日、M8級が連発。津波で沿岸は大きな被害を受け、下田ではロシア艦ディアナ号が大破した。内憂外患が文字通り重なった。"},
+{tr:3,y:1855,mo:10,day:2,s:"安政江戸地震",t:"安政江戸地震 — 死者約1万",x:"江戸直下型で倒壊・火災により死者約1万とされる。水戸学の中心人物・藤田東湖の圧死は、水戸藩ひいては尊攘運動の行方も変えた。鯰絵が大流行した。"},
+{tr:3,y:1858,mo:7,s:"コレラ流行",t:"コレラ大流行",x:"長崎から始まり江戸で爆発的に流行、死者は江戸だけで数万人ともいわれる(諸説あり)。「開国が疫病を持ち込んだ」という実感が、攘夷感情の民衆的な土壌となった。"},
+{tr:3,y:1859,mo:7,s:"金流出",t:"小判が海外へ大量流出",x:"金銀比価が国内約1:5・海外約1:15と乖離していたため、外国銀貨を小判に替えて持ち出すだけで大きな利鞘が生じた。開港直後から小判は急速に国外へ流出する。",c:"C",th:4},
+{tr:3,y:1860,mo:4,day:0,s:"五品廻送令",dl:"万延元年閏3月",t:"五品江戸廻送令",x:"雑穀・水油・蝋・呉服・生糸の5品は江戸問屋を経由せよという流通統制。在郷商人と列国の反発でほとんど機能せず、幕府の経済統制力の限界を示した。"},
+{tr:3,y:1860,mo:4,day:20,s:"万延改鋳",t:"万延の改鋳 — 物価騰貴へ",x:"小判の金含有量を約1/3に切り下げて流出を止めたが、通貨の実質的増発となり物価は急騰。俸禄で暮らす武士と都市民衆の生活を直撃し、攘夷運動の経済的燃料となった。",th:4},
+{tr:3,y:1865,mo:9,s:"横須賀製鉄所",dl:"慶応元年(1865)",t:"横須賀製鉄所、建設開始",x:"勘定奉行・小栗忠順が仏の支援を取り付けて着工。技師長はヴェルニー。ドックと工場群は維新後そのまま新政府に引き継がれ、横須賀海軍工廠として近代化を支えた。",c:"D"},
+{tr:3,y:1866,mo:5,s:"打ちこわし",dl:"慶応2年5〜6月",t:"江戸・大坂で打ちこわし、武州世直し一揆",x:"米価高騰を背景に大坂(5月)・江戸(5月末)で打ちこわしが発生、武蔵国では数万人規模の世直し一揆(6月)。第二次征長のさなか、幕府のお膝元が燃えていた。"},
+{tr:3,y:1867,mo:8,s:"ええじゃないか",dl:"慶応3年夏〜冬",t:"「ええじゃないか」乱舞、広がる",x:"「お札降り」を機に東海道筋から畿内・四国へ乱舞が拡大。倒幕派の謀略説も古くからあるが実証は乏しく、世直しへの期待と社会不安の表出とみる説が有力。",c:"E"},
+{tr:3,y:1868,mo:3,day:28,s:"神仏分離",t:"神仏分離令",x:"新政府の祭政一致方針により神社から仏教色を排除。意図を超えて各地で廃仏毀釈の嵐を招き、多くの寺院・仏像が失われた。変革の負の側面である。"},
+
+/* --- 世界 --- */
+{tr:4,y:1853,mo:6,y2:1864,mo2:7,s:"太平天国の乱",t:"太平天国の乱(1851〜64)",dl:"1851〜64年",x:"清で起きた史上最大級の内戦。死者は数千万人規模とされる。1853年3月には南京を占領して首都とした。清の疲弊は列強の東アジア政策と市場の動向を通じて日本にも波及した。"},
+{tr:4,y:1853,mo:10,y2:1856,mo2:3,s:"クリミア戦争",t:"クリミア戦争(1853〜56)",x:"英仏・オスマン帝国とロシアの戦争。極東でも英仏艦隊が露艦隊を追跡し、カムチャツカのペトロパブロフスクを攻撃した。プチャーチンの対日交渉も、この戦争の影の下で行われていた。"},
+{tr:4,y:1856,mo:10,y2:1860,mo2:10,s:"アロー戦争",t:"アロー戦争(第二次アヘン戦争、1856〜60)",x:"英仏が清と開戦。「清の次は日本ではないか」という現実的な恐怖が、ハリスの通商条約交渉における最大の説得材料となった。"},
+{tr:4,y:1857,mo:5,s:"インド大反乱",t:"インド大反乱(1857〜58)",x:"東インド会社の支配に対する大反乱。鎮圧後、ムガル帝国は滅亡し英国の直轄統治へ。大反乱の経験は、英国の対日方針を「征服より通商」に傾けたとされる。"},
+{tr:4,y:1858,mo:6,s:"天津条約",t:"天津条約 — 清、英仏露米と締結",x:"アロー戦争の講和(第一次)。日本の通商条約調印とほぼ同時であり、日本の開国は東アジア全体を覆う条約体制の一環だった。"},
+{tr:4,y:1860,mo:10,s:"北京占領",t:"英仏軍、北京を占領(北京条約)",x:"円明園が略奪・焼却され、咸豊帝は熱河へ逃亡。清の首都陥落の報は幕府に強烈な危機感を与え、対外強硬論と軍備増強論の双方を刺激した。"},
+{tr:4,y:1861,mo:4,y2:1865,mo2:4,s:"南北戦争",t:"アメリカ南北戦争(1861〜65)",x:"米国は内戦により東アジアから事実上後退。攘夷実行期(1863〜64)の対日軍事圧力が英仏中心となった遠因である。"},
+{tr:4,y:1862,mo:9,s:"ビスマルク",t:"ビスマルク、プロイセン首相に",x:"「鉄血演説」。ドイツ統一戦争の時代が始まる。小国分立から軍事力で統一国家へ — のちの明治国家が手本と仰ぐ国のかたちが、同時代に形成されつつあった。"},
+{tr:4,y:1865,mo:4,s:"南北戦争終結",t:"南北戦争終結 — 余剰武器が世界市場へ",x:"大量の中古銃(ミニエー銃・ゲベール銃など)が放出され、上海・長崎経由で日本にも流入。グラバーら商人を介して薩長の軍備を近代化させ、戊辰戦争の火力を支えた。",th:7},
+{tr:4,y:1866,mo:6,s:"普墺戦争",t:"普墺戦争 — プロイセン、7週間で勝利",x:"ケーニヒグレーツの戦いで決着。鉄道と後装銃を駆使した短期決戦は、軍制近代化の威力を世界に示した。"},
+{tr:4,y:1866,mo:7,s:"大西洋ケーブル",t:"大西洋横断電信ケーブル、敷設成功",x:"欧米間がほぼ即時に結ばれる情報革命。一方、極東の情報はなお船便で数十日遅れ — 日本は情報網の「果て」で維新を迎えた。"},
+{tr:4,y:1867,mo:3,s:"アラスカ売却",t:"ロシア、アラスカを米国へ売却",x:"720万ドル。ロシアの北太平洋からの後退を象徴する取引で、日本近海の勢力図にも間接的に影響した。"},
+{tr:4,y:1867,mo:4,s:"パリ万博",t:"パリ万国博覧会 — 幕府と薩摩が別々に出展",x:"幕府(徳川昭武ら)に加え、薩摩藩は「薩摩琉球国」を名乗って独自出展し勲章まで作った。幕府の「日本代表」としての地位は、国際舞台でも揺さぶられていた。"},
+{tr:4,y:1867,mo:9,s:"『資本論』",t:"マルクス『資本論』第1巻刊行",x:"同じ年、日本では大政奉還。世界が資本主義の分析を始めたとき、日本は資本主義への参入を始めようとしていた。"},
+];
+
+/* ========= カード ========= */
+const CARDS = {
+A:{q:"「鎖国」はしていなかった?",
+ old:"江戸幕府は鎖国政策で国を完全に閉ざしており、ペリーが力ずくでこじ開けた。",
+ neu:"「鎖国」は1801年に蘭学者・志筑忠雄がケンペルの著作を訳す際に作った言葉で、幕府自身の一貫した「祖法」ではなかった。実際には長崎(オランダ・清)・対馬(朝鮮)・薩摩(琉球)・松前(アイヌ)の「四つの口」で貿易と外交を管理し続けていた(荒野泰典ら)。ペリー来航は「閉ざされた国の開放」というより、「管理された対外関係の再編を軍事力で迫られた」出来事と捉え直されている。"},
+B:{q:"ペリーは「突然」来たのではない",
+ old:"黒船は突然現れ、幕府は太平の眠りから叩き起こされて大混乱した。",
+ neu:"来航の約1年前(嘉永5年)、オランダ商館長が「別段風説書」で米艦隊派遣の計画を、司令官名や艦数まで含めて幕府に伝えていた。幕府は評議を重ねたが対応方針の合意に至らず、一方で現場の浦賀奉行所では応接の準備が進んでいた。問題は「情報がなかった」ことではなく、「情報があっても意思決定できない統治機構」にあった — というのが近年の理解である。"},
+C:{q:"攘夷は「無知な排外主義」だったのか",
+ old:"攘夷派は世界を知らない頑迷な人々で、開国派こそが正しかった。",
+ neu:"開港後の金流出・万延改鋳・輸出急増は激しい物価騰貴を招き、俸禄生活の武士と都市民衆の暮らしを直撃した。攘夷運動の高揚には、この経済ショックへの反応という側面が大きい。また志士層の「破約攘夷」は、不利な条約をいったん破棄して対等に結び直すという政治戦略でもあった。攘夷戦争の当事者だった薩長が、のちに最も積極的な開国・近代化勢力へ転じた事実は、「無知」だけでは説明がつかない。"},
+D:{q:"幕府は「旧態依然」ではなかった",
+ old:"幕府は時代遅れのまま滅び、近代化は明治政府がゼロから始めた。",
+ neu:"幕府は長崎海軍伝習所(1855)、蕃書調所、横須賀製鉄所(1865)、フランス軍事顧問団による軍制改革(1867)など、体系的な近代化を進めていた。横須賀のドックと工場群は明治政府にそのまま引き継がれて海軍工廠となり、旧幕臣の技術者・官僚も新政府を支えた。明治の近代化のかなりの部分は「幕府の遺産の相続」の上に成り立った、という評価が定着しつつある。"},
+E:{q:"明治維新は民衆革命ではない",
+ old:"ええじゃないかや世直し一揆で民衆のエネルギーが爆発し、幕府を倒した。",
+ neu:"世直し一揆やええじゃないかは倒幕運動と直接には結びついておらず、維新の主体はあくまで武士層 — それも薩長土肥という特定の藩 — だった。近年は、フランス革命のような「下からの革命」ではなく、対外危機・経済変動・政治闘争が重なった「複合革命」(三谷博)などと捉える見方が有力である。民衆は変革の担い手というより、物価高と戦乱の影響を最も強く受けた側だった。"},
+F:{q:"江戸無血開城は「美談」だけではない",
+ old:"勝海舟と西郷隆盛、二人の英雄の会談による劇的な決断だった。",
+ neu:"両者の交渉が重要だったことは確かだが、それだけで決まってはいない。英公使パークスが「恭順している相手への攻撃は支持できない」と新政府側に伝えた圧力、天璋院(篤姫)・和宮ら大奥からの嘆願、慶喜自身の徹底恭順、そして100万都市江戸の混乱・経済崩壊を避けたい双方の実利 — 複数の要因が重なった複合的な帰結と理解されている。"},
+G:{q:"「不平等条約」と「井伊の独断」の実像",
+ old:"井伊直弼が独断で結んだ屈辱的な不平等条約が、日本経済を最初から苦しめた。",
+ neu:"当初の輸入関税は平均20%程度で、極端な低関税(一律5%)になったのは1866年の改税約書以降である。領事裁判権も、幕府側に外国人裁判の負担を避ける意図があったことなど、当時の東アジアの条約慣行の中で捉える研究が進む(片務的最恵国待遇など不平等性自体は実在した)。また調印現場では、井伊はなお勅許を待つ姿勢だったが、全権の井上清直・岩瀬忠震が状況判断で調印に踏み切ったとされ、「井伊の独断」という単純な像も見直されている。"},
+H:{q:"大政奉還は「敗北宣言」ではない",
+ old:"追い詰められた慶喜が、観念して政権を投げ出した。",
+ neu:"慶喜は政権返上後も、諸侯会議(公議政体)の議長格として徳川家が実質的な主導権を握り続ける構想を持っていたとされる(家近良樹ら)。実際、王政復古クーデタの後ですら慶喜の新政府参加は交渉され続けた。同時期の「討幕の密勅」は正規の手続きを欠き、真正性への疑義が古くから呈されている。武力倒幕派は鳥羽・伏見の開戦によって、ようやく流れを自派に引き寄せた — という理解が有力である。"},
+};
+
+/* ========= 因果の糸 ========= */
+const CHAIN = [
+{y:"1853", n:"黒船来航", l:"軍事圧力が可視化され、幕府は諸大名に意見を求める — 国政が「みなで論じるもの」に", t:0},
+{y:"1858", n:"勅許なき条約調印", l:"天皇の権威が幕府の正統性を測る物差しになり、政局の中心が京都へ", t:M(1858,6)},
+{y:"1859", n:"開港・貿易開始", l:"生糸・茶の輸出で日本経済が世界市場に直結する", t:M(1859,6)},
+{y:"1859–66", n:"経済ショック", l:"金流出→改鋳→物価騰貴が武士と民衆の生活を直撃、攘夷の燃料に", t:M(1860,4)},
+{y:"1860–64", n:"攘夷運動と政治テロ", l:"桜田門外で幕威が失墜、京都では天誅と争乱が続く", t:M(1860,3)},
+{y:"1862–65", n:"雄藩の台頭", l:"攘夷の実戦(薩英・下関)で懲りた薩長が、英国と結び軍を近代化", t:M(1863,7)},
+{y:"1866", n:"薩長同盟と征長失敗", l:"幕府が武力でも勝てないことが露呈、権威と実力の両方を喪失", t:M(1866,6)},
+{y:"1867", n:"大政奉還・王政復古", l:"政権の「枠組み」そのものの設計競争となり、クーデタで新政府樹立", t:M(1867,10)},
+{y:"1868", n:"戊辰戦争", l:"鳥羽・伏見から会津・箱館へ — 武力で決着し旧体制を解体", t:M(1868,1)},
+{y:"1868–", n:"明治政府", l:"中央集権国家の建設へ。ただしその設計図の多くは幕末に描かれていた", t:M(1868,9)},
+];
+
+/* ========= 情勢フェーズ ========= */
+const PHASES = [
+[0, "黒船の衝撃", "ペリーは国書を置いて去り、幕府は初めて広く「世論」に頼った。海防議論が沸騰し、台場築造や大船建造解禁が進む。ロシア使節も長崎に現れ、圧力は一方向ではない。"],
+[M(1854,3), "開国と災害の時代", "和親条約で下田・箱館が開き、幕府は安政の改革で軍制近代化に着手する。しかし東海・南海・江戸と巨大地震が相次ぎ、コレラも流行。社会不安が静かに蓄積していく。"],
+[M(1858,3), "条約と大獄", "勅許を得られないまま通商条約に調印。京都の天皇が政治の焦点に浮上し、井伊直弼は将軍継嗣問題とあわせて反対派を大量処罰する。弾圧は復讐の連鎖の始まりだった。"],
+[M(1860,3), "権威の動揺", "桜田門外の変で現職大老が横死。幕府は和宮降嫁による公武合体で立て直しを図るが、開港後の経済ショックが進行し、攘夷熱はむしろ高まっていく。"],
+[M(1862,7), "攘夷の噴出", "島津久光の率兵上京を機に幕府は改革を強いられ、京都では天誅が横行する。約束させられた「攘夷期限」に長州は下関で砲撃を実行し、薩摩は鹿児島で英艦隊と交戦した。"],
+[M(1863,8), "京都争乱と長州の転落", "八月十八日の政変で長州は京都を追われ、禁門の変で朝敵に転落。四国艦隊にも敗れる。幕府は第一次征長で主導権回復を図り、一時は成功したかに見えた。"],
+[M(1865,1), "水面下の再編", "長州では高杉らのクーデタで倒幕派が藩権力を握り、薩摩は英国と接近して軍備を更新する。慶応2年1月、薩長同盟。条約勅許で「破約攘夷」の大義は消え、争点は純粋な権力闘争へ移った。"],
+[M(1866,6), "転換点 — 征長失敗", "幕府は四境で長州に敗れ、将軍家茂が陣中に死去。米価高騰で江戸・大坂は打ちこわしの嵐となる。年末には孝明天皇も崩御し、あらゆる政治的前提が崩れた。"],
+[M(1867,1), "二つの近代化競走", "慶喜は慶応の改革で幕府の立て直しを急ぎ、外交では兵庫開港勅許を勝ち取る。「強すぎる慶喜」を警戒する薩摩は武力倒幕に傾き、土佐は大政奉還による軟着陸を模索する。"],
+[M(1867,10), "政権交代の設計", "大政奉還で幕府は制度上消滅し、王政復古クーデタで新政府が発足。だが慶喜の処遇は未決のままで、政局はまだ決着していない。誰もが内戦を避けようとし、そして避けられなかった。"],
+[M(1868,1), "武力決着", "鳥羽・伏見の敗北で慶喜は朝敵となり、徹底恭順を選ぶ。新政府は攘夷を捨てて開国和親を宣言し、江戸は交渉によって無血開城した。"],
+[M(1868,5), "戊辰戦争と新時代", "抵抗は上野から東北、そして蝦夷地へ。会津落城とほぼ同じころ、元号は明治に改まる。ペリー来航から15年3か月 — 260年続いた幕府は歴史になった。"],
+];
+
+/* ========= 勢力(地図・ボード) ========= */
+const STANCE = {
+  baku:{n:"幕府方",     c:"#5f8fc0"},
+  kob :{n:"公武合体・公議", c:"#9a7fc9"},
+  jyo :{n:"攘夷急進",   c:"#d9a13b"},
+  tob :{n:"倒幕・新政府", c:"#d4574a"},
+  teki:{n:"朝敵",       c:"#7d4a44"},
+  neu :{n:"中立・恭順", c:"#7d8797"},
+  cho :{n:"朝廷",       c:"#c9a227"},
+};
+const ACTORS = [
+{id:"baku", n:"幕府", x:430, y:218, r:18, k:"幕",
+ s:[[0,"baku","黒船対応に苦慮。阿部正弘、諸大名に意見を求める"],
+    [M(1858,4),"baku","井伊直弼が大老に — 条約調印と大獄の強権路線"],
+    [M(1860,3),"baku","桜田門外の変で権威動揺 — 公武合体路線へ"],
+    [M(1862,7),"baku","文久の改革 — 雄藩の要求を受け入れ譲歩"],
+    [M(1864,8),"baku","長州征討で主導権の回復を図る"],
+    [M(1866,8),"baku","征長失敗 — 軍事的威信を喪失"],
+    [M(1866,12),"baku","慶喜就任、慶応の改革で最後の立て直し"],
+    [M(1867,10),"kob","大政奉還 — 公議政体の主導権を狙う"],
+    [M(1867,12),"neu","王政復古により新政府から排除される"],
+    [M(1868,1),"teki","鳥羽・伏見に敗北、慶喜追討令 — 「朝敵」に"],
+    [M(1868,4),"neu","江戸開城 — 徳川家は存続(のち駿府70万石)"]]},
+{id:"cho", n:"朝廷", x:334, y:270, r:16, k:"朝",
+ s:[[0,"cho","幕府の諮問により政治の表舞台へ — 発言力が上昇"],
+    [M(1858,3),"cho","条約勅許を拒否 — 権威の源泉となる"],
+    [M(1863,8),"cho","八月十八日政変後、公武合体派が宮中を主導"],
+    [M(1866,12),"cho","孝明天皇崩御 — 幼い明治天皇が践祚し流動化"],
+    [M(1867,12),"tob","王政復古 — 新政府の中枢に"]]},
+{id:"sat", n:"薩摩", x:162, y:430, r:15, k:"薩",
+ s:[[0,"kob","島津斉彬の集成館事業 — 近代化と幕政改革を志向"],
+    [M(1862,4),"kob","久光が率兵上京、公武合体を主導"],
+    [M(1863,7),"kob","薩英戦争 — 攘夷の限界を悟り英国と接近"],
+    [M(1866,1),"tob","薩長同盟 — 武力倒幕へ転回"],
+    [M(1868,1),"tob","新政府軍の中核として戊辰戦争を戦う"]]},
+{id:"cho2", n:"長州", x:205, y:314, r:15, k:"長",
+ s:[[0,"neu","藩政改革で財政再建・洋式軍備を推進"],
+    [M(1862,7),"jyo","攘夷急進派が藩論を主導"],
+    [M(1863,5),"jyo","下関で外国船砲撃 — 全国唯一の攘夷実行"],
+    [M(1863,8),"jyo","八月十八日政変で京都から追放される"],
+    [M(1864,7),"teki","禁門の変で朝敵に。四国艦隊にも敗北"],
+    [M(1865,1),"tob","功山寺挙兵で倒幕派が藩権力を掌握、軍制改革"],
+    [M(1866,6),"tob","征長軍を四境で撃退 — 軍事力を実証"],
+    [M(1868,1),"tob","新政府軍の中核として戊辰戦争を戦う"]]},
+{id:"tos", n:"土佐", x:285, y:360, r:13, k:"土",
+ s:[[0,"kob","山内容堂 — 幕府への恩顧と公議の間で揺れる"],
+    [M(1861,8),"jyo","土佐勤王党(武市瑞山)が台頭"],
+    [M(1863,9),"kob","容堂、勤王党を弾圧 — 公議路線へ回帰"],
+    [M(1867,6),"kob","後藤象二郎ら、大政奉還路線を推進"],
+    [M(1868,1),"tob","新政府に参加、戊辰戦争に従軍"]]},
+{id:"hiz", n:"肥前", x:148, y:352, r:13, k:"肥",
+ s:[[0,"neu","鍋島直正 — 反射炉・洋式砲で独自の近代化"],
+    [M(1865,1),"neu","アームストロング砲など軍備充実、中央政局とは距離"],
+    [M(1868,2),"tob","新政府側で参戦 — 上野戦争で佐賀藩砲が威力"]]},
+{id:"aiz", n:"会津", x:452, y:172, r:13, k:"会",
+ s:[[0,"baku","東北の雄藩 — 家訓は将軍家への忠誠"],
+    [M(1862,9),"baku","松平容保が京都守護職に。新選組を配下に治安維持"],
+    [M(1868,1),"teki","朝敵に指定される"],
+    [M(1868,9),"neu","約1か月の籠城の末、会津若松城開城"]]},
+];
+
+const CITIES = [
+ [410,238,"江戸",1],[314,288,"京都",1],[424,262,"浦賀",0],
+ [248,304,"広島",0],[162,432,"鹿児島",0],[208,330,"下関",0],
+];
+const PORTS = [
+ [394,270,"下田",M(1854,3)],[476,110,"箱館",M(1854,3)],
+ [400,250,"横浜",M(1859,6)],[126,372,"長崎",M(1859,6),1],[298,314,"兵庫",M(1867,12)],
+];
+const BATTLES = [
+{x:420,y:258,l:"黒船来航",w:[0,M(1853,7)]},
+{x:208,y:330,l:"下関攘夷戦",w:[M(1863,5),M(1863,6)]},
+{x:162,y:432,l:"薩英戦争",w:[M(1863,7),M(1863,8)]},
+{x:314,y:288,l:"禁門の変",w:[M(1864,7),M(1864,7)]},
+{x:208,y:330,l:"四国艦隊下関砲撃",w:[M(1864,8),M(1864,9)]},
+{x:222,y:316,l:"第一次長州征討(不戦恭順)",w:[M(1864,8),M(1864,12)],arrows:["w-ch1"]},
+{x:222,y:316,l:"第二次長州征討(幕府敗退)",w:[M(1866,6),M(1866,8)],arrows:["w-ch2a","w-ch2b"]},
+{x:314,y:288,l:"鳥羽・伏見の戦い",w:[M(1868,1),M(1868,2)]},
+{x:410,y:238,l:"江戸無血開城",w:[M(1868,3),M(1868,4)],peace:true},
+{x:410,y:238,l:"上野戦争",w:[M(1868,5),M(1868,5)]},
+{x:452,y:172,l:"会津戦争",w:[M(1868,8),M(1868,9)]},
+{x:476,y:112,l:"榎本艦隊、蝦夷地へ(〜明治2年5月)",w:[M(1868,10),N]},
+];
+const FRONTS = [["front1",M(1868,1)],["front2",M(1868,5)],["front3",M(1868,10)]];
+
+/* ========= 準備 ========= */
+EV.forEach((e,i)=>{ e.i=i; e.t0=M(e.y,e.mo); e.t1=(e.y2?M(e.y2,e.mo2):null); });
+const $ = id => document.getElementById(id);
+const svgNS = "http://www.w3.org/2000/svg";
+function el(tag, cls, parent){ const d=document.createElement(tag); if(cls)d.className=cls; if(parent)parent.appendChild(d); return d; }
+function sel_(tag, attrs, parent){ const d=document.createElementNS(svgNS,tag);
+  for(const k in attrs) d.setAttribute(k,attrs[k]); if(parent)parent.appendChild(d); return d; }
+function dateLabel(e){
+  if (e.dl) return e.dl + (e.tr===4 ? "" : "");
+  const base = `${e.y}年${e.mo}月` + (e.day ? `${e.day}日` : "");
+  if (e.t1!=null) return `${e.y}年${e.mo}月〜${e.y2}年${e.mo2}月`;
+  return base;
+}
+function jpDate(e){ // 詳細表示用: 西暦+和暦
+  if (e.dl) return e.dl;
+  if (e.t1!=null) return `${e.y}年${e.mo}月〜${e.y2}年${e.mo2}月` + (e.tr===4?"(西暦)":"");
+  let s = `${e.y}年${e.mo}月`; if(e.day) s+=`${e.day}日`;
+  return e.tr===4 ? s+"(西暦)" : s + `(${eraLabel(e.t0)})`;
+}
+
+/* ---- 年表 DOM 構築 ---- */
+const lanesEl = $("lanes");
+const laneBodies = [];
+TRACKS.forEach((tk,ti)=>{
+  const lane = el("div","lane",lanesEl);
+  const nm = el("div","lname",lane);
+  const sw = el("i","",nm); sw.style.background = tk.c;
+  nm.appendChild(document.createTextNode(tk.n));
+  const body = el("div","lbody",lane);
+  body.dataset.tr = ti;
+  laneBodies.push(body);
+});
+// 年グリッド
+const gridlayer = el("div","gridlayer",lanesEl);
+for(let y=1854;y<=1868;y++){
+  const line = el("i","",gridlayer);
+  line.style.left = (M(y,1)/N*100)+"%";
+}
+// playhead
+const playhead = el("div","playhead",gridlayer);
+// 目盛り
+const ticksEl = $("ticks");
+for(let y=1854;y<=1868;y++){
+  const s = el("span","",ticksEl); s.textContent=y; s.style.left=(M(y,1)/N*100)+"%";
+}
+// 元号帯
+const erasEl = $("eras");
+ERAS.forEach(e=>{
+  const s = el("span","",erasEl); s.textContent=e[1]; s.style.left=(e[0]/N*100)+"%";
+});
+// イベント配置
+const dotEls = [], labEls = [];
+const laneCount = TRACKS.map(()=>0);
+EV.forEach(e=>{
+  const body = laneBodies[e.tr];
+  const xc = e.t0 + (e.day!=null ? e.day/30 : .5);
+  const left = (xc/N*100)+"%";
+  let node;
+  if (e.t1!=null){
+    node = el("div","bar",body);
+    node.style.left = (e.t0/N*100)+"%";
+    node.style.width = ((e.t1-e.t0+1)/N*100)+"%";
+    node.style.background = TRACKS[e.tr].c; node.style.color = TRACKS[e.tr].c;
+  } else {
+    node = el("div","dot"+(e.c?" card":""),body);
+    node.style.left = left;
+    node.style.background = TRACKS[e.tr].c; node.style.color = TRACKS[e.tr].c;
+  }
+  node.dataset.i = e.i;
+  node.title = dateLabel(e)+" "+e.t;
+  const lab = el("div","elab r"+(laneCount[e.tr]++%4),body);
+  lab.textContent = e.s;
+  const labPct = e.t1!=null ? (e.t0+(e.t1-e.t0)/2+.5)/N*100 : xc/N*100;
+  lab.style.left = labPct+"%";
+  if (labPct < 3){ lab.style.transform = "translateX(0)"; }
+  else if (labPct > 96){ lab.style.transform = "translateX(-100%)"; }
+  dotEls.push(node); labEls.push(lab);
+});
+lanesEl.addEventListener("click",ev=>{
+  const tgt = ev.target;
+  if (tgt.classList.contains("dot")||tgt.classList.contains("bar")){
+    const e = EV[+tgt.dataset.i]; selectEvent(e); setT(Math.min(e.t0+ (e.t1!=null?0:0), N)); return;
+  }
+  if (tgt.classList.contains("lbody")){
+    const r = tgt.getBoundingClientRect();
+    setT(Math.round((ev.clientX-r.left)/r.width*N));
+  }
+});
+
+/* ---- 因果の糸 DOM ---- */
+const chainEl = $("chain");
+CHAIN.forEach((c,i)=>{
+  const d = el("div","cnode",chainEl);
+  d.innerHTML = `<div class="cy">${c.y}</div><div class="cn">${i+1}. ${c.n}</div><div class="cl">${c.l}</div>`;
+  d.addEventListener("click",()=>{ setT(c.t); });
+  c.el = d;
+});
+
+/* ---- カード一覧 DOM ---- */
+const cardgrid = $("cardgrid");
+for (const id in CARDS){
+  const c = CARDS[id];
+  const e = EV.find(x=>x.c===id);
+  const d = el("div","bigcard",cardgrid);
+  d.innerHTML = `<h4>${c.q}</h4><div class="bc-ev">関連イベント: ${dateLabel(e)} ${e.t}</div>
+   <div class="cp"><div class="old"><b>学校ではこう習った</b>${c.old}</div>
+   <div class="new"><b>最新の研究では</b>${c.neu}</div></div>
+   <button class="jump">→ この出来事の時点へ移動</button>`;
+  d.querySelector(".jump").addEventListener("click",()=>{
+    setT(e.t0); selectEvent(e);
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+
+/* ---- 地図 DOM ---- */
+const citiesG = $("cities");
+CITIES.forEach(([x,y,n,star])=>{
+  if(star) sel_("path",{d:`M${x} ${y-5} L${x+1.6} ${y-1.6} L${x+5} ${y-1} L${x+2.5} ${y+1.5} L${x+3} ${y+5} L${x} ${y+3} L${x-3} ${y+5} L${x-2.5} ${y+1.5} L${x-5} ${y-1} L${x-1.6} ${y-1.6} Z`,class:"star"},citiesG);
+  else sel_("circle",{cx:x,cy:y,r:2.2,class:"city"},citiesG);
+  sel_("text",{x:x+7,y:y+3,class:"citylab"},citiesG).textContent = n;
+});
+const portsG = $("ports");
+PORTS.forEach(([x,y,n,t0,flip])=>{
+  const g = sel_("g",{class:"port","data-t0":t0},portsG);
+  sel_("rect",{x:x-2.6,y:y-2.6,width:5.2,height:5.2,rx:1,fill:"#6fbfb0"},g);
+  const tx = sel_("text",{x:flip?x-5:x+5,y:y+3},g); tx.textContent = n+"⚓";
+  if (flip) tx.setAttribute("text-anchor","end");
+});
+const battlesG = $("battles");
+BATTLES.forEach(b=>{
+  const g = sel_("g",{class:"battle"+(b.peace?" peace":"")},battlesG);
+  b.el = g;
+  sel_("circle",{cx:b.x,cy:b.y,r:5,class:"ring2"},g);
+  const ring = sel_("circle",{cx:b.x,cy:b.y,r:8,class:"ring"},g);
+  ring.style.transformOrigin = `${b.x}px ${b.y}px`;
+  const tx = sel_("text",{x:b.x+10,y:b.y-8},g); tx.textContent = b.l;
+  if (b.x > 400) { tx.setAttribute("x", b.x-10); tx.setAttribute("text-anchor","end"); }
+});
+const actorsG = $("actors");
+ACTORS.forEach(a=>{
+  const g = sel_("g",{class:"actor"},actorsG);
+  a.el = g;
+  a.cir = sel_("circle",{cx:a.x,cy:a.y,r:a.r},g);
+  sel_("text",{x:a.x,y:a.y},g).textContent = a.k;
+  const nm = sel_("text",{x:a.x, y:a.y+a.r+11, class:"aname"},g); nm.textContent=a.n;
+});
+/* ボード */
+const boardEl = $("board");
+ACTORS.forEach(a=>{
+  const r = el("div","brow",boardEl);
+  r.innerHTML = `<span class="bn">${a.n}</span><span class="bs"></span><span class="bt"></span>`;
+  a.chip = r.querySelector(".bs"); a.btxt = r.querySelector(".bt");
+});
+
+/* ========= 状態と更新 ========= */
+let T = 0, selected = null, playing = false, speed = 1, timer = null;
+const scrub = $("scrub");
+
+function stanceAt(a,t){ let s=a.s[0]; for(const x of a.s) if(x[0]<=t) s=x; return s; }
+function phaseAt(t){ let p=PHASES[0], idx=0; PHASES.forEach((x,i)=>{ if(x[0]<=t){p=x;idx=i;} }); return [p,idx]; }
+
+function setT(t, fromScrub){
+  T = Math.max(0, Math.min(N, t|0));
+  if(!fromScrub) scrub.value = T;
+  render();
+}
+function isActive(e){
+  if (e.t1!=null) return T >= e.t0-1 && T <= e.t1+1;
+  return T >= e.t0-2 && T <= e.t0+1;
+}
+
+function render(){
+  // 読み出し
+  const [y,m] = ym(T);
+  $("roY").textContent = `${y}年${m}月`;
+  $("roE").textContent = eraLabel(T);
+  // playhead
+  playhead.style.left = (T/N*100)+"%";
+  // イベント
+  const near = [];
+  EV.forEach(e=>{
+    const on = isActive(e);
+    dotEls[e.i].classList.toggle("on", on);
+    labEls[e.i].classList.toggle("on", on);
+    dotEls[e.i].classList.toggle("sel", selected===e);
+    if(on) near.push(e);
+  });
+  // 近傍リスト
+  const nb = $("nearby"); nb.innerHTML = "";
+  near.sort((a,b)=>a.t0-b.t0 || a.tr-b.tr).slice(0,9).forEach(e=>{
+    const b = document.createElement("button");
+    b.innerHTML = `<i style="background:${TRACKS[e.tr].c}"></i><span class="nd">${dateLabel(e)}</span><span>${e.t}</span>`;
+    b.addEventListener("click",()=>selectEvent(e));
+    nb.appendChild(b);
+  });
+  if(!near.length) nb.innerHTML = `<span style="color:var(--faint);font-size:12px">この前後に大きな出来事はありません。</span>`;
+  // フェーズ
+  const [p] = phaseAt(T);
+  $("phaseTitle").textContent = p[1];
+  $("phaseText").textContent = p[2];
+  // 因果の糸ハイライト
+  let ci = 0; CHAIN.forEach((c,i)=>{ if(c.t<=T) ci=i; });
+  CHAIN.forEach((c,i)=> c.el.classList.toggle("on", i===ci));
+  // 地図
+  ACTORS.forEach(a=>{
+    const s = stanceAt(a,T), st = STANCE[s[1]];
+    a.cir.setAttribute("fill", st.c);
+    a.el.classList.toggle("teki", s[1]==="teki");
+    a.chip.textContent = st.n; a.chip.style.background = st.c;
+    a.btxt.textContent = s[2];
+  });
+  document.querySelectorAll("#ports .port").forEach(g=>{
+    g.classList.toggle("show", T >= +g.dataset.t0);
+  });
+  BATTLES.forEach(b=>{
+    const show = T>=b.w[0] && T<=b.w[1];
+    b.el.classList.toggle("show", show);
+    (b.arrows||[]).forEach(id=> $(id).classList.toggle("show", show));
+  });
+  FRONTS.forEach(([id,t0])=> $(id).classList.toggle("show", T>=t0));
+}
+
+function selectEvent(e){
+  selected = e;
+  $("dDate").textContent = jpDate(e);
+  $("dTrack").textContent = TRACKS[e.tr].n;
+  const th = $("dThread");
+  if (e.th){ th.style.display="inline-block"; th.textContent = `因果の糸 ${e.th}/10`; }
+  else th.style.display="none";
+  $("dTitle").textContent = e.t;
+  $("dBody").textContent = e.x;
+  const dc = $("dCard");
+  if (e.c){
+    const c = CARDS[e.c];
+    dc.innerHTML = `<div class="cardpair"><div class="cp-h">学校ではこう習った → 最新の研究では:${c.q}</div>
+      <div class="cp"><div class="old"><b>学校ではこう習った</b>${c.old}</div>
+      <div class="new"><b>最新の研究では</b>${c.neu}</div></div></div>`;
+  } else dc.innerHTML = "";
+  render();
+}
+
+/* ========= 操作 ========= */
+scrub.addEventListener("input", ()=> setT(+scrub.value, true));
+
+const playBtn = $("playBtn");
+function setPlaying(p){
+  playing = p;
+  playBtn.textContent = p ? "❚❚ 一時停止" : "▶ 再生";
+  clearInterval(timer);
+  if (p) timer = setInterval(()=>{
+    if (T >= N){ setPlaying(false); return; }
+    setT(T+1);
+  }, 360/speed);
+}
+playBtn.addEventListener("click", ()=>{
+  if (!playing && T >= N) setT(0);
+  setPlaying(!playing);
+});
+$("speedBtn").addEventListener("click", function(){
+  speed = speed===1?2:speed===2?4:1;
+  this.textContent = "速度 ×"+speed;
+  if (playing) setPlaying(true);
+});
+$("resetBtn").addEventListener("click", ()=>{ setPlaying(false); setT(0); });
+
+document.addEventListener("keydown", ev=>{
+  if (ev.target === scrub || /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName)) return;
+  if (ev.key === "ArrowLeft"){ setT(T - (ev.shiftKey?12:1)); ev.preventDefault(); }
+  else if (ev.key === "ArrowRight"){ setT(T + (ev.shiftKey?12:1)); ev.preventDefault(); }
+  else if (ev.key === " "){ setPlaying(!playing); ev.preventDefault(); }
+});
+
+/* ========= 初期表示 ========= */
+selectEvent(EV.find(e=>e.s==="ペリー来航"));
+setT(0);
+</script>
+</body>
+</html>
