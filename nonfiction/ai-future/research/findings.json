@@ -1,0 +1,3367 @@
+{
+ "domains": [
+  {
+   "domain": "AIの雇用への影響(実データ、2023〜2026)",
+   "summary": "2026年半ば時点で、AIの雇用影響は「マクロでは見えず、ミクロで鮮明」という構図。米国(4.2%、2026年6月)、ユーロ圏(6.2%、同5月)、日本(2.5%、同5月)の失業率はいずれも歴史的低水準圏だが、若年層とAI高曝露職種に影響が集中している。Stanford Digital Economy LabのBrynjolfssonらの「Canaries」研究(ADP給与データ)では、22〜25歳のAI高曝露職の雇用が生成AI普及後に相対16%減(2025年10月時点)、若手ソフトウェア開発者は約20%減。2026年2月の追試では金利説を棄却しつつ、厳格な統制下で有意になるのは2024年以降とした。米新卒失業率は5.7%(NY連銀、2026Q1)、不完全就業率41.5%。Indeedではジュニア求人が1年で7%減る一方シニアは4%増の「experience creep」、SignalFireはビッグテック新卒採用が2019年比半減以下と報告。職種別ではカスタマーサービスが1年で4.8%減(-13万人)、翻訳はBLSが見通しを下方修正。生産性研究は二面性を示す: コールセンター+14%(新人+34%)、文書作成の時間-40%、Copilotで-55.8%だが、METRのRCTでは熟練OSS開発者はAI使用でむしろ19%遅くなった(本人は20%速いと認識)。レイオフでは2025年に米国で約5.5万人がAI起因とされ、2026年はOracle 2.1万人、Amazon 1.6万人、Meta 8千人などがAIを理由に挙げた(Klarnaのような揺り戻しもある)。再分配ではOpenResearchの3年RCTが月$1,000で労働時間週1.3時間減にとどまることを示し、フィンランド・ケニアでも労働意欲低下は確認されず、UBIの「怠惰化」懸念は実証的には弱い。",
+   "key_findings": [
+    {
+     "claim": "22〜25歳のAI高曝露職種の雇用は生成AI普及後に相対16%減(2025年10月時点、ADPデータ)、若手ソフトウェア開発者は2022年末比約20%減",
+     "detail": "Brynjolfsson, Chandar, Chen「Canaries in the Coal Mine」。同職種の経験者は横ばい〜増加。調整は賃金でなく雇用量で発生し、AIが「自動化」する職種に集中、「補助」する職種では起きていない。テック企業除外でも頑健。",
+     "source_title": "Canaries in the Coal Mine? (Stanford Digital Economy Lab)",
+     "source_url": "https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/",
+     "confidence": "high",
+     "as_of": "2025-11"
+    },
+    {
+     "claim": "2026年2月の追試で、AI高曝露職はむしろ金利感応度が低く金利説は棄却されたが、最も厳格な統制ではAI起因の雇用減が有意になるのは2024年以降",
+     "detail": "企業×時点固定効果を入れると2022〜23年の減少は他要因の混在が示唆される。ダッシュボードは2026年4月まで更新され、最高曝露職種は前年比-0.2%、最低曝露は+0.1%。",
+     "source_title": "Canaries, Interest Rates, and Timing (Feb 2026 update)",
+     "source_url": "https://digitaleconomy.stanford.edu/news/canaries-interest-rates-and-timinga-more-on-recent-drivers-of-employment-changes-for-young-workers/",
+     "confidence": "high",
+     "as_of": "2026-02"
+    },
+    {
+     "claim": "米新卒(大卒)の失業率は2026年Q1に約5.7%、不完全就業率41.5%。若年大卒失業率は2023年7月の4.0%から2026年3月に5.3%へ上昇",
+     "detail": "ただしEPIは非大卒の若年層も同様に悪化しており「AIが大卒エントリー職だけを直撃」という解釈は時期尚早と指摘。採用率(hires rate)の低迷が主因との分析。",
+     "source_title": "NY Fed / EPI Class of 2026",
+     "source_url": "https://www.epi.org/blog/class-of-2026-young-college-graduates-face-a-weaker-labor-market-but-a-more-mixed-picture-than-the-headlines-suggest/",
+     "confidence": "high",
+     "as_of": "2026-04"
+    },
+    {
+     "claim": "Indeedのジュニア職求人は2024年8月→2025年8月で7%減、シニア職は4%増(experience creep)。AI言及求人は2025年12月に全体の4.2%で過去最高",
+     "detail": "経験2-4年枠の求人シェアは46%(2022年央)→40%(2025年央)、5年以上要求は37%→42%。全体の求人が停滞する中、採用がAI関連スキルに集中。",
+     "source_title": "Indeed Hiring Lab / Fortune",
+     "source_url": "https://www.hiringlab.org/2026/01/22/january-labor-market-update-jobs-mentioning-ai-are-growing-amid-broader-hiring-weakness/",
+     "confidence": "high",
+     "as_of": "2026-01"
+    },
+    {
+     "claim": "ビッグテックの新卒採用は2019年比50%超減、新卒はビッグテック採用のわずか7%(SignalFire)",
+     "detail": "Magnificent 7に入る新卒割合は2022年比半減以下。スタートアップでも新卒は採用の6%未満。",
+     "source_title": "SignalFire State of Tech Talent Report 2025",
+     "source_url": "https://www.signalfire.com/blog/signalfire-state-of-talent-report-2025",
+     "confidence": "medium",
+     "as_of": "2025-05"
+    },
+    {
+     "claim": "米カスタマーサービス職は2024年5月→2025年5月に13.0万人減(-4.8%)、翻訳・通訳はBLSが職業展望を下方修正",
+     "detail": "BLS OESデータ分析。AI高曝露職種全体は同期間-0.2%(全体雇用は+0.8%)。BLSの2024年報告はパラリーガル、グラフィックデザイナー、翻訳等18職種をAI関連縮小職として列挙。",
+     "source_title": "BLS OES分析 / Slator",
+     "source_url": "https://www.bls.gov/opub/ted/2025/ai-impacts-in-bls-employment-projections.htm",
+     "confidence": "medium",
+     "as_of": "2025-05"
+    },
+    {
+     "claim": "生産性RCTは二面性: コールセンター+14%(新人+34%)、文書作成時間-40%・品質+18%、Copilotで完了時間-55.8%、だがMETRのRCTでは熟練OSS開発者はAI使用で19%遅くなった",
+     "detail": "METR(2025年7月)は自身の大規模リポジトリで作業する熟練開発者16人のRCT。本人は20%速くなったと認識しており、認識と実測の乖離が大。生産性向上は新人・定型タスクで大きく熟練者・複雑タスクで小さいか逆効果。",
+     "source_title": "Brynjolfsson et al. / Noy & Zhang (Science) / METR",
+     "source_url": "https://www.science.org/doi/10.1126/science.adh2586",
+     "confidence": "high",
+     "as_of": "2025-07"
+    },
+    {
+     "claim": "2026年上半期、Oracle 2.1万人、Amazon 1.6万人、Dell 1.1万人、Meta 8千人、PayPal 4.5千人などがAIを理由に挙げてレイオフを公表。2025年の米AI起因レイオフは約5.5万人",
+     "detail": "TechCrunchの2026年AI言及レイオフ一覧。各社とも過去最高収益とレイオフが併存し、AI設備投資の原資として人件費削減の側面も。逆行事例としてKlarnaはAI代替の品質低下を認め2025年5月に再雇用へ転換。「AI理由」公表がどこまで実態かは要注意。",
+     "source_title": "TechCrunch AI layoffs running list 2026",
+     "source_url": "https://techcrunch.com/2026/06/22/the-running-list-major-tech-layoffs-in-2026-where-employers-cited-ai/",
+     "confidence": "medium",
+     "as_of": "2026-06"
+    },
+    {
+     "claim": "マクロ失業率は米4.2%(2026年6月)、ユーロ圏6.2%(2026年5月)、日本2.5%(2026年5月、有効求人倍率1.17倍)と低水準で、AIの影響はまだマクロ指標に現れていない",
+     "detail": "米国は6月に雇用者数+5.7万人と減速、労働参加率61.5%への低下が失業率を押し下げ。日本は完全失業者数が9か月連続増(2026年4月に193万人)と緩やかな軟化。",
+     "source_title": "BLS / Eurostat / 総務省統計局",
+     "source_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/3-02072026-ap",
+     "confidence": "high",
+     "as_of": "2026-06"
+    },
+    {
+     "claim": "OpenResearchの3年RCT(月$1,000×3,000人)では労働時間は週1.3時間減にとどまり、求職活動はむしろ10%活発化。フィンランド・ケニアでも労働供給の大幅減は確認されず",
+     "detail": "支出は月+$310(食費・家賃・交通)。フィンランド(月€560)は就業日数+6日で有意な雇用効果なしだが幸福度は改善。ケニアGiveDirectly(195村・約2.3万人・最長12年)では一括給付群が起業・事業収入で最良。UBIの「怠惰化」懸念は実証的に弱いが、AI失業対策としての規模・財源は未検証。",
+     "source_title": "OpenResearch Unconditional Cash Study",
+     "source_url": "https://www.openresearchlab.org/studies/unconditional-cash-study/study",
+     "confidence": "high",
+     "as_of": "2024-07"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "米若年大卒の失業率",
+     "unit": "%",
+     "series": [
+      {
+       "x": "2023-07",
+       "y": 4
+      },
+      {
+       "x": "2026-03",
+       "y": 5.3
+      }
+     ],
+     "notes": "EPI分析(BLS CPSベース)。2023年7月の底から+1.3pt。NY連銀の新卒失業率は2026Q1に5.7%、不完全就業率41.5%。",
+     "source_title": "EPI Class of 2026 / NY Fed",
+     "source_url": "https://www.epi.org/blog/class-of-2026-young-college-graduates-face-a-weaker-labor-market-but-a-more-mixed-picture-than-the-headlines-suggest/"
+    },
+    {
+     "metric": "22〜25歳AI高曝露職の相対雇用減(2022年末比、ADPデータ)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "2022-11",
+       "y": 0
+      },
+      {
+       "x": "2025-07",
+       "y": -13
+      },
+      {
+       "x": "2025-10",
+       "y": -16
+      }
+     ],
+     "notes": "Stanford Canaries研究の相対減少率。若手ソフトウェア開発者単体では約-20%(2025年時点)。論文本文とFeb 2026アップデートの数値。",
+     "source_title": "Canaries in the Coal Mine (Stanford)",
+     "source_url": "https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/"
+    },
+    {
+     "metric": "AI曝露度別の雇用前年比(2026年4月)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "最高曝露20%の職種",
+       "y": -0.2
+      },
+      {
+       "x": "最低曝露の職種",
+       "y": 0.1
+      }
+     ],
+     "notes": "Canaries Dashboard(2026-07-01更新)のFortune報道による読み取り。",
+     "source_title": "Fortune / Canaries Dashboard",
+     "source_url": "https://fortune.com/2026/06/27/what-is-ai-impact-entry-level-jobs-stanford-adp-canaries-brynjolfsson-richardson/"
+    },
+    {
+     "metric": "Indeed求人の変化(2024年8月→2025年8月)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "ジュニア職求人",
+       "y": -7
+      },
+      {
+       "x": "シニア職求人",
+       "y": 4
+      }
+     ],
+     "notes": "experience creep。AI言及求人シェアは2025年12月に4.2%(過去最高)。",
+     "source_title": "Indeed Hiring Lab / Fortune",
+     "source_url": "https://fortune.com/2026/04/03/experience-creep-jobs-ai-entry-level/"
+    },
+    {
+     "metric": "生成AI生産性RCTの効果量(タスク完了の速度/生産性変化)",
+     "unit": "%",
+     "series": [
+      {
+       "label": "コールセンター(解決数/時)",
+       "x": "Brynjolfsson et al. 2023",
+       "y": 14
+      },
+      {
+       "label": "同・新人層",
+       "x": "Brynjolfsson et al. 2023 (novice)",
+       "y": 34
+      },
+      {
+       "label": "文書作成時間短縮",
+       "x": "Noy & Zhang 2023",
+       "y": 40
+      },
+      {
+       "label": "コーディング時間短縮",
+       "x": "GitHub Copilot RCT 2023",
+       "y": 55.8
+      },
+      {
+       "label": "熟練OSS開発者(遅延)",
+       "x": "METR RCT 2025",
+       "y": -19
+      }
+     ],
+     "notes": "正の値は生産性向上/時間短縮、METRのみ悪化(19%遅延)。測定指標が研究ごとに異なる点に注意。",
+     "source_title": "各RCT論文",
+     "source_url": "https://www.science.org/doi/10.1126/science.adh2586"
+    },
+    {
+     "metric": "AIを理由に挙げた主要レイオフ(2026年上半期、人数)",
+     "unit": "人",
+     "series": [
+      {
+       "x": "Oracle",
+       "y": 21000
+      },
+      {
+       "x": "Amazon",
+       "y": 16000
+      },
+      {
+       "x": "Dell",
+       "y": 11000
+      },
+      {
+       "x": "Meta",
+       "y": 8000
+      },
+      {
+       "x": "PayPal",
+       "y": 4500
+      },
+      {
+       "x": "Block",
+       "y": 4000
+      },
+      {
+       "x": "Cisco",
+       "y": 4000
+      },
+      {
+       "x": "Intuit",
+       "y": 3000
+      },
+      {
+       "x": "Atlassian",
+       "y": 1600
+      },
+      {
+       "x": "Cloudflare",
+       "y": 1100
+      }
+     ],
+     "notes": "TechCrunch集計(2026-06-22)。「AI言及」であり純粋なAI代替とは限らない。2025年通年の米AI起因レイオフは約55,000人(トラッカー集計)。",
+     "source_title": "TechCrunch AI layoffs list 2026",
+     "source_url": "https://techcrunch.com/2026/06/22/the-running-list-major-tech-layoffs-in-2026-where-employers-cited-ai/"
+    },
+    {
+     "metric": "主要地域の失業率(2026年最新)",
+     "unit": "%",
+     "series": [
+      {
+       "label": "米国 2026-06",
+       "x": "米国",
+       "y": 4.2
+      },
+      {
+       "label": "ユーロ圏 2026-05",
+       "x": "ユーロ圏",
+       "y": 6.2
+      },
+      {
+       "label": "日本 2026-05",
+       "x": "日本",
+       "y": 2.5
+      }
+     ],
+     "notes": "米BLS、Eurostat、総務省統計局(季調値)。日本の有効求人倍率は1.17倍(2026年5月)。",
+     "source_title": "BLS / Eurostat / 総務省",
+     "source_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/3-02072026-ap"
+    },
+    {
+     "metric": "UBI実験の労働供給効果",
+     "unit": "各指標",
+     "series": [
+      {
+       "label": "OpenResearch: 労働時間変化(時間/週)",
+       "x": "OpenResearch RCT (米, $1000/月×3年)",
+       "y": -1.3
+      },
+      {
+       "label": "フィンランド: 就業日数差(日/年)",
+       "x": "フィンランド (€560/月×2年)",
+       "y": 6
+      }
+     ],
+     "notes": "単位が異なる2実験を並記。ケニアGiveDirectlyは労働供給減なし・一括給付で起業増(数値系列は公表報告書の質的記述)。",
+     "source_title": "OpenResearch / フィンランド社会保健省",
+     "source_url": "https://www.openresearchlab.org/studies/unconditional-cash-study/study"
+    }
+   ],
+   "key_findings_note": "undefined",
+   "open_questions": [
+    "若年雇用悪化のうちAI起因分と金利・パンデミック後正常化・オフショアリングの寄与分解(Stanford自身も2024年以前は識別困難と認める)",
+    "企業の「AI理由」レイオフ公表がどこまで実態か(投資家向けナラティブ・通常のリストラの再ラベリングの可能性)",
+    "METRの熟練開発者19%遅延と企業導入でのCopilot生産性向上報告の矛盾は、2026年のエージェント型ツールでどう変化したか",
+    "日本・EUにおける職種別AI雇用効果の実証データの不足(ADP級の高頻度データが未整備)",
+    "エントリーレベル消失が5〜10年後の中堅人材パイプラインに与える影響"
+   ]
+  },
+  {
+   "domain": "LLM系AIの能力トレンド(2022〜2026)",
+   "summary": "2022〜2026年のLLM能力は「ベンチマークの連続的な飽和」として現れた。MMLUは2024年までに、GPQA Diamondも2026年前半に上位92〜94%で実質飽和。SWE-bench Verifiedは2024年の33%(GPT-4o)から2026年7月のClaude Fable 5/Mythos 5の95%超へ到達し、難問系のARC-AGI-2すら20ヶ月で0.1%→85%(GPT-5.5)に急伸。残る差別化軸はHLE(最高64.7%、人間専門家~90%)とFrontierMath Tier 4程度になった。エージェント能力の代表指標であるMETRの50%成功タスク長は、GPT-4の約3.5分からClaude Opus 4.5の320分、2026年前半のOpus 4.6では約12時間へ伸び、倍増周期は全期間の約7ヶ月からpost-2023では131日(約4.3ヶ月)へ加速している。駆動要因は、(a)学習計算量の年4〜5倍成長(Epoch AI)、(b)年約3倍の事前学習アルゴリズム効率改善、(c)2024年秋のo1以降の「推論+RL後学習+推論時計算」パラダイムであり、o3はo1の約10倍のRL計算で訓練された。経済面では同等能力あたりの推論価格が中央値で年50倍(2024年以降は年200倍)下落する一方、フラッグシップ絶対価格は据え置き〜上昇(Fable 5は$10/$50 per Mtok)。研究開発自体の自動化も定量化が始まり、Anthropicはマージコードの80%超がClaude起筆(2026年5月)、エンジニアのマージ量8倍、難問での研究判断が人間を上回る割合64%と公表。GoogleもAI生成コード75%を公表しており、「AIがAI開発を加速する」ループが2026年前半時点で実測可能な段階に入った。",
+   "key_findings": [
+    {
+     "claim": "METRの50%成功タスク長ホライズンは、GPT-4(2023年3月)の3.5分からClaude Opus 4.5(2025年11月)の320分へ伸長し、post-2023の倍増周期はTH1.1手法で131日(約4.3ヶ月)",
+     "detail": "Time Horizon 1.1(2026年1月29日発表)。全期間(2019〜)では約7ヶ月周期。o3は121分、GPT-5は214分。2026年前半のClaude Opus 4.6は約12時間との報告があるが、METR自身が「16時間超の測定は現行タスクスイートでは信頼性が低い」と注記。",
+     "source_title": "METR: Time Horizon 1.1",
+     "source_url": "https://metr.org/blog/2026-1-29-time-horizon-1-1/",
+     "confidence": "high",
+     "as_of": "2026-05"
+    },
+    {
+     "claim": "SWE-bench Verifiedは2026年7月時点でClaude Mythos 5が95.5%、Fable 5が95.0%に達し実質飽和。2024年8月の公開時トップは30%台だった",
+     "detail": "2026年4月時点ではOpus 4.7が87.6%、GPT-5.3-Codexが85.0%。後継のSWE-bench ProではOpus 4.8が69.2%で、まだ天井がある。",
+     "source_title": "SWE-Bench Verified Leaderboard (llm-stats)",
+     "source_url": "https://llm-stats.com/benchmarks/swe-bench-verified",
+     "confidence": "high",
+     "as_of": "2026-07"
+    },
+    {
+     "claim": "ARC-AGI-2はフロンティアスコアが20ヶ月で0.1%→83.3%に急伸し、2026年時点でGPT-5.5が85%で首位",
+     "detail": "GPT-5.4 Pro 83.3%、Gemini 3.1 Pro 77.1%。SWE-bench首位のClaude系が抽象推論では首位でないなど、能力軸による棲み分けが発生。次世代のARC-AGI-3(エージェント型)が公開済み。",
+     "source_title": "ARC-AGI-2 Leaderboard 2026 (AgentMarketCap)",
+     "source_url": "https://agentmarketcap.ai/blog/2026/04/06/arc-agi-2-leaderboard-2026-gemini-gpt5-claude-reasoning-benchmark",
+     "confidence": "medium",
+     "as_of": "2026-04"
+    },
+    {
+     "claim": "Humanity's Last Exam(HLE)は2026年7月時点の最高スコアがClaude Mythos Previewの64.7%で、人間専門家平均~90%とのギャップが残る数少ないベンチマーク",
+     "detail": "2025年1月公開、2,500問、約1,000人の専門家が作成、2026年1月にNature掲載。公開時の最良スコアは一桁%だった。",
+     "source_title": "Humanity's Last Exam Leaderboard (llm-stats)",
+     "source_url": "https://llm-stats.com/benchmarks/humanity's-last-exam",
+     "confidence": "medium",
+     "as_of": "2026-07"
+    },
+    {
+     "claim": "FrontierMathはv1で2024年11月の2%未満から2026年5月のGPT-5.5 Pro 52.4%まで上昇。2026年6月のv2改訂後はTiers1-3でGPT-5.5 Pro 87.7%とClaude Fable 5 87.0%がほぼ同率首位",
+     "detail": "v2は監査で旧問題の42%に誤りが見つかり修正されたため、v1とのスコア連続性はない。研究水準のTier 4ではFable 5が約10ポイントリード。",
+     "source_title": "FrontierMath | Epoch AI",
+     "source_url": "https://epoch.ai/frontiermath",
+     "confidence": "medium",
+     "as_of": "2026-06"
+    },
+    {
+     "claim": "フロンティアモデルの学習計算量は年4〜5倍で成長中(Epoch AI)。2030年まで年4倍成長の継続は可能だが5GW超の電力を要する",
+     "detail": "2018年以降のフロンティアは年約4倍。学習用電力は年2倍で増加。オープンウェイトモデルも年約4.7倍で追随し、2025年11月頃に1e26 FLOP超えと予測された。",
+     "source_title": "Training compute of frontier AI models grows by 4-5x per year | Epoch AI",
+     "source_url": "https://epoch.ai/publications/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+     "confidence": "high",
+     "as_of": "2025-12"
+    },
+    {
+     "claim": "事前学習のアルゴリズム効率は年約3倍(同一性能に必要な計算が約8ヶ月で半減)。推定レンジは年1.8〜5.3倍",
+     "detail": "Epoch AI「Algorithmic progress in language models」。計算量の年4〜5倍成長と掛け合わせると、実効的な能力投入は年10倍超のペース。",
+     "source_title": "Algorithmic progress in language models | Epoch AI",
+     "source_url": "https://epoch.ai/blog/algorithmic-progress-in-language-models",
+     "confidence": "high",
+     "as_of": "2025-12"
+    },
+    {
+     "claim": "2024年9月のo1以降、能力向上の主駆動は事前学習スケールからRL後学習+推論時計算へ移行。o3はo1の約10倍のRL計算で訓練",
+     "detail": "Dario Amodei(2025年1月)は「RL段階への支出はまだ小さく、各社が数億〜数十億ドル規模へ拡大中」と発言。一方でRLは情報効率が悪く(1FLOPあたり事前学習の1/10,000未満)、収穫逓減・飽和を示す実証研究(2026年)もある。",
+     "source_title": "How far can reasoning models scale? | Epoch AI",
+     "source_url": "https://epoch.ai/gradient-updates/how-far-can-reasoning-models-scale",
+     "confidence": "high",
+     "as_of": "2026-01"
+    },
+    {
+     "claim": "同等能力あたりのLLM推論価格は中央値で年50倍下落(約2ヶ月で半減)、2024年1月以降のデータに限ると中央値は年200倍に加速。ベンチマークにより年9〜900倍の幅",
+     "detail": "GPT-4水準のGPQA性能は年40倍、Claude 3.5 Sonnet水準のGPQA Diamond評価コストは年200〜400倍で下落。ただしフラッグシップの絶対価格は下がっておらず(Fable 5は$10/$50でOpus 4.8の2倍)、支出はより高い能力へシフト。",
+     "source_title": "LLM inference prices have fallen rapidly but unequally across tasks | Epoch AI",
+     "source_url": "https://epoch.ai/data-insights/llm-inference-price-trends",
+     "confidence": "high",
+     "as_of": "2026-01"
+    },
+    {
+     "claim": "2026年前半の最前線はClaude Fable 5/Mythos 5(2026年6月9日リリース)、GPT-5.5、Gemini 3.1 Pro。Fable 5はSWE-bench Verified 95%でほぼ全ベンチマークSOTA、Mythos 5は同一モデルのセーフガード限定解除版",
+     "detail": "Fable 5の価格は$10/$50 per Mtok。CBRN・サイバー等の要注意クエリはOpus 4.8が代理応答(セッションの5%未満)。Mythos 5は米政府連携のProject Glasswing経由で限定提供され、約1週間の自律作業でゲノミクス新規研究を実施、創薬設計工程を約10倍加速と発表。",
+     "source_title": "Claude Fable 5 and Claude Mythos 5 | Anthropic",
+     "source_url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+     "confidence": "high",
+     "as_of": "2026-06"
+    },
+    {
+     "claim": "Anthropicはマージされるコードの80%超がClaude起筆(2026年5月)と公表。エンジニアの1日あたりマージ量は2024年比8倍、難しい研究課題で人間より良い次の一手を示す割合は64%(2026年4月、2025年11月は51%)",
+     "detail": "Claude Code登場(2025年2月)前は一桁%。コード最適化タスクでのClaudeの高速化倍率は2025年5月の約3倍から2026年4月に52倍へ(熟練研究者は4〜8時間で約4倍)。Google CEOは新規コードの75%がAI生成(2024年10月の約25%から上昇)と公表。Microsoftは約30%(2025年4月)。",
+     "source_title": "When AI builds itself | Anthropic",
+     "source_url": "https://www.anthropic.com/institute/recursive-self-improvement",
+     "confidence": "high",
+     "as_of": "2026-05"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "METR 50%成功タスク長ホライズン(TH1.1)",
+     "unit": "分(人間専門家換算)",
+     "source_title": "METR Time Horizon 1.1 / METR time horizons page",
+     "source_url": "https://metr.org/blog/2026-1-29-time-horizon-1-1/",
+     "notes": "TH1.1の実測値。Claude Opus 4.6(約720分=12時間)のみ二次報道による値で、METRは16時間超の測定は信頼性が低いと注記。x はモデルのリリース年月。",
+     "series": [
+      {
+       "x": "2023-03",
+       "y": 3.5,
+       "label": "GPT-4 0314"
+      },
+      {
+       "x": "2023-11",
+       "y": 3.6,
+       "label": "GPT-4 1106"
+      },
+      {
+       "x": "2025-02",
+       "y": 60,
+       "label": "Claude Sonnet 3.7"
+      },
+      {
+       "x": "2025-04",
+       "y": 121,
+       "label": "o3"
+      },
+      {
+       "x": "2025-05",
+       "y": 101,
+       "label": "Claude Opus 4"
+      },
+      {
+       "x": "2025-08",
+       "y": 214,
+       "label": "GPT-5"
+      },
+      {
+       "x": "2025-11",
+       "y": 320,
+       "label": "Claude Opus 4.5"
+      },
+      {
+       "x": "2026-02",
+       "y": 720,
+       "label": "Claude Opus 4.6(報道値・参考)"
+      }
+     ]
+    },
+    {
+     "metric": "SWE-bench Verified 最高スコア推移",
+     "unit": "%",
+     "source_title": "SWE-bench Verified leaderboards (llm-stats / tokenmix / swebench.com)",
+     "source_url": "https://llm-stats.com/benchmarks/swe-bench-verified",
+     "notes": "2024〜2025年の中間値はカットオフ前の公表値に基づく概数。2026-04と2026-07は検索で確認した実測値。",
+     "series": [
+      {
+       "x": "2024-08",
+       "y": 33,
+       "label": "GPT-4o(公開時水準)"
+      },
+      {
+       "x": "2024-10",
+       "y": 49,
+       "label": "Claude 3.5 Sonnet(概数)"
+      },
+      {
+       "x": "2025-05",
+       "y": 72.5,
+       "label": "Claude Opus 4(概数)"
+      },
+      {
+       "x": "2025-12",
+       "y": 80.9,
+       "label": "Claude Opus 4.5(概数)"
+      },
+      {
+       "x": "2026-04",
+       "y": 87.6,
+       "label": "Claude Opus 4.7"
+      },
+      {
+       "x": "2026-07",
+       "y": 95.5,
+       "label": "Claude Mythos 5"
+      }
+     ]
+    },
+    {
+     "metric": "ARC-AGI-2 フロンティア最高スコア",
+     "unit": "%",
+     "source_title": "ARC-AGI-2 Leaderboard 2026 (AgentMarketCap / llm-stats)",
+     "source_url": "https://agentmarketcap.ai/blog/2026/04/06/arc-agi-2-leaderboard-2026-gemini-gpt5-claude-reasoning-benchmark",
+     "notes": "「20ヶ月で0.1→83.3」という記述からの補間を含む。中間点はグラフ・記事からの読み取りに基づく近似値。",
+     "series": [
+      {
+       "x": "2024-08",
+       "y": 0.1,
+       "label": "当時のフロンティア"
+      },
+      {
+       "x": "2025-06",
+       "y": 10,
+       "label": "近似値(記事からの読み取り)"
+      },
+      {
+       "x": "2026-04",
+       "y": 83.3,
+       "label": "GPT-5.4 Pro"
+      },
+      {
+       "x": "2026-06",
+       "y": 85,
+       "label": "GPT-5.5"
+      }
+     ]
+    },
+    {
+     "metric": "Humanity's Last Exam 最高スコア",
+     "unit": "%",
+     "source_title": "HLE Leaderboard (llm-stats / agi.safe.ai)",
+     "source_url": "https://llm-stats.com/benchmarks/humanity's-last-exam",
+     "notes": "2025-01は公開時の報告値(概数)、2025年中の値はカットオフ前知識の概数。人間専門家平均は~90%。",
+     "series": [
+      {
+       "x": "2025-01",
+       "y": 9,
+       "label": "公開時最良(o1級・概数)"
+      },
+      {
+       "x": "2025-07",
+       "y": 25,
+       "label": "2025年央フロンティア(概数)"
+      },
+      {
+       "x": "2026-07",
+       "y": 64.7,
+       "label": "Claude Mythos Preview"
+      }
+     ]
+    },
+    {
+     "metric": "FrontierMath(v1)最高スコア",
+     "unit": "%",
+     "source_title": "FrontierMath | Epoch AI / Our World in Data",
+     "source_url": "https://epoch.ai/frontiermath",
+     "notes": "v1系列。2026-06のv2改訂(問題の42%を修正)によりスコアの連続性が切れた点に注意。v2 Tiers1-3ではGPT-5.5 Pro 87.7% / Fable 5 87.0%。",
+     "series": [
+      {
+       "x": "2024-11",
+       "y": 2,
+       "label": "公開時最良"
+      },
+      {
+       "x": "2024-12",
+       "y": 25,
+       "label": "o3(発表値)"
+      },
+      {
+       "x": "2026-05",
+       "y": 52.4,
+       "label": "GPT-5.5 Pro"
+      }
+     ]
+    },
+    {
+     "metric": "大手テック企業のAI生成コード比率(公表値)",
+     "unit": "%",
+     "source_title": "Anthropic / Google / Microsoft 公表値(Fortune, DevOps.com, Anthropic)",
+     "source_url": "https://www.anthropic.com/institute/recursive-self-improvement",
+     "notes": "定義は各社で異なる(Anthropic=マージコードのAI起筆比率、Google=新規コードのAI生成比率)。同一指標の時系列ではなく比較用。",
+     "series": [
+      {
+       "x": "2024-10",
+       "y": 25,
+       "label": "Google(新規コード)"
+      },
+      {
+       "x": "2025-04",
+       "y": 30,
+       "label": "Microsoft"
+      },
+      {
+       "x": "2025-10",
+       "y": 50,
+       "label": "Google(新規コード)"
+      },
+      {
+       "x": "2026-05",
+       "y": 80,
+       "label": "Anthropic(マージコード、80%超)"
+      },
+      {
+       "x": "2026-06",
+       "y": 75,
+       "label": "Google(新規コード)"
+      }
+     ]
+    },
+    {
+     "metric": "同等能力あたり推論価格の年間下落倍率(Epoch AI)",
+     "unit": "倍/年(下落率)",
+     "source_title": "LLM inference price trends | Epoch AI",
+     "source_url": "https://epoch.ai/data-insights/llm-inference-price-trends",
+     "notes": "時系列ではなく指標別の比較。レンジは年9〜900倍。",
+     "series": [
+      {
+       "x": "全期間中央値",
+       "y": 50,
+       "label": "6ベンチマーク中央値"
+      },
+      {
+       "x": "2024年1月以降の中央値",
+       "y": 200,
+       "label": "post-2024加速後"
+      },
+      {
+       "x": "GPT-4水準GPQA",
+       "y": 40,
+       "label": "固定性能の例"
+      },
+      {
+       "x": "Claude3.5Sonnet水準GPQA-D",
+       "y": 300,
+       "label": "200〜400倍の中央"
+      }
+     ]
+    },
+    {
+     "metric": "学習計算量・効率の年間成長率(Epoch AI)",
+     "unit": "倍/年",
+     "source_title": "Epoch AI Trends / Training compute grows 4-5x per year",
+     "source_url": "https://epoch.ai/publications/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+     "notes": "比較用スナップショット(2025年末〜2026年時点の推定)。実効能力投入 ≈ 計算量成長 × アルゴリズム効率。",
+     "series": [
+      {
+       "x": "フロンティア学習計算量",
+       "y": 4.5,
+       "label": "年4〜5倍の中央"
+      },
+      {
+       "x": "事前学習アルゴリズム効率",
+       "y": 3,
+       "label": "レンジ1.8〜5.3倍"
+      },
+      {
+       "x": "学習用電力",
+       "y": 2,
+       "label": "年2倍"
+      },
+      {
+       "x": "オープンウェイト計算量",
+       "y": 4.7,
+       "label": "年4.7倍"
+      }
+     ]
+    }
+   ],
+   "open_questions": [
+    "METRのタスクスイートは16時間超のホライズン測定に信頼性がなく、2026年後半以降のフロンティア(Fable 5等)の真のホライズンは未確定",
+    "FrontierMath v1→v2の改訂(問題の42%を修正)でトレンド線が断絶しており、数学能力の長期時系列は引き直しが必要",
+    "RL後学習の収穫逓減(飽和べき則)がいつフロンティアの伸びを律速するか — Epochは推論モデルの計算が事前学習フロンティアに合流する2026年以降の鈍化リスクを指摘",
+    "AI生成コード比率(Anthropic 80%超、Google 75%)は各社で定義が異なり、生産性・品質への純効果は未検証(Anthropic自身が「量の指標であり過大評価の可能性」と注記)",
+    "同等能力あたり価格が年50〜200倍下落する一方で総推論支出が急増する「LLMflation下の支出爆発」の経済的帰結",
+    "HLEの残り35ポイント(64.7%→人間専門家~90%)がどの能力軸(長尾知識か推論か)で埋まるか"
+   ]
+  },
+  {
+   "domain": "計算資源・データセンタ投資・半導体供給(2024〜2026)",
+   "summary": "AIインフラ投資は2024〜2026年に指数関数的に拡大している。ハイパースケーラー4社(Amazon/Microsoft/Alphabet/Meta)の設備投資は2024年約2,300億ドル→2025年約4,100億ドル→2026年計画約6,900億〜7,250億ドル(前年比+77%)で、2027年には1兆ドル超えが視野に入る。需要側の中心であるNVIDIAのデータセンタ売上は四半期ベースで2024年初の226億ドルから2026年2-4月期の752億ドル(前年比+92%)まで拡大し、FY2026通期売上は2,159億ドル(+65%)。供給側では最大の隘路だったTSMCのCoWoS先端パッケージング能力が2023年末の月産1.3万枚から2026年末には12〜13万枚へ約10倍に拡張され、需給ギャップは2026年末に約10%まで縮小見込み。N2(2nm)は2026年3月に量産寄与を開始し、TSMCの2026年capexは520〜560億ドルの上限方向。対中規制は2025年4月のH20禁輸→同年夏の売上15%納付付き解禁→2026年1月のH200解禁(25%納付、約10社・各7.5万基上限)と迷走し、NVIDIA自身は中国売上ゼロを前提にガイダンスを出す。学習計算量は既知最大がGrok 4の約5e26 FLOPで、コストは年率3.5倍成長により2027年に10億ドル級の学習ランが予測される。メガDCは「計画先行」が実態で、Stargateは計画9GW超のうち稼働0.3〜0.6GW(Abileneのみ)、OpenAIは1.4兆ドルの誓約を6,000億ドルに縮小したと報道される一方、xAI Colossusは55.5万GPU・約180億ドルと最速の実装を示す。示唆:資金とチップ供給の制約は緩和に向かい、ボトルネックは電力・建設・メモリ価格へ移行しつつある。",
+   "key_findings": [
+    {
+     "claim": "ハイパースケーラー4社の2026年capex計画は合計約7,250億ドルで、2025年実績の約4,100億ドルから+77%",
+     "detail": "内訳の目安はAmazon約2,000億ドル、Microsoft(暦年)1,900億ドル、Alphabet最大1,800〜1,900億ドル、Meta 1,250〜1,450億ドル(引き上げ後)。Metaは部材価格上昇とDC追加費用を理由にガイダンスを100億ドル引き上げた。アナリストは2027年に4社合計1兆ドル超えを予想。",
+     "as_of": "2026-06",
+     "source_title": "Tom's Hardware: Big Tech's AI spending plans reach $725 billion",
+     "source_url": "https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion",
+     "confidence": "high"
+    },
+    {
+     "claim": "NVIDIAのデータセンタ売上はFY27Q1(2026年2-4月)に752億ドル(YoY+92%)、FY2026通期売上は2,159億ドル(+65%)",
+     "detail": "四半期DC売上はFY25Q1の226億ドルから9四半期連続で拡大。FY26Q3時点でCEOは「Blackwellは絶好調、クラウドGPUは売り切れ」と発言。FY27Q2ガイダンスは910億ドル(±2%)で、中国向けDCコンピュート売上はゼロと仮定。",
+     "as_of": "2026-05",
+     "source_title": "NVIDIA Q1 FY2027 press release",
+     "source_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
+     "confidence": "high"
+    },
+    {
+     "claim": "TSMCのCoWoS能力は2023年末の月産約1.3万枚から2026年末に12〜13万枚へ約10倍に拡張され、需給ギャップは約20%から10%へ縮小見込み",
+     "detail": "2024年末約3.5万枚→2025年末約7.5万枚→2026年末12〜13万枚。OSAT分5〜6万枚を含めると業界全体で月産20万枚に接近。2年続いた「パッケージング律速」(AIサーバのリードタイム50週超)は解消に向かう。",
+     "as_of": "2026-06",
+     "source_title": "TrendForce: TSMC CoWoS supply-demand gap narrowing",
+     "source_url": "https://www.trendforce.com/news/2026/06/15/news-tsmc-cowos-supply-demand-gap-reportedly-seen-narrowing-from-20-to-10-by-end-2026-as-capacity-expands/",
+     "confidence": "medium"
+    },
+    {
+     "claim": "TSMCはQ1 2026売上359億ドル・HPC比率61%で、N2(2nm)は2026年3月から売上寄与を開始、2026年capexは520〜560億ドルの上限方向",
+     "detail": "Q2 2026ガイダンスは390〜402億ドル(QoQ+10%)。capexの70〜80%が先端プロセス向けでN2ランプが主導。HPC(AI含む)比率は2025年通年58%から2026年に60%超へ。",
+     "as_of": "2026-04",
+     "source_title": "MacroMicro: TSMC Q1 2026 earnings call summary",
+     "source_url": "https://en.macromicro.me/blog/tsmc-q1-earnings-call-rare-capacity-expansion-as-the-ai-megatrend-takes-shape",
+     "confidence": "high"
+    },
+    {
+     "claim": "対中輸出規制は2025年4月のH20禁輸から一転、2026年1月にはH200が売上25%納付・ケースバイケース審査で解禁された",
+     "detail": "2025年8月にH20を売上15%納付条件で解禁、2026年1月14日に大統領布告でH200等へ25%納付を正式化。Alibaba・Tencent・ByteDance等約10社が各75,000基上限で購入認可、NVIDIAは82,000基の対中出荷を準備と報道。ただしNVIDIAはガイダンス上、中国DC売上ゼロを前提とし不確実性が残る。",
+     "as_of": "2026-06",
+     "source_title": "Brookings: The US is out of the AI chip market in China",
+     "source_url": "https://www.brookings.edu/articles/ball-games-over-the-us-is-out-of-the-ai-chip-market-in-china/",
+     "confidence": "high"
+    },
+    {
+     "claim": "既知最大の学習ランはGrok 4の約5e26 FLOPで、フロンティア学習コストは年率3.5倍成長により2027年に10億ドル超のランが出現すると予測される(推定)",
+     "detail": "GPT-5は約5e25 FLOP(Epoch推定)でGPT-4.5(>1e26)より小さく「最新=最大」が崩れた。実測コスト例: GPT-4約4,000万ドル、Llama 3.1 405B約1.7億ドル、Grok-2約1.07億ドル。最終学習ランはR&D計算支出の少数派で、OpenAIの2024年コンピュートの大半は実験に消費された。",
+     "as_of": "2026-01",
+     "source_title": "Epoch AI: How much does it cost to train frontier AI models",
+     "source_url": "https://epoch.ai/blog/how-much-does-it-cost-to-train-frontier-ai-models",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Stargateは計画9GW超・7サイトのうち、実際に稼働しているのはAbileneの0.3GW(2026年5月末に0.6GWへ)のみ",
+     "detail": "Abilene(計画1.2GW、GPU25万基稼働・8棟中4棟完成、2026Q4完成予定)以外の6サイト(TX2、NM、WI、MI、OH)は建設中で完成は2028Q4予定。Abileneの2.1GWへの拡張は中止され1.2GWで頭打ち。OpenAIは総支出誓約を1.4兆ドルから2030年までの約6,000億ドルへ縮小したと報道(一次未確認)。",
+     "as_of": "2026-04",
+     "source_title": "Epoch AI: OpenAI Stargate — where the US sites stand",
+     "source_url": "https://epoch.ai/publications/openai-stargate-where-the-us-sites-stand",
+     "confidence": "high"
+    },
+    {
+     "claim": "xAI Colossus(Memphis)は2026年2月時点でGPU約55.5万基・投資約180億ドルの世界最大級AI学習拠点となり、総計画2GWへ拡張中",
+     "detail": "2024年に122日でH100 10万基を稼働させた実績。2026年2月時点のグリッド受電は300MWで、ガスタービン1.1GW超が2027Q2までに稼働予定。メガDC計画の中では最速の実装例。",
+     "as_of": "2026-02",
+     "source_title": "Introl: xAI Colossus hits 2 GW plan, 555,000 GPUs",
+     "source_url": "https://introl.com/blog/xai-colossus-2-gigawatt-expansion-555k-gpus-january-2026",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Anthropicは2026年5月にSpaceXのColossus 1全キャパシティ(300MW超、NVIDIA GPU 22万基超)の利用契約を発表し、複数ベンダーからの調達を多様化",
+     "detail": "既存分としてAmazon最大5GW(2026年末までに約1GW)、Google/Broadcom 5GW(2027年開始)、Microsoft/NVIDIAとのAzure 300億ドル、Fluidstackとの500億ドル投資。TechCrunchは対価を月12.5億ドルと報道。",
+     "as_of": "2026-05",
+     "source_title": "Anthropic: Higher usage limits and a compute deal with SpaceX",
+     "source_url": "https://www.anthropic.com/news/higher-limits-spacex",
+     "confidence": "high"
+    },
+    {
+     "claim": "2026年のNVIDIA GPU出荷はJPMorgan推定でRubin 570万基+Blackwell 180万基だが、TrendForce系はRubin遅延でBlackwell主体(70%超)と予測が割れている(推定)",
+     "detail": "2025年はBlackwell約520万基出荷の推定。Rubinランプの実勢は2026年後半の最大の不確実要素。",
+     "as_of": "2026-06",
+     "source_title": "TweakTown: NVIDIA expected to ship 5.2M Blackwell GPUs in 2025",
+     "source_url": "https://www.tweaktown.com/news/106116/nvidia-expected-to-ship-5-2m-blackwell-gpus-in-2025-1-8m-2026-and-7m-rubin/index.html",
+     "confidence": "low"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "NVIDIA データセンタ四半期売上",
+     "unit": "十億ドル",
+     "series": [
+      {
+       "x": "FY25Q1 (2024/02-04)",
+       "y": 22.6
+      },
+      {
+       "x": "FY25Q2 (2024/05-07)",
+       "y": 26.3
+      },
+      {
+       "x": "FY25Q3 (2024/08-10)",
+       "y": 30.8
+      },
+      {
+       "x": "FY25Q4 (2024/11-2025/01)",
+       "y": 35.6
+      },
+      {
+       "x": "FY26Q1 (2025/02-04)",
+       "y": 39.1
+      },
+      {
+       "x": "FY26Q2 (2025/05-07)",
+       "y": 41.1
+      },
+      {
+       "x": "FY26Q3 (2025/08-10)",
+       "y": 51.2
+      },
+      {
+       "x": "FY26Q4 (2025/11-2026/01)",
+       "y": 62.3
+      },
+      {
+       "x": "FY27Q1 (2026/02-04)",
+       "y": 75.2
+      }
+     ],
+     "source_title": "NVIDIA 決算プレスリリース(Q3 FY26, Q1 FY27)",
+     "source_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
+     "notes": "会社発表の実測値。FY25の各四半期は決算リリースの既知値。FY27Q2ガイダンスは総売上910億ドル(±2%)"
+    },
+    {
+     "metric": "ハイパースケーラー4社合計capex(Amazon+Microsoft+Alphabet+Meta)",
+     "unit": "十億ドル/年",
+     "series": [
+      {
+       "x": "2024",
+       "y": 230
+      },
+      {
+       "x": "2025",
+       "y": 410
+      },
+      {
+       "x": "2026(計画)",
+       "y": 725
+      }
+     ],
+     "source_title": "Tom's Hardware / 各社決算",
+     "source_url": "https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion",
+     "notes": "2024は各社報告からの概算、2025は実績(約4,100億ドル)、2026は計画値。2026レンジは690〜725Bの報道幅あり"
+    },
+    {
+     "metric": "会社別capex(暦年)",
+     "unit": "十億ドル/年",
+     "series": [
+      {
+       "label": "Amazon",
+       "x": "2025",
+       "y": 131
+      },
+      {
+       "label": "Amazon",
+       "x": "2026(計画)",
+       "y": 200
+      },
+      {
+       "label": "Microsoft",
+       "x": "2026(計画)",
+       "y": 190
+      },
+      {
+       "label": "Alphabet",
+       "x": "2025",
+       "y": 90
+      },
+      {
+       "label": "Alphabet",
+       "x": "2026(計画)",
+       "y": 185
+      },
+      {
+       "label": "Meta",
+       "x": "2024",
+       "y": 39.2
+      },
+      {
+       "label": "Meta",
+       "x": "2025",
+       "y": 69
+      },
+      {
+       "label": "Meta",
+       "x": "2026(計画中央値)",
+       "y": 135
+      }
+     ],
+     "source_title": "CNBC / Meta 8-K / Tom's Hardware",
+     "source_url": "https://www.cnbc.com/2026/02/05/amazon-amzn-q4-earnings-report-2025.html",
+     "notes": "Meta 2026は125-145Bレンジの中央値。Alphabet 2026は最大180-190Bの中間値。Microsoft 2025暦年は会計年度差のため未掲載"
+    },
+    {
+     "metric": "TSMC CoWoS 月産能力",
+     "unit": "ウェハ枚/月",
+     "series": [
+      {
+       "x": "2023年末",
+       "y": 13000
+      },
+      {
+       "x": "2024年末",
+       "y": 35000
+      },
+      {
+       "x": "2025年末",
+       "y": 75000
+      },
+      {
+       "x": "2026年末(計画)",
+       "y": 125000
+      }
+     ],
+     "source_title": "TrendForce / Silicon Analysts",
+     "source_url": "https://www.trendforce.com/news/2025/01/02/news-tsmc-set-to-expand-cowos-capacity-to-record-75000-wafers-in-2025-doubling-2024-output/",
+     "notes": "業界推定値。2026年末は120-130kレンジの中間値。OSAT追加分50-60kを含めると業界全体で約200k"
+    },
+    {
+     "metric": "フロンティアモデル学習計算量(既知の代表例)",
+     "unit": "FLOP(対数目盛推奨)",
+     "series": [
+      {
+       "x": "GPT-4 (2023)",
+       "y": 2e+25
+      },
+      {
+       "x": "GPT-4.5 (2025)",
+       "y": 1e+26
+      },
+      {
+       "x": "GPT-5 (2025)",
+       "y": 5e+25
+      },
+      {
+       "x": "Grok 4 (2025)",
+       "y": 5e+26
+      }
+     ],
+     "source_title": "Epoch AI: Notes on GPT-5 training compute",
+     "source_url": "https://epochai.substack.com/p/notes-on-gpt-5-training-compute",
+     "notes": "Epoch AIによる推定値(実測ではない)。Grok 4が既知最大。学習計算量は年率5倍、コストは年率3.5倍で成長"
+    },
+    {
+     "metric": "Stargate 計画容量 vs 稼働容量(2026年4月時点)",
+     "unit": "GW",
+     "series": [
+      {
+       "label": "計画",
+       "x": "Abilene TX",
+       "y": 1.2
+      },
+      {
+       "label": "稼働",
+       "x": "Abilene TX",
+       "y": 0.3
+      },
+      {
+       "label": "計画",
+       "x": "Shackelford TX",
+       "y": 2
+      },
+      {
+       "label": "計画",
+       "x": "Doña Ana NM",
+       "y": 2.2
+      },
+      {
+       "label": "計画",
+       "x": "Milam TX",
+       "y": 1.2
+      },
+      {
+       "label": "計画",
+       "x": "Port Washington WI",
+       "y": 1.3
+      },
+      {
+       "label": "計画",
+       "x": "Saline MI",
+       "y": 1.4
+      },
+      {
+       "label": "計画",
+       "x": "Lordstown OH",
+       "y": 0.3
+      }
+     ],
+     "source_title": "Epoch AI: OpenAI Stargate — where the US sites stand",
+     "source_url": "https://epoch.ai/publications/openai-stargate-where-the-us-sites-stand",
+     "notes": "2026-04-17時点。稼働はAbileneの0.3GWのみ(2026年5月末に0.6GW予定)。Abilene以外の稼働は0。完成予定はAbilene 2026Q4、他は2028Q4"
+    },
+    {
+     "metric": "xAI Colossus GPU数の推移",
+     "unit": "GPU基数",
+     "series": [
+      {
+       "x": "2024年9月(122日で構築)",
+       "y": 100000
+      },
+      {
+       "x": "2024年12月",
+       "y": 200000
+      },
+      {
+       "x": "2026年2月",
+       "y": 555000
+      }
+     ],
+     "source_title": "Introl: xAI Colossus 2 GW expansion",
+     "source_url": "https://introl.com/blog/xai-colossus-2-gigawatt-expansion-555k-gpus-january-2026",
+     "notes": "H100/H200/GB200混在。投資総額約180億ドル。総計画2GW、2026年2月時点のグリッド受電は300MW"
+    }
+   ],
+   "open_questions": [
+    "Rubinの2026年後半ランプの実勢(JPMorgan推定570万基 vs TrendForceの遅延・Blackwell主体予測の矛盾)",
+    "OpenAIのインフラ誓約縮小($1.4T→$600B)報道の一次確認と、Stargate 2028Q4完成予定の実現可能性",
+    "HBM・DRAM価格高騰がハイパースケーラーcapexとGPU原価に与える定量的影響(Metaがガイダンス引き上げ理由に言及)",
+    "電力供給(ガスタービン調達・系統接続待ち)が2027年以降どの程度実効ボトルネックになるか",
+    "H200対中解禁後の実出荷量と、Huawei Ascend等中国国産アクセラレータの供給量",
+    "AI capexの対収益ギャップ(Forbes 2026-06が指摘)が投資持続性に与える影響"
+   ]
+  },
+  {
+   "domain": "2026年 Mythos / Fable 騒動(Anthropic Claude 5世代の二層提供)",
+   "summary": "2026年、AnthropicはClaude 5世代で同一ウェイトを二層提供する戦略を採った。一般向けのFable 5(安全策付き)と、承認組織限定のMythos 5(制限解除・サイバー能力開放)である。発端は2026-03-26のMythosリーク、4-07のMythos Preview発表とProject Glasswing(当初40社超)だった。Mythosは17年物のFreeBSD RCEを完全自律で発見・悪用し、Firefoxでは181回のworking exploit生成(Opus 4.6は数百回中2回)を示すなど、攻撃転用可能なサイバー能力で各国中銀・規制当局を動揺させた。6-09にFable 5/Mythos 5を提供開始(入力$10・出力$50=Opus 4.8の約2倍)したが、6-12にAmazon研究者による安全機構バイパスの実演を受け米商務省が輸出管理を発動、Anthropicは全ユーザーのアクセスを即時停止。他モデル(Opus 4.8, GPT-5.5, Kimi K2.7)も同一脆弱性を再現可能と判明し、6-30に管理解除、7-01に新分類器(当該手法を99%超ブロック)付きで再展開した。騒動の核心は、(1)自律的な脆弱性発見・エクスプロイト生成というdual-use能力、(2)同一モデルを一般と特権組織で分ける「アクセス格差」、(3)Sam Altmanが「fear-based marketing」と批判した安全性の演出論争、(4)価格2倍なのに降格頻発(ログの\"TOO_DUMB_TO_NEED_FABLE\"タグ)やClaude Codeの中国ユーザー検知ステガノグラフィ発覚による信頼毀損である。業界ではOpenAIがDaybreak/GPT-5.5-Cyber(CyberGym 85.6%)で3層トラステッドアクセスを敷き、「知能」より「アクセス設計」が差別化軸に移行。規制面では6-02の大統領令がフロンティアモデルの機密ベンチマークと最大30日の自主的政府早期アクセスを打ち出したが強制ライセンスは否定した。AI進化予測への教訓として、Mythos PreviewはEpoch Capabilities Indexで線形トレンドを約7か月先行(2か月で約8.6か月分)する能力ジャンプを見せた一方、後継Opus 4.7はMythos前トレンド線に着地し、ジャンプの一時性(compute scaling起因)が示唆された。Epochは脆弱性「発見」の伸びはGlasswingの潤沢なAPI予算による交絡があり過大評価の可能性を指摘。能力主張の要素分解、単一モデルペアからの外挿の危険、規制中断を予測に織り込む必要性が浮き彫りになった。",
+   "key_findings": [
+    {
+     "claim": "AnthropicはClaude 5世代で同一ウェイトを二層提供した:一般向けFable 5(安全策付き)と承認組織限定Mythos 5(制限解除)。両者は2026-06-09発表・提供開始で価格は入力$10/出力$50(百万トークン)",
+     "source_url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+     "source_title": "Claude Fable 5 and Claude Mythos 5 / Anthropic",
+     "confidence": "high",
+     "as_of": "2026-06",
+     "detail": "Fable 5は安全分類器で危険領域(サイバー/生物化学/蒸留)をOpus 4.8へルーティング。発動は平均5%未満のセッション。"
+    },
+    {
+     "claim": "2026-06-12、米商務省がFable 5/Mythos 5に輸出管理を発動し外国籍者への提供を禁止、Anthropicは全ユーザーのアクセスを即時停止した",
+     "source_url": "https://www.anthropic.com/news/redeploying-fable-5",
+     "source_title": "Redeploying Claude Fable 5 / Anthropic",
+     "confidence": "high",
+     "as_of": "2026-06",
+     "detail": "発端はAmazon研究者がFable 5の安全機構をバイパスし脆弱性の悪用方法を実演した報告。国籍リアルタイム確認不能のため全停止。"
+    },
+    {
+     "claim": "2026-06-30に輸出管理は解除され7-01にFable 5をグローバル再展開。他モデル(Opus 4.8, GPT-5.5, Kimi K2.7)も同一脆弱性を再現可能と判明したことが解除の背景",
+     "source_url": "https://www.anthropic.com/news/redeploying-fable-5",
+     "source_title": "Redeploying Claude Fable 5 / Anthropic",
+     "confidence": "high",
+     "as_of": "2026-07",
+     "detail": "新分類器で当該手法を99%超ブロック。ただしルーティンなコーディングで誤検知(降格)が増加。"
+    },
+    {
+     "claim": "Mythos Previewは自律的サイバー能力で飛躍を示し、Firefoxで181回のworking exploitを生成(Opus 4.6は数百回中2回)、17年物FreeBSD RCEを完全自律で発見・悪用した",
+     "source_url": "https://www.anthropic.com/research/mythos-preview",
+     "source_title": "Assessing Claude Mythos Preview cyber capabilities / Anthropic",
+     "confidence": "high",
+     "as_of": "2026-04",
+     "detail": "OSS-Fuzzで595クラッシュ、10標的で制御奪取。脆弱性1万件超を発見(89%の重大度判定が正確)。"
+    },
+    {
+     "claim": "UK AISI評価でMythos Previewは32段階攻撃シミュレーション(TLO)を史上初完遂(10回中3回、平均22段階、Opus 4.6は16段階)、CTFエキスパート課題73%成功",
+     "source_url": "https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities",
+     "source_title": "Our evaluation of Claude Mythos Preview cyber capabilities / AISI",
+     "confidence": "high",
+     "as_of": "2026-04",
+     "detail": "2年前は上位モデルが初級課題をかろうじて達成する水準だった。ただし防御側不在のレンジでの評価という限界あり。"
+    },
+    {
+     "claim": "Mythos PreviewはEpoch Capabilities Indexで線形トレンドを約7か月先行し能力ジャンプを見せたが、後継Opus 4.7はMythos前トレンド線に着地しジャンプの一時性が示唆された",
+     "source_url": "https://www.lesswrong.com/posts/siK3JL4S6o9EeT7Jf/over-eight-months-of-progress-in-two-analyzing-the-mythos",
+     "source_title": "Analyzing the Mythos Capability Jump / LessWrong",
+     "confidence": "medium",
+     "as_of": "2026-04",
+     "detail": "2か月(2/5-4/7)で約8.6か月分の進歩、トレンド約3倍加速。compute scaling(推定1e27 FLOP)起因なら一時的な可能性。ECIは内部指標でグラフ読み取り。"
+    },
+    {
+     "claim": "Epoch AIはMythosのサイバー能力を部分的に過大評価と分析:エクスプロイト開発は本物の飛躍だが脆弱性発見の伸びはGlasswingの潤沢なAPI予算による交絡があり曖昧",
+     "source_url": "https://epoch.ai/gradient-updates/are-mythos-cyber-capabilities-overhyped",
+     "source_title": "Are Mythos cyber capabilities overhyped? / Epoch AI",
+     "confidence": "high",
+     "as_of": "2026-05",
+     "detail": "CVE件数は2025比+142%(4月)/+262%(5月)だが投資水準の反映かもしれない。能力主張は要素分解して検証すべきという教訓。"
+    },
+    {
+     "claim": "OpenAIのSam Altmanはこの二層戦略を「fear-based marketing」と批判し、AIを少数エリートに囲い込む手法だと示唆した",
+     "source_url": "https://techcrunch.com/2026/04/21/sam-altman-throws-shade-at-anthropics-cyber-model-mythos-fear-based-marketing/",
+     "source_title": "Sam Altman throws shade at Anthropic's cyber model, Mythos / TechCrunch",
+     "confidence": "high",
+     "as_of": "2026-04",
+     "detail": "「爆弾を作った、あなたの頭上に落とす、と言って100億円のシェルターを売る」という比喩で批判。"
+    },
+    {
+     "claim": "業界は追随:OpenAIがDaybreak/GPT-5.5-Cyber(CyberGym 85.6%、2026-06-22フル版)で3層トラステッドアクセスを展開。差別化軸が『知能』から『アクセス設計』へ移行",
+     "source_url": "https://openai.com/index/daybreak-securing-the-world/",
+     "source_title": "Daybreak: Tools for securing every organization / OpenAI",
+     "confidence": "high",
+     "as_of": "2026-06",
+     "detail": "最高層GPT-5.5-Cyberはフィッシング耐性認証を要求(6-01以降)。トラステッドアクセスの潮流。"
+    },
+    {
+     "claim": "2026-06-02の大統領令はフロンティアモデルの機密ベンチマーク(NSA長官が閾値決定)と最大30日の自主的政府早期アクセスを定めたが強制ライセンスは明確に否定",
+     "source_url": "https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/",
+     "source_title": "Promoting Advanced AI Innovation and Security / White House",
+     "confidence": "high",
+     "as_of": "2026-06",
+     "detail": "商務省輸出管理が実際に発動された初の主要事例。covered frontier model指定の枠組み。"
+    },
+    {
+     "claim": "信頼毀損の複合要因:高性能不要と判定時にOpus 4.8へ降格するログタグ『TOO_DUMB_TO_NEED_FABLE』を開発者が発見、価格はOpus 4.8の約2倍",
+     "source_url": "https://finance.biggo.com/news/c40ae0b7-fedd-4435-9b79-d416642f9ad5",
+     "source_title": "Anthropic Fable 5 Sparks Outrage / BigGo Finance",
+     "confidence": "medium",
+     "as_of": "2026-07",
+     "detail": "OpenCodeのDaxが発見。エンジニアの『ログ見ると思わなかった』発言が炎上と報道(一次確認未了のためmedium)。"
+    },
+    {
+     "claim": "Claude Code(v2.1.91以降)が中国ユーザーをtimezone/プロキシで検知しsystem promptにステガノグラフィで秘匿信号を埋めていたと発覚、Alibabaが高リスク認定・社内禁止",
+     "source_url": "https://the-decoder.com/hidden-code-in-claude-code-secretly-flagged-chinese-users/",
+     "source_title": "Hidden code in Claude Code secretly flagged Chinese users / The Decoder",
+     "confidence": "medium",
+     "as_of": "2026-06",
+     "detail": "Anthropicは『リセラー悪用・蒸留対策実験』と説明し7-01リリースで削除。背景にQwen関連の大規模蒸留攻撃主張(約25,000不正アカウント)。"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "Epoch Capabilities Index(ECI・内部指標、グラフ読み取り近似)",
+     "unit": "index",
+     "source_url": "https://www.lesswrong.com/posts/siK3JL4S6o9EeT7Jf/over-eight-months-of-progress-in-two-analyzing-the-mythos",
+     "source_title": "Analyzing the Mythos Capability Jump / LessWrong",
+     "notes": "グラフからの読み取り近似。Opus 4.7はMythos前トレンド線に着地しジャンプの一時性を示唆。",
+     "series": [
+      {
+       "x": "2026-02-05",
+       "y": 153,
+       "label": "Opus 4.6"
+      },
+      {
+       "x": "2026-04-07",
+       "y": 161,
+       "label": "Mythos Preview"
+      },
+      {
+       "x": "2026-04-17",
+       "y": 154,
+       "label": "Opus 4.7(トレンド線)"
+      }
+     ]
+    },
+    {
+     "metric": "AISI TLO(32段階攻撃)平均到達段階",
+     "unit": "steps",
+     "source_url": "https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities",
+     "source_title": "AISI Mythos Preview cyber evaluation",
+     "notes": "Mythos Previewが史上初TLO完遂(10回中3回)。",
+     "series": [
+      {
+       "x": "Opus 4.6",
+       "y": 16,
+       "label": "平均段階"
+      },
+      {
+       "x": "Mythos Preview",
+       "y": 22,
+       "label": "平均段階"
+      }
+     ]
+    },
+    {
+     "metric": "50%タイムホライズン(SWEタスク自律遂行)",
+     "unit": "hours",
+     "source_url": "https://www.lesswrong.com/posts/siK3JL4S6o9EeT7Jf/over-eight-months-of-progress-in-two-analyzing-the-mythos",
+     "source_title": "Analyzing the Mythos Capability Jump / LessWrong",
+     "notes": "2.86ダブリング。1か月ダブリング仮定は高度に投機的。",
+     "series": [
+      {
+       "x": "Opus 4.6",
+       "y": 12,
+       "label": "時間"
+      },
+      {
+       "x": "Mythos Preview",
+       "y": 87,
+       "label": "時間"
+      }
+     ]
+    },
+    {
+     "metric": "CVE件数スパイク(2025ベースライン比)",
+     "unit": "% above baseline",
+     "source_url": "https://epoch.ai/gradient-updates/are-mythos-cyber-capabilities-overhyped",
+     "source_title": "Are Mythos cyber capabilities overhyped? / Epoch AI",
+     "notes": "投資水準(Glasswing API予算)による交絡の可能性あり。",
+     "series": [
+      {
+       "x": "2026-04",
+       "y": 142,
+       "label": "CVE超過率"
+      },
+      {
+       "x": "2026-05",
+       "y": 262,
+       "label": "CVE超過率"
+      }
+     ]
+    },
+    {
+     "metric": "モデル価格(百万トークンあたり)",
+     "unit": "USD",
+     "source_url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+     "source_title": "Claude Fable 5 and Mythos 5 / Anthropic",
+     "notes": "Fable5はOpus4.8の約2倍。入力=x軸input、出力=x軸output。",
+     "series": [
+      {
+       "x": "Opus4.8-input",
+       "y": 5,
+       "label": "入力"
+      },
+      {
+       "x": "Opus4.8-output",
+       "y": 25,
+       "label": "出力"
+      },
+      {
+       "x": "Fable5-input",
+       "y": 10,
+       "label": "入力"
+      },
+      {
+       "x": "Fable5-output",
+       "y": 50,
+       "label": "出力"
+      }
+     ]
+    },
+    {
+     "metric": "Firefox JSエンジン working exploit生成回数",
+     "unit": "count",
+     "source_url": "https://www.anthropic.com/research/mythos-preview",
+     "source_title": "Mythos Preview cyber assessment / Anthropic",
+     "notes": "Opus4.6は数百回中2回、Mythosは181回+register control 29回。",
+     "series": [
+      {
+       "x": "Opus 4.6",
+       "y": 2,
+       "label": "working exploit"
+      },
+      {
+       "x": "Mythos Preview",
+       "y": 181,
+       "label": "working exploit"
+      }
+     ]
+    },
+    {
+     "metric": "Project Glasswing提供組織数の推移",
+     "unit": "organizations",
+     "source_url": "https://en.wikipedia.org/wiki/Claude_Mythos",
+     "source_title": "Claude Mythos / Wikipedia",
+     "notes": "報道により約50→200の表現あり。概数。",
+     "series": [
+      {
+       "x": "2026-04-07",
+       "y": 40,
+       "label": "組織数"
+      },
+      {
+       "x": "2026-06-02",
+       "y": 150,
+       "label": "組織数"
+      }
+     ]
+    }
+   ],
+   "open_questions": [
+    "'TOO_DUMB_TO_NEED_FABLE'降格タグとAnthropicエンジニアの反応は二次報道(BigGo)中心で、一次ソース(GitHub/公式ログ)による裏取りが未完了",
+    "Mythos Previewの能力ジャンプがcompute scaling起因か人間の研究breakthrough起因かはAnthropicが'research-sensitive'として詳細非公開で、外部検証が困難",
+    "Epoch Capabilities Index値は内部指標のグラフ読み取り近似で、正確な数値は未公表",
+    "輸出管理発動から解除までの政府内部の意思決定過程(どの証拠が決め手か)は非公開",
+    "Mythos 5と Mythos Preview の能力差分の定量値が公開されておらず、世代間の実測比較が限定的",
+    "Claude Codeステガノグラフィ件とMythos/Fable騒動の因果的関連(意図的な情報統制か偶発的な時期重複か)は不明"
+   ]
+  },
+  {
+   "domain": "過去のAI予測の答え合わせ(Situational Awareness / AI 2027 / Metaculus / 専門家サーベイ)",
+   "summary": "2026年7月時点で過去の主要AI予測を検証すると、明確な非対称性が浮かぶ。Aschenbrenner「Situational Awareness」(2024年6月)は技術・インフラ系予測が約8/10的中(テストタイム計算、GPQA飽和(GPT-5が88.4%)、電力律速、ガス発電への回帰、~1GW級クラスタと資本動員)した一方、政治経済系は約8/10外れた(国家プロジェクト化・数兆ドル歳出・輸出規制強化・OSS後退はすべて逆方向、AI収益も予測$100Bに対し実際~$60Bで4割未達)。「AGI by 2027」は未確定だが drop-in remote worker は未実現。AI 2027(2025年4月)は定量進捗が予測ペースの約65%(SWE-bench予測85%に対し74.5%)で、53予測中51%が的中・順調。著者ら自身も2025年12月に自動コーダー到達を3〜5年後ろ倒し、2026年Q1にMETRホライズン加速(倍増89〜105日)を受けて中央値を2028年央(Kokotajlo)〜2030年央(Lifland)に再修正した。予測分布も大圧縮が続く: Metaculusの強いAGI中央値は2020年の「約50年先」から2033年へ、弱いAGIは2027年へ。AI Impactsの研究者サーベイHLMI中央値は2016年2061→2022年2059→2023年2047と、GPT-4後の1年で13年短縮した。共通する系統誤差は(1)ベンチマーク・計算量・capexなど「法則的」領域の直線外挿は当たる、(2)エージェントの実務信頼性と業界収益の指数外挿は過大、(3)政府・制度の反応速度は大幅過大、(4)オープンソースと中国の独自革新(DeepSeek-R1)は過小、(5)リスクは想定能力より先に到来(自律ゼロデイ発見が1年早い)、(6)専門家予測はアンカリングされイベント駆動で階段状にしか更新されない、の6点である。",
+   "key_findings": [
+    {
+     "claim": "Situational Awareness(2024年6月)の予測は技術・インフラ系が約8/10的中、政治経済系が約8/10外れという明確な二極分化を示した",
+     "detail": "的中: テストタイム計算(o1 2024年10月)、GPQA飽和(~18ヶ月でGPT-5 88.4%)、電力律速、ガス発電回帰(Meta 7.5GW発注等)、資本動員(McKinsey試算: 2030年までDC設備投資$5.2兆)。外れ: 国家プロジェクト化、議会の数兆ドル歳出、輸出規制強化(実際はAI Diffusion Rule撤回・H200級対中販売容認と逆方向)、OSS後退(DeepSeek-R1が反証)、実質金利10%超(実際2.0〜2.4%)",
+     "source_title": "Aschenbrenner's Receipts (philippdubach.com)",
+     "source_url": "https://philippdubach.com/posts/aschenbrenners-receipts/",
+     "confidence": "high",
+     "as_of": "2026-05"
+    },
+    {
+     "claim": "Aschenbrennerの「AI収益$100Bランレート(2026年央)」予測は実際~$60Bで約4割未達、一方「AGI by 2027」は2026年3月時点でなお未確定と判定された",
+     "detail": "EA Forumの検証(2026年3月)は総合評価を「かなり良くやった」としつつ、収益とdrop-in remote workerの未実現、OSS拡散の見落としを主要な外れと認定。AGI 2027説は「半年前は非現実的に見えたが直近のSWE系能力ジャンプで再び信憑性が増した」",
+     "source_title": "How did Leopold do? (EA Forum)",
+     "source_url": "https://forum.effectivealtruism.org/posts/RuwF8FCfpsLeZRgur/how-did-leopold-do-evaluating-situational-awareness-s",
+     "confidence": "high",
+     "as_of": "2026-03"
+    },
+    {
+     "claim": "AI 2027(2025年4月)の2025年予測は定量指標で予測ペースの約65%: SWE-bench Verifiedは予測85%に対し実際74.5%、OpenAI年換算収益は予測$18Bに対し実際~$20Bとほぼ的中",
+     "detail": "定性予測(エージェントは理論上は印象的だが実務では信頼性不足、コーディング特化エージェントの職業変革、月数百ドルの価格帯)はおおむね的中。65%ペース補正でテイクオフ推定は2028年央〜2030年央に後ろ倒し",
+     "source_title": "Grading AI 2027's 2025 Predictions (LessWrong)",
+     "source_url": "https://www.lesswrong.com/posts/JYGeAAh92hAwvseFk/grading-ai-2027-s-2025-predictions",
+     "confidence": "high",
+     "as_of": "2026-01"
+    },
+    {
+     "claim": "AI 2027の1年後トラッキングでは53予測中「確認14・先行3・順調10」(計51%)で、「リスクが想定能力より先に到来する」パターン(自律ゼロデイ発見が予定より約1年早い)が確認された",
+     "detail": "内訳: 確認26%、先行6%、順調19%、遅れ8%、兆候段階25%、未検証17%。能力ベンチマークは遅れ気味なのに安全保障系イベント(ゼロデイ、DoD連携)が先行するという逆転が特徴",
+     "source_title": "AI 2027 Tracker: One Year of Predictions vs. Reality (LessWrong)",
+     "source_url": "https://www.lesswrong.com/posts/oSWae4bE4mqWy5a6Q/ai-2027-tracker-one-year-of-predictions-vs-reality",
+     "confidence": "medium",
+     "as_of": "2026-04"
+    },
+    {
+     "claim": "AI 2027著者ら自身が予測を2度更新: 2025年12月に完全コーディング自動化を3〜5年後ろ倒し、2026年Q1にはMETRホライズン加速を受けKokotajloが自動コーダー中央値を2029年末→2028年央へ再前倒し(Liflandは2030年央)",
+     "detail": "更新理由はMETR Time Horizon 1.1採用、Gemini 3/GPT-5.2/Claude Opus 4.6の評価、倍増時間見積りの5.5ヶ月→4.0〜4.5ヶ月への改訂。原シナリオの「2027年superhuman coder」からは総じて2〜3年後ろ倒しで収束しつつ振動している",
+     "source_title": "Q1 2026 Timelines Update (AI Futures Project, LessWrong)",
+     "source_url": "https://www.lesswrong.com/posts/XLLjqMxETva3ABtsK/q1-2026-timelines-update",
+     "confidence": "high",
+     "as_of": "2026-04"
+    },
+    {
+     "claim": "MetaculusのAGI予測は2020年の「約50年先」から2026年には中央値2033年(25%で2029年)へ圧縮、弱いAGIは中央値2027年",
+     "detail": "約2,000人の予測者による。2025年10月時点で弱いAGI中央値2027年・強いAGI中央値2033年(aisafety.info)。集約ダッシュボード(Good Heart Labs)の統合推定は2031年(80%CI 2027-2044、2026年7月6日時点)",
+     "source_title": "When do experts think human-level AI will be created? (aisafety.info)",
+     "source_url": "https://aisafety.info/questions/5633/When-do-experts-think-human-level-AI-will-be-created",
+     "confidence": "medium",
+     "as_of": "2026-02"
+    },
+    {
+     "claim": "AI Impacts研究者サーベイのHLMI到達中央値は2016年調査2061年→2022年調査2059年→2023年調査(回答約2,700人)2047年と、6年間ほぼ不動だったのがGPT-4後の1年で13年短縮した",
+     "detail": "同じ2023年調査で「全労働の完全自動化」中央値は2116年とHLMIから69年乖離しており、質問フレーミングへの強い感度も判明。学界(2047)>Metaculus(2033)>ラボ内部者(2028-2031)という予測の階層は2016年から一貫",
+     "source_title": "2023 Expert Survey on Progress in AI (AI Impacts Wiki)",
+     "source_url": "https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai",
+     "confidence": "high",
+     "as_of": "2024-01"
+    },
+    {
+     "claim": "METRの50%タイムホライズンはGPT-4の3.5分(2023年)からClaude Opus 4.5の320分(2025年11月)へ拡大し、倍増時間は2024年以降89日に加速——エージェント能力の実測がシナリオ作者の再前倒しの根拠となった",
+     "detail": "Time Horizon 1.1(2026年1月29日)。ただし16時間超の推定はタスクスイート飽和のため信頼できないとMETR自身が注記。2026年3月の最前線モデル~16時間到達は二次情報",
+     "source_title": "Time Horizon 1.1 (METR)",
+     "source_url": "https://metr.org/blog/2026-1-29-time-horizon-1-1/",
+     "confidence": "high",
+     "as_of": "2026-01"
+    },
+    {
+     "claim": "過去予測の系統誤差は「法則的領域(計算量・capex・ベンチマーク)の外挿は当たり、制度・政治・拡散の予測は外れる」に集約される",
+     "detail": "philippdubachの分析: モーダルストーリー型予測は「経験則が支配する基盤では頑健、連合政治に依存する基盤では脆弱」。加えてエージェント実務信頼性の過大評価(ベンチマーク→実務の変換係数)、OSS・中国独自革新の過小評価、イベント駆動の階段状更新(アンカリング)が共通",
+     "source_title": "Aschenbrenner's Receipts (philippdubach.com)",
+     "source_url": "https://philippdubach.com/posts/aschenbrenners-receipts/",
+     "confidence": "high",
+     "as_of": "2026-05"
+    },
+    {
+     "claim": "原文の主要予測文言: Situational Awareness「AGI by 2027 is strikingly plausible」「2030年に~100GW・$1兆超クラスタ(米国発電量の20%超)」、AI 2027「エージェントは理論上印象的だが実務では信頼性不足(2025年央)」「Agent-0は10^27 FLOPで訓練(2025年末)」",
+     "detail": "SAのクラスタ予測表: 2026年~100万H100換算・~1GW・数百億ドル、2028年~10GW・数千億ドル。2026年実績(Stargate級~1GWキャンパス、frontier訓練~10^26-27 FLOP)はこの行にほぼ整合",
+     "source_title": "SITUATIONAL AWARENESS: Racing to the Trillion-Dollar Cluster",
+     "source_url": "https://situational-awareness.ai/racing-to-the-trillion-dollar-cluster/",
+     "confidence": "high",
+     "as_of": "2024-06"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "METR 50%タイムホライズン(フロンティアモデルが50%成功率でこなせるタスク長)",
+     "unit": "分",
+     "series": [
+      {
+       "x": "2023-03",
+       "y": 3.5,
+       "label": "GPT-4 0314"
+      },
+      {
+       "x": "2023-11",
+       "y": 3.6,
+       "label": "GPT-4 1106"
+      },
+      {
+       "x": "2025-02",
+       "y": 60,
+       "label": "Claude Sonnet 3.7"
+      },
+      {
+       "x": "2025-04",
+       "y": 121,
+       "label": "o3"
+      },
+      {
+       "x": "2025-05",
+       "y": 101,
+       "label": "Claude Opus 4"
+      },
+      {
+       "x": "2025-08",
+       "y": 214,
+       "label": "GPT-5"
+      },
+      {
+       "x": "2025-11",
+       "y": 320,
+       "label": "Claude Opus 4.5"
+      }
+     ],
+     "source_title": "METR Time Horizon 1.1(2026年1月29日)",
+     "source_url": "https://metr.org/blog/2026-1-29-time-horizon-1-1/",
+     "notes": "倍増時間: 全期間196日、2023年以降131日、2024年以降89日。CIは広い(例: Opus 4.5は170-729分)。2026年3月の~16時間(960分)到達は二次情報かつMETRが飽和注意を明記のため除外"
+    },
+    {
+     "metric": "AI Impacts専門家サーベイ: HLMI(高水準機械知能)50%到達年の中央値",
+     "unit": "年",
+     "series": [
+      {
+       "x": "2016",
+       "y": 2061,
+       "label": "Grace et al. 2016調査"
+      },
+      {
+       "x": "2022",
+       "y": 2059,
+       "label": "ESPAI 2022(738人)"
+      },
+      {
+       "x": "2023",
+       "y": 2047,
+       "label": "ESPAI 2023(約2,700人)"
+      }
+     ],
+     "source_title": "AI Impacts Wiki: 2023 Expert Survey on Progress in AI",
+     "source_url": "https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai",
+     "notes": "x=調査実施年、y=予測されたHLMI到達年。GPT-4後の1年で13年短縮。同2023年調査の「全労働完全自動化」は2116年"
+    },
+    {
+     "metric": "Metaculus AGI(強い定義)到達年のコミュニティ中央値の推移",
+     "unit": "年",
+     "series": [
+      {
+       "x": "2020",
+       "y": 2070,
+       "label": "約50年先(近似)"
+      },
+      {
+       "x": "2023",
+       "y": 2040,
+       "label": "GPT-4後(近似)"
+      },
+      {
+       "x": "2025-10",
+       "y": 2033,
+       "label": "aisafety.info確認値"
+      },
+      {
+       "x": "2026-02",
+       "y": 2033,
+       "label": "50% by 2033(約2,000人)"
+      }
+     ],
+     "source_title": "Metaculus Q5121 / aisafety.info / MEXCまとめ",
+     "source_url": "https://www.metaculus.com/questions/5121/when-will-the-first-general-ai-system-be-devised-tested-and-publicly-announced/",
+     "notes": "Metaculus本体は403のため2025-10と2026-02は二次ソース(aisafety.info、mexc.com/news/1021446)確認値、2020と2023はグラフ・記事からの読み取り近似。弱いAGI(Q3479)の中央値は2025-10時点で2027年"
+    },
+    {
+     "metric": "Aschenbrenner予測: 最大訓練クラスタ電力(予測値、2024年6月時点)",
+     "unit": "GW",
+     "series": [
+      {
+       "x": "2022",
+       "y": 0.01,
+       "label": "~GPT-4級 1万H100e $5億"
+      },
+      {
+       "x": "2024",
+       "y": 0.1,
+       "label": "10万H100e 数十億ドル"
+      },
+      {
+       "x": "2026",
+       "y": 1,
+       "label": "100万H100e 数百億ドル"
+      },
+      {
+       "x": "2028",
+       "y": 10,
+       "label": "1000万H100e 数千億ドル"
+      },
+      {
+       "x": "2030",
+       "y": 100,
+       "label": "1億H100e $1兆超・米発電量20%超"
+      }
+     ],
+     "source_title": "SITUATIONAL AWARENESS: Racing to the Trillion-Dollar Cluster",
+     "source_url": "https://situational-awareness.ai/racing-to-the-trillion-dollar-cluster/",
+     "notes": "これは予測系列(実測でない)。2026年実績はStargate級~1GWキャンパスでほぼ整合、というのが検証記事の評価"
+    },
+    {
+     "metric": "AI 2027の2025年予測 vs 実績(予測比%: 実際÷予測)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "SWE-bench Verified(予測85%)",
+       "y": 87.6,
+       "label": "実際74.5%(Opus 4.1)"
+      },
+      {
+       "x": "OpenAI年換算収益(予測$18B)",
+       "y": 111,
+       "label": "実際~$20B"
+      },
+      {
+       "x": "定量進捗の総合ペース",
+       "y": 65,
+       "label": "予測ペース比"
+      }
+     ],
+     "source_title": "Grading AI 2027's 2025 Predictions (LessWrong)",
+     "source_url": "https://www.lesswrong.com/posts/JYGeAAh92hAwvseFk/grading-ai-2027-s-2025-predictions",
+     "notes": "比較用の変換値(87.6=74.5/85)。総合65%は同記事の評価。時点は2025年末〜2026年初"
+    },
+    {
+     "metric": "AI 2027 Tracker: 53予測の1年後判定内訳",
+     "unit": "件",
+     "series": [
+      {
+       "x": "確認",
+       "y": 14
+      },
+      {
+       "x": "先行",
+       "y": 3
+      },
+      {
+       "x": "順調",
+       "y": 10
+      },
+      {
+       "x": "遅れ",
+       "y": 4
+      },
+      {
+       "x": "兆候段階",
+       "y": 13
+      },
+      {
+       "x": "未検証",
+       "y": 9
+      }
+     ],
+     "source_title": "AI 2027 Tracker: One Year of Predictions vs. Reality (LessWrong)",
+     "source_url": "https://www.lesswrong.com/posts/oSWae4bE4mqWy5a6Q/ai-2027-tracker-one-year-of-predictions-vs-reality",
+     "notes": "2026年4月頃時点。確認+先行+順調=27件(51%)"
+    },
+    {
+     "metric": "AI 2027著者(Kokotajlo)の「自動コーダー到達」中央値の変遷",
+     "unit": "年",
+     "series": [
+      {
+       "x": "2025-04",
+       "y": 2027.2,
+       "label": "AI 2027シナリオ(2027年初superhuman coder)"
+      },
+      {
+       "x": "2025-12",
+       "y": 2030.5,
+       "label": "AI Futures Model(3-5年後ろ倒し、近似)"
+      },
+      {
+       "x": "2026-04",
+       "y": 2028.5,
+       "label": "Q1 2026更新: mid-2028"
+      }
+     ],
+     "source_title": "Q1 2026 Timelines Update / AI Futures Model Dec 2025",
+     "source_url": "https://www.lesswrong.com/posts/XLLjqMxETva3ABtsK/q1-2026-timelines-update",
+     "notes": "y=予測到達年(小数=年内の月位置)。2025-12の値は「3〜5年後ろ倒し」記述からの近似。Liflandの同時点中央値はmid-2030。シナリオ本文の位置づけは「モーダルな物語」であり著者の確率的中央値とは元々ずれがある点に注意"
+    },
+    {
+     "metric": "AI業界収益: Aschenbrenner予測 vs 実績",
+     "unit": "十億ドル(年換算ランレート)",
+     "series": [
+      {
+       "x": "2026-06(予測)",
+       "y": 100,
+       "label": "SA予測: $100Bランレート"
+      },
+      {
+       "x": "2026-03(実績)",
+       "y": 60,
+       "label": "実績~$60B(EA Forum検証)"
+      }
+     ],
+     "source_title": "How did Leopold do? (EA Forum)",
+     "source_url": "https://forum.effectivealtruism.org/posts/RuwF8FCfpsLeZRgur/how-did-leopold-do-evaluating-situational-awareness-s",
+     "notes": "参考: Claude Codeは公開9ヶ月で年換算$2.5B(2026年2月、Q1 2026 Timelines Update経由)"
+    }
+   ],
+   "open_questions": [
+    "「AGI by 2027」の最終判定は2027年末まで持ち越し——直近のSWE系能力ジャンプで再浮上しており、検証者の間でも評価が割れている",
+    "Metaculusの歴史的中央値(2020〜2024の各時点値)はAPI認証が必要で正確な時系列を取得できず、近似値に留まる。レポート本編ではMetaculus APIトークン取得かWayback Machineでの補完が望ましい",
+    "「リスクが能力より先に到来」パターン(自律ゼロデイ発見の1年前倒し)の一次確認——Anthropic公式発表の原文を当たるべき(現状は二次情報)",
+    "AI収益~$60B(2026年3月)の集計範囲(モデルAPI収益のみか、クラウド・アプリ込みか)が検証記事間で不統一",
+    "予測の階層(内部者<予測市場<学界)のどこが正しいかは未決着——2026年後半のエージェント実務普及データ(米センサス局のAI利用率等)が次の判定材料",
+    "Aschenbrennerの2028年予測(10GWクラスタ、$100B級単一訓練クラスタ)は2027年中に前哨判定が可能"
+   ]
+  },
+  {
+   "datapoints": [
+    {
+     "metric": "機関別AI経済効果の推定(年率換算・生産性/GDP押し上げ)",
+     "unit": "%ポイント/年",
+     "series": [
+      {
+       "x": "Acemoglu 2024 (TFP)",
+       "y": 0.07
+      },
+      {
+       "x": "Penn Wharton 2025",
+       "y": 0.15
+      },
+      {
+       "x": "IMF Misch 2025 (欧州)",
+       "y": 0.2
+      },
+      {
+       "x": "ECB Bergeaud 2025 (ユーロ圏)",
+       "y": 0.29
+      },
+      {
+       "x": "OECD 2024 (TFP中央値)",
+       "y": 0.4
+      },
+      {
+       "x": "McKinsey 2023 (生成AI上限)",
+       "y": 0.6
+      },
+      {
+       "x": "Aghion-Bunel 2024 (中央値)",
+       "y": 1
+      },
+      {
+       "x": "Baily-Brynjolfsson-Korinek 2023",
+       "y": 1
+      },
+      {
+       "x": "Goldman Sachs 2023 (米)",
+       "y": 1.5
+      },
+      {
+       "x": "Korinek-Suh 2024 (AGI基準)",
+       "y": 18
+      },
+      {
+       "x": "Epoch GATE 2025 (2035年)",
+       "y": 30
+      }
+     ],
+     "notes": "Tom Cunningham の比較表(2025-10)より年率換算。手法はタスクベース(下位)からcompute ベース(上位)まで。レンジは3桁の開き。シナリオプリセット(保守/中位/急進)にそのまま使える。",
+     "source_title": "Forecasts of AI & Economic Growth (Tom Cunningham, 2025-10-19)",
+     "source_url": "https://tecunningham.github.io/posts/2025-10-19-forecasts-of-AI-growth-extended.html"
+    },
+    {
+     "metric": "Acemoglu (2024) TFP効果0.66%の係数分解",
+     "unit": "%",
+     "series": [
+      {
+       "x": "AI曝露タスク比率(賃金加重)",
+       "y": 20
+      },
+      {
+       "x": "曝露タスク中の採算自動化率",
+       "y": 23
+      },
+      {
+       "x": "タスク平均の労働コスト削減",
+       "y": 27
+      },
+      {
+       "x": "総コスト換算の削減率",
+       "y": 14.4
+      },
+      {
+       "x": "10年TFP効果(=20%×23%×14.4%)",
+       "y": 0.66
+      },
+      {
+       "x": "hard-task補正後の10年TFP上限",
+       "y": 0.53
+      },
+      {
+       "x": "10年GDP効果下限(資本比例)",
+       "y": 0.93
+      },
+      {
+       "x": "10年GDP効果上限(投資反応込み)",
+       "y": 1.56
+      }
+     ],
+     "notes": "Hulten定理: ΔTFP=影響タスクのGDPシェア×平均コスト削減。曝露20%はEloundou et al. 2023、23%はSvanberg et al. 2024、27%はNoy-Zhang/Brynjolfsson et al.の平均。年率では約0.064%。実測値ベースの係数(実験研究の実測+推定の組合せ)。",
+     "source_title": "The Simple Macroeconomics of AI (Acemoglu, May 2024, 本文PDF確認)",
+     "source_url": "https://shapingwork.mit.edu/wp-content/uploads/2024/05/Acemoglu_Macroeconomics-of-AI_May-2024.pdf"
+    },
+    {
+     "metric": "Okun係数(産出1%変化が失業率に与える効果、絶対値)",
+     "unit": "pp失業率/1%産出",
+     "series": [
+      {
+       "x": "スペイン",
+       "y": 0.82
+      },
+      {
+       "x": "米国",
+       "y": 0.45
+      },
+      {
+       "x": "スイス",
+       "y": 0.22
+      },
+      {
+       "x": "日本",
+       "y": 0.17
+      },
+      {
+       "x": "オーストリア",
+       "y": 0.13
+      }
+     ],
+     "notes": "Ball-Leigh-Loungani(JMCB 2017版PDF本文で確認)。20先進国で安定成立、大不況でも不変。有期雇用比率が高いほど係数大(スペイン)、終身雇用の日本は小(前半-0.12→後半-0.22へ上昇)。国別GDP→失業率写像にそのまま使える実測値。",
+     "source_title": "Okun's Law: Fit at 50? (Ball, Leigh, Loungani)",
+     "source_url": "https://www.imf.org/external/pubs/ft/wp/2013/wp1310.pdf"
+    },
+    {
+     "metric": "GATEモデルのGDP成長率シナリオ",
+     "unit": "%/年",
+     "series": [
+      {
+       "label": "歴史平均",
+       "x": "ベースライン",
+       "y": 3
+      },
+      {
+       "label": "自動化進行期(下限2倍)",
+       "x": "自動化進行期・低",
+       "y": 6
+      },
+      {
+       "label": "自動化進行期(上限20倍)",
+       "x": "自動化進行期・高",
+       "y": 60
+      },
+      {
+       "label": "高自動化・積極シナリオ下限",
+       "x": "完全自動化・低",
+       "y": 30
+      },
+      {
+       "label": "高自動化・積極シナリオ上限",
+       "x": "完全自動化・高",
+       "y": 100
+      }
+     ],
+     "notes": "Epoch AI公式ブログの記述(2-20x、30-100%/yr)からの読み取り(モデル出力・推定)。主要パラメータ: 完全自動化~1e36実効FLOP、計算資本減耗δ_Q=0.30/年、熱的上限2e38 FLOP/年、R&D収穫λ≈0.3-0.5、推論/訓練トレードオフm≈1-2 OOM。",
+     "source_title": "GATE: Modeling the trajectory of AI and automation (Epoch AI, 2025-03)",
+     "source_url": "https://epoch.ai/blog/announcing-gate"
+    },
+    {
+     "metric": "Davidson takeoffモデルの中央値推定(2023年時点)",
+     "unit": "混合(年・OOM)",
+     "series": [
+      {
+       "label": "AGI(100%自動化)年",
+       "x": "AGI年",
+       "y": 2043
+      },
+      {
+       "label": "20%→100%自動化の所要年数",
+       "x": "takeoff年数",
+       "y": 3
+      },
+      {
+       "label": "20%→100%の実効FLOPギャップ",
+       "x": "FLOPギャップ(OOM)",
+       "y": 4
+      },
+      {
+       "label": "AGI訓練要件(log10実効FLOP)",
+       "x": "AGI訓練要件",
+       "y": 35
+      },
+      {
+       "label": "R&DでのAI-人間CESパラメータρ",
+       "x": "CES rho",
+       "y": -0.5
+      }
+     ],
+     "notes": "Scott AlexanderによるDavidsonレポート要約からの読み取り(推定分布の中央値)。自動化率=シグモイド(log10実効FLOP)で実装可能。AGI→超知能は1〜12ヶ月。",
+     "source_title": "Davidson On Takeoff Speeds (Astral Codex Ten)",
+     "source_url": "https://www.astralcodexten.com/p/davidson-on-takeoff-speeds"
+    },
+    {
+     "metric": "AI曝露雇用比率(国グループ別、IMF 2024)",
+     "unit": "% 雇用",
+     "series": [
+      {
+       "x": "先進国",
+       "y": 60
+      },
+      {
+       "x": "世界全体",
+       "y": 40
+      },
+      {
+       "x": "新興国",
+       "y": 40
+      },
+      {
+       "x": "低所得国",
+       "y": 26
+      }
+     ],
+     "notes": "IMF SDN/2024/001(Cazzaniga et al.)。先進国の曝露60%のうち約半分は代替リスク、半分は補完(生産性向上)。国別モデルの曝露率パラメータの土台。新興国40%は概数、低所得国26%は同報告の公表値。",
+     "source_title": "Gen-AI: Artificial Intelligence and the Future of Work (IMF SDN/2024/001)",
+     "source_url": "https://www.imf.org/-/media/files/publications/sdn/2024/english/sdnea2024001.pdf"
+    },
+    {
+     "metric": "緊縮規模と社会不安イベント(Ponticelli-Voth、欧州1919-2008)",
+     "unit": "相対倍率",
+     "series": [
+      {
+       "label": "支出増加時を1とした不安イベント頻度",
+       "x": "支出増加時",
+       "y": 1
+      },
+      {
+       "label": "支出削減≥5%GDP時",
+       "x": "削減5%GDP以上",
+       "y": 2
+      }
+     ],
+     "notes": "CHAOS指標(暴動+反政府デモ+ゼネスト+暗殺+クーデター未遂の年間件数)。削減1%GDPごとに単調にリスク増、増税は有意でない。報道引用からの読み取り(近似)。社会安定性モジュールで「可処分所得の急落」を非対称トリガーにする根拠。",
+     "source_title": "Austerity and Anarchy: Budget Cuts and Social Unrest in Europe, 1919-2008 (SSRN)",
+     "source_url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1899287"
+    },
+    {
+     "metric": "AJJ Baumolモデル: 自動化率βと資本分配率の漸近挙動(Fig 9.1)",
+     "unit": "比率",
+     "series": [
+      {
+       "label": "自動化率β",
+       "x": "year 0",
+       "y": 0
+      },
+      {
+       "label": "自動化率β",
+       "x": "year 100",
+       "y": 0.55
+      },
+      {
+       "label": "自動化率β",
+       "x": "year 250",
+       "y": 0.9
+      },
+      {
+       "label": "自動化率β",
+       "x": "year 500",
+       "y": 0.99
+      },
+      {
+       "label": "資本分配率αK",
+       "x": "year 0",
+       "y": 0
+      },
+      {
+       "label": "資本分配率αK",
+       "x": "year 100",
+       "y": 0.18
+      },
+      {
+       "label": "資本分配率αK",
+       "x": "year 250",
+       "y": 0.32
+      },
+      {
+       "label": "資本分配率αK",
+       "x": "year 500",
+       "y": 0.36
+      }
+     ],
+     "notes": "グラフからの読み取り(Fig 9.1、本文PDF確認)。ρ<0(タスク補完)のとき、β→1でも資本分配率は約1/3に漸近し、GDP成長率は約2%で安定=Baumolのコスト病が爆発成長を抑える。ρ<0でσ>1に反転すると爆発成長。",
+     "source_title": "Artificial Intelligence and Economic Growth (Aghion, Jones & Jones, 書籍章PDF)",
+     "source_url": "https://web.stanford.edu/~chadj/AJJ-AIandGrowth.pdf"
+    }
+   ],
+   "domain": "AIの経済効果を扱うマクロ経済モデルとその係数(ブラウザ内タスクベース簡易マクロモデルの理論的裏付け)",
+   "key_findings": [
+    {
+     "claim": "Acemoglu (2024) はHulten定理により「ΔTFP=AI曝露タスク比率20%×採算自動化率23%×総コスト削減14.4%≈0.66%(10年、年率0.064%)」と導出し、GDP効果は投資反応込みでも10年で0.93〜1.56%にとどまるとした。",
+     "detail": "生産関数 Y=(∫y(z)^((σ-1)/σ)dz)^(σ/(σ-1))、σ≈0.5(Humlum 2021)。hard-to-learnタスク補正(easyタスク上限73%、hardの生産性向上はeasyの1/4)でTFP≤0.53%。賃金式 dlnw=(1/σ)dlnY−(1/σ)×限界タスク密度で自動化の賃金効果は符号不定。σ<s_K(≈0.4)なら労働増強型技術でも実質賃金が下がり得る。悪い新タスク(SNS操作等)でGDP+2%・厚生−0.72%の乖離例も提示。",
+     "source_title": "The Simple Macroeconomics of AI (Acemoglu, 2024-05, 本文確認)",
+     "source_url": "https://shapingwork.mit.edu/wp-content/uploads/2024/05/Acemoglu_Macroeconomics-of-AI_May-2024.pdf",
+     "confidence": "high",
+     "as_of": "2024-05"
+    },
+    {
+     "claim": "Aghion-Jones-Jones はCES(ρ<0)タスクモデル Y=A(β^(1-ρ)K^ρ+(1-β)^(1-ρ)L^ρ)^(1/ρ) で、タスクが補完的なら成長は未自動化の「不可欠だが改善しにくい」タスクに制約される(Baumolコスト病)ことを示し、β→1でも資本分配率は約1/3に漸近し成長率は約2%で安定する均斉成長例を提示した。",
+     "detail": "アイデア生産の自動化では g_A=(g_C+g_S)/(1-φ)(Jones 1995拡張)。アイデア生産の完全自動化(Ȧ=KA^φ, φ>0)ならType IIシンギュラリティ(A_t=(1/(A_0^(−φ)−φt))^(1/φ)、有限時間で発散)。σ<1/σ>1の分岐が簡易モデルの「飽和 vs 爆発」スイッチとして実装可能。",
+     "source_title": "Artificial Intelligence and Economic Growth (Aghion, Jones & Jones, 1919章PDF本文確認)",
+     "source_url": "https://web.stanford.edu/~chadj/AJJ-AIandGrowth.pdf",
+     "confidence": "high",
+     "as_of": "2019-05"
+    },
+    {
+     "claim": "Epoch AIのGATEモデル(2025-03)は compute開発+自動化+準内生成長の統合評価モデルで、完全自動化を実効訓練計算量~1e36 FLOPに置き、自動化進行期の成長率は歴史平均3%の2〜20倍、積極シナリオで年30〜100%と出力する。",
+     "detail": "主要パラメータ(付録D): 計算資本減耗δ_Q=0.30/年、熱的上限C_L=2.0e38 FLOP/年、R&D収穫逓減λ≈0.3-0.5、fishing-out φ≈0.3-0.5、調整費用凸性χ≈2-3、推論/訓練トレードオフ C_{T+ι}=C_T·ι^(1/m)(m≈1-2 OOM)、推論倍率上限100。労働市場は「完全再配置」と「完全置換」の2極シナリオを実装しており、失業率モジュールの上下限として利用できる。",
+     "source_title": "GATE: An Integrated Assessment Model for AI Automation (arXiv 2503.04941, HTML本文確認)",
+     "source_url": "https://arxiv.org/abs/2503.04941",
+     "confidence": "high",
+     "as_of": "2025-03"
+    },
+    {
+     "claim": "Tom Davidsonのcompute-centric takeoffモデル(2023)は「認知タスク20%自動化→100%自動化」の所要期間を中央値約3年、AGI年を中央値2043年、実効FLOPギャップを約4 OOM(範囲1-9)と推定し、R&DでのAI-人間代替にCES ρ=−0.5を採用した。",
+     "detail": "AGI訓練要件はBio Anchors系の~1e35-36実効FLOP(2020アルゴリズム換算)、ソフトウェア効率は年約2倍、wake-up(投資加速)~2034年。takeoffspeeds.comで全パラメータが対話的に調整可能。自動化率をlog10(実効compute)のシグモイドで表す実装が両モデル(GATE/Davidson)の共通近似になる。",
+     "source_title": "Davidson On Takeoff Speeds (ACX要約、本文確認) / takeoffspeeds.com",
+     "source_url": "https://www.astralcodexten.com/p/davidson-on-takeoff-speeds",
+     "confidence": "medium",
+     "as_of": "2023-06"
+    },
+    {
+     "claim": "機関別のAI GDP効果推定は年率換算で+0.07%(Acemoglu)〜+30%(Epoch GATE)と3桁の開きがあり、Goldman Sachs=世界GDP+7%($7兆)・米生産性+1.5pp/年、PwC=2030年に+$15.7兆(+14%)、McKinsey=生成AIで年$2.6〜4.4兆、IMF(欧州)=+0.2%/年が代表値。",
+     "detail": "Cunningham(2025-10)の比較表を軸に整理。中間にはOECD +0.25-0.6pp(TFP)、ECB +0.29%/年(ユーロ圏、GPT-4で16,937タスク分類)、Aghion-Bunel +0.68-1.3pp、Korinek-Suh(AGI基準+18%/年・賃金約85%崩落)がある。差の主因は「現在自動化可能なタスクの静的計上」vs「computeスケーリング+研究自動化の複利」という手法の違い。",
+     "source_title": "Forecasts of AI & Economic Growth (Tom Cunningham, 本文確認)",
+     "source_url": "https://tecunningham.github.io/posts/2025-10-19-forecasts-of-AI-growth-extended.html",
+     "confidence": "high",
+     "as_of": "2025-10"
+    },
+    {
+     "claim": "IMF (SDN/2024/001) は世界雇用の約40%、先進国の約60%がAIに曝露され(うち半分は代替・半分は補完)、低所得国は26%にとどまると推定、174カ国のAI Preparedness Indexを整備した。",
+     "detail": "国別シミュレータの曝露率・準備度パラメータの一次ソース。先進国は曝露が大きい分、補完利益も大きい非対称構造。",
+     "source_title": "Gen-AI: Artificial Intelligence and the Future of Work (Cazzaniga et al., IMF)",
+     "source_url": "https://www.imf.org/-/media/files/publications/sdn/2024/english/sdnea2024001.pdf",
+     "confidence": "high",
+     "as_of": "2024-01"
+    },
+    {
+     "claim": "GDP→失業率の写像にはOkun係数(Ball-Leigh-Loungani)が使え、産出1%の変化に対する失業率変化は米国0.45pp、スペイン0.82pp、日本0.17pp、スイス0.22pp、オーストリア0.13ppと国別に大きく異なるが、各国内では時系列的に安定している。",
+     "detail": "20先進国(1980-)・米国(1948-)で推定、大不況でも係数は不変。有期雇用比率が高い国ほど大きい。国別シミュレータの「労働市場の硬直性」パラメータとしてそのまま採用可能な実測値。",
+     "source_title": "Okun's Law: Fit at 50? (IMF WP 13/10 / JMCB 2017、本文の国別記述を確認)",
+     "source_url": "https://www.imf.org/external/pubs/ft/wp/2013/wp1310.pdf",
+     "confidence": "high",
+     "as_of": "2017-10"
+    },
+    {
+     "claim": "失業・所得ショック→社会不安の実証では、Ponticelli-Voth(欧州1919-2008)が「支出削減がGDP比1%増えるごとに不安イベント(暴動・反政府デモ・ゼネスト・暗殺・クーデター未遂=CHAOS指標)のリスクが単調増加し、削減≥5%GDPで頻度が約2倍になる」ことを示し、ILOの社会不安指数研究は「不十分な成長と高失業率が2大決定要因で、総失業率の効果は若年失業率単独より大きい」と報告している。",
+     "detail": "増税の効果は小さく非有意という非対称性があり、社会安定性モジュールは「可処分所得の急落」をトリガーにするのが実証整合的。ILO指数はGallup World Poll(政府信頼・生活水準・自由・雇用機会・ネット接続)の合成。普遍的な回帰係数は公開文献に見当たらないため、モデルでは係数を感度スライダにすべき(推定)。",
+     "source_title": "Austerity and Anarchy (Ponticelli & Voth) / ILO World of Work Report 2013",
+     "source_url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1899287",
+     "confidence": "medium",
+     "as_of": "2020-03"
+    }
+   ],
+   "open_questions": [
+    "ILO社会不安指数の回帰係数の一次資料(World of Work Report 2013技術付録)の具体値 — 失業1pp→指数何ポイントかは未公開の可能性が高く、モデルでは感度パラメータ化が必要",
+    "GATEモデルの公式「基準シナリオ」の数値トラジェクトリ表(プレイグラウンドのMonte Carlo出力のエクスポート)",
+    "IMF AI Preparedness Indexの国別スコア一覧(CSV)— 国別シミュレータの準備度係数として要取得",
+    "米CEA 2026年1月レポート『Artificial Intelligence and the Great Divergence』の最新推定値(学習知識カットオフ後の一次資料、未読)",
+    "Korinek & Suh (2024) の賃金崩落~85%の導出パラメータ(CES弾力性と自動化速度の関数形)の詳細",
+    "自動化ショック→失業の直接係数(Okunは需要側のみ)— Acemoglu-Restrepo (2020) のロボット研究(ロボット1台/千人→雇用率-0.2pp等)を次回調査で補強すべき"
+   ],
+   "summary": "ブラウザ内タスクベース簡易マクロモデルの理論骨格は4層に整理できる。(1)保守側の錨はAcemoglu(2024)で、Hulten定理により「TFP上昇=AI曝露タスク比率20%×採算自動化率23%×総コスト削減14.4%≈0.66%/10年(年率0.064%)、GDP効果0.93〜1.56%」と規律付ける。タスク間代替弾力性σ≈0.5、資本分配率s_K≈0.4が主要係数で、賃金は生産性効果−置換効果の差で符号不定。(2)Aghion-Jones-JonesのCES(ρ<0)モデルはBaumolのコスト病を定式化し、Y=A(β^(1-ρ)K^ρ+(1-β)^(1-ρ)L^ρ)^(1/ρ)で自動化率β→1でも資本分配率は約1/3に漸近、成長は未自動化タスクに制約される。σ<1なら飽和、σ>1やアイデア生産の完全自動化(φ>0)なら有限時間発散という「飽和vs爆発」の分岐スイッチを与える。(3)急進側はEpoch AIのGATE(完全自動化~1e36実効FLOP、成長率は歴史3%の2〜20倍、積極シナリオで年30〜100%)とDavidsonのtakeoffモデル(20%→100%自動化が中央値約3年、AGI中央値2043年、FLOPギャップ~4 OOM、R&DのCES ρ=−0.5)で、自動化率をlog10(実効compute)のシグモイドとして実装できる。(4)機関別推定は年率+0.07%(Acemoglu)〜+30%(GATE)と3桁の開きがあり、Goldman(+1.5pp/年)、PwC(2030年+$15.7兆)、IMF(欧州+0.2%/年)等をシナリオプリセット化できる。失業率はOkun係数(米0.45、西0.82、日0.17)でGDPから写像し、GATEの「完全再配置/完全置換」を摩擦パラメータで内挿。社会安定性はILO社会不安指数(成長不足と高失業が2大要因)とPonticelli-Voth(支出削減≥5%GDPで不安イベント約2倍、増税は非有意という非対称性)を根拠に、失業増と可処分所得急落をトリガーとする指数として実装するのが実証整合的。ただし不安の普遍係数は存在せず感度スライダにすべき。調査ノート全文: /private/tmp/claude-501/-Users-kazu-Work-kzmszk-evals/2b2dc516-173d-43bb-aca8-c636a11bf000/scratchpad/ai-macro-economics.md"
+  },
+  {
+   "domain": "フィジカルAI(ロボティクス+基盤モデル)の現状と見通し",
+   "summary": "フィジカルAIは2025-26年に「デモから初期商用化」へ転換した。ソフト面ではVLA(視覚-言語-行動)モデルが急進展: Physical Intelligenceはπ0(flow matching)→π0.5(未知環境汎化)→π*0.6+RECAP(2025年11月、実機経験からのRL自己改善で難タスクのスループット2倍超・エスプレッソ13時間連続稼働)と進み、Google DeepMindはGemini Robotics 1.5で「行動前に考える」推論とロボット間モーション転移を実証、NVIDIAはGR00T N1.7をApache 2.0で公開した。最大の課題であるデータ問題には、世界モデルによる合成軌道生成(GR00T-Dreamsは11時間で78万軌道)、人間視点動画2万時間の事前学習、実機フリートからのRLという3方向で攻めている。ハード面では2025年の世界ヒューマノイド出荷は約1.3万台で中国勢が約8割: Unitree 5,500台超(R1は$5,900)、AgiBot 5,100台超(2026年3月に累計1万台)、UBTechはWalker S2を約1,000台生産しBYD等へ配備。米国勢はFigureがBotQで1台/時の量産体制(累計350台超)、Tesla OptimusはFremontで1,000台超稼働だが「主に学習用」でV3量産は2026年夏開始予定。BOMはGoldman推計で2022→23年に約40%低下($30k-150k/台)し、アクチュエータ(BOMの35-50%)の中国製量産が牽引。商用配備はBMW(Figure 03×40台、$25/稼働時間)、GXO倉庫のAgility Digit(10万トート突破)、BYDのWalker S2(100-200台)など実例が出揃った。産業用ロボットはIFR統計で2024年54.2万台設置、中国が54%を占め国産シェアも57%へ逆転。Morgan Stanleyは中国ヒューマノイド出荷を2026年5万台・2030年44.6万台へ倍増修正しており、コスト低下と中国のスケールが業界の時計を早めている。一方、信頼性データの欠如、出荷台数と実稼働の乖離、標準ベンチマーク不在が evaluation の壁として残る。",
+   "key_findings": [
+    {
+     "claim": "IFR統計で2024年の産業用ロボット世界設置台数は542,076台(史上2位)、うち中国が295,045台で世界需要の54%を占め、中国の稼働台数は2,027,190台と初めて200万台を突破した",
+     "detail": "中国国内では中国メーカーのシェアが57%と初めて外資を逆転(10年前は約28%)。IFRは2025年に57.5万台(+6%)、2028年に70万台超えを予測。地域別ではアジア74%、欧州16%、米州9%。",
+     "as_of": "2025-09",
+     "source_title": "IFR World Robotics 2025 Executive Summary (Industrial Robots)",
+     "source_url": "https://ifr.org/img/worldrobotics/Executive_Summary_WR_2025_Industrial_Robots.pdf",
+     "confidence": "high"
+    },
+    {
+     "claim": "2025年の世界ヒューマノイド出荷は約13,000台で、Unitree(5,500台超)とAgiBot(5,100台超)の中国2社だけで約8割を占めた",
+     "detail": "Unitreeは2025年生産6,500台超(大半がG1)で世界1位、2026年目標2万台。AgiBotは2025年12月に累計5,000台、2026年3月に累計10,000台と3カ月で倍増。TrendForceはUnitreeのヒューマノイド売上構成比51%超・粗利率60%と報告。",
+     "as_of": "2026-04",
+     "source_title": "Forbes: Unitree G1 Humanoid Robots Are Reshaping The Robotics Investment Stack / TrendForce",
+     "source_url": "https://www.trendforce.com/presscenter/news/20260409-13007.html",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Unitree R1は2025年7月に$5,900で発売され、ヒューマノイド価格の底を一気に引き下げた(H1 $90,000→G1 $16,000→R1 $5,900)",
+     "detail": "H2は2025年10月に商用$40,900/EDU$68,900で発売。1X NEOは家庭用$20,000で2026年納入予約、Tesla Optimusは量産時$20,000-25,000目標。",
+     "as_of": "2025-10",
+     "source_title": "Unitree Shop / Forbes",
+     "source_url": "https://www.forbes.com/sites/jonmarkman/2026/04/27/unitree-g1-humanoid-robots-are-reshaping-the-robotics-investment-stack/",
+     "confidence": "high"
+    },
+    {
+     "claim": "Physical Intelligenceのπ*0.6+RECAP(2025年11月)は実機経験からのRLで最難タスクのスループットを2倍超に改善し、エスプレッソ作りを13時間連続稼働、新環境で50点の未知衣類折りたたみ、工場での59箱の組立を実証した",
+     "detail": "RECAPは示範→リアルタイム人間介入→自律練習の3段階でVLAをadvantage条件付けRL訓練する手法。模倣学習の誤差蓄積問題への回答で、共同創業者Hausmanは「RL is back」と表現。",
+     "as_of": "2025-11",
+     "source_title": "π*0.6: a VLA That Learns From Experience (arXiv:2511.14759)",
+     "source_url": "https://arxiv.org/abs/2511.14759",
+     "confidence": "high"
+    },
+    {
+     "claim": "Google DeepMindのGemini Robotics 1.5(2025年9月)は行動前に推論過程を言語化する「思考するVLA」と、ALOHA・Franka・Apptronik Apollo間のモーション転移を実証し、2026年CESではBoston Dynamics電動Atlasへの統合を発表した",
+     "detail": "推論特化のER 1.5とVLAの2モデル構成。On-Device版(2025年6月)はロボット上でローカル実行可能。",
+     "as_of": "2026-01",
+     "source_title": "Gemini Robotics 1.5 brings AI agents into the physical world (Google DeepMind)",
+     "source_url": "https://deepmind.google/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/",
+     "confidence": "high"
+    },
+    {
+     "claim": "FigureはBotQ工場でFigure 03の生産速度を120日以内に1台/日から1台/時へ24倍化し、2026年4月末時点で累計350台超を生産。BMW Spartanburgとは40台・約$25/ロボット稼働時間の商用契約に移行した",
+     "detail": "BotQ第1世代ラインは年産12,000台能力、4年で累計10万台目標。フリート拡大自体をHelix(自社VLA)のデータ収集と位置づける。家庭向けは2026年後半予定。",
+     "as_of": "2026-04",
+     "source_title": "Figure: Ramping Figure 03 Production",
+     "source_url": "https://www.figure.ai/news/ramping-figure-03-production",
+     "confidence": "high"
+    },
+    {
+     "claim": "UBTechはWalker S2を2025年11月に量産納入開始し年末までに累計1,000台生産、受注は8億元(約$112M)超。BYD(100-200台)、Foxconn、Airbus、さらに2026年7月には中越国境の税関業務にも配備された",
+     "detail": "2026年に年産5,000台、2027年に10,000台へ拡大計画。BYD配備は世界最大の商用ヒューマノイド導入とされる。",
+     "as_of": "2026-07",
+     "source_title": "UBTECH Walker S2 Begins Mass Production and Delivery (PR Newswire)",
+     "source_url": "https://www.prnewswire.com/news-releases/ubtech-humanoid-robot-walker-s2-begins-mass-production-and-delivery-with-orders-exceeding-800-million-yuan-302616924.html",
+     "confidence": "high"
+    },
+    {
+     "claim": "Tesla OptimusはFremont工場で1,000台超のGen3が稼働するが、Musk自身が2026年1月の決算で「主に学習用で生産的タスクではない」と認めており、V3量産開始は2026年7月末-8月予定",
+     "detail": "量産時目標コスト$20,000-25,000、Giga Texasに年産1,000万台目標の専用工場計画。実際の生産性寄与は未実証。",
+     "as_of": "2026-04",
+     "source_title": "Tesla Optimus Production Timeline 2026(二次ソース)",
+     "source_url": "https://optimusk.blog/blog/tesla-optimus-production-timeline/",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Goldman Sachs推計でヒューマノイド製造コストは2022年の$50,000-250,000/台から2023年に$30,000-150,000/台へ約40%低下し、想定(年15-20%減)を大幅に上回った",
+     "detail": "アクチュエータがBOMの35-50%、バッテリー15-20%、計算10-15%。1台に最大44個のハーモニックドライブ。中国勢の国産量産でアクチュエータ約50%減、Teslaはローラースクリューを$3,000→$800に。Goldmanは2035年市場を$38Bへ6倍上方修正。",
+     "as_of": "2024-01",
+     "source_title": "Goldman Sachs: The global market for humanoid robots could reach $38 billion by 2035",
+     "source_url": "https://www.goldmansachs.com/insights/articles/the-global-market-for-robots-could-reach-38-billion-by-2035",
+     "confidence": "high"
+    },
+    {
+     "claim": "Morgan Stanleyは2026年6月に中国ヒューマノイド出荷予測を2026年5万台(従来2.8万台)、2030年44.6万台(従来26.2万台)へほぼ倍増修正し、業界は「初期商用化フェーズ」に入ったと判断した",
+     "detail": "中国市場規模は2026年$2B→2030年$15B。フルサイズ機比率は2026年30%→2028年70%へ。世界では2050年に$5Tのエコシステム・10億台シナリオも提示。TrendForceも中国2026年生産+94%を予測。",
+     "as_of": "2026-06",
+     "source_title": "SCMP: Morgan Stanley raises China humanoid robot shipment forecast to 50,000 units",
+     "source_url": "https://www.scmp.com/tech/article/3358210/morgan-stanley-raises-china-humanoid-robot-shipment-forecast-50000-units",
+     "confidence": "high"
+    },
+    {
+     "claim": "データボトルネック対策として、NVIDIA GR00T-Dreamsは少数の実機示範から世界基盤モデル(Cosmos)経由で11時間に78万本の合成軌道を生成、GR00T N1.7は2万時間の人間視点動画を事前学習に組み込んだ",
+     "detail": "テレオペは1時間のデータ収集に1時間かかりスケールしない。合成データ(世界モデル+シミュレーション)、人間動画、実機RL(π*0.6)の3方向が並走。",
+     "as_of": "2026-04",
+     "source_title": "NVIDIA Technical Blog: Enhance Robot Learning with Synthetic Trajectory Data",
+     "source_url": "https://developer.nvidia.com/blog/enhance-robot-learning-with-synthetic-trajectory-data-generated-by-world-foundation-models/",
+     "confidence": "high"
+    },
+    {
+     "claim": "Agility RoboticsのDigitはGXO運営のSpanx倉庫でRaaSモデルの商用稼働を続け、2025年11月に累計10万トート搬送を突破した(ヒューマノイド初の商用マイルストーン)",
+     "detail": "GXOとは業界初の複数年契約(100台規模)。Amazon等でも累計数十万時間を記録。",
+     "as_of": "2025-11",
+     "source_title": "Agility Robotics: Digit Moves Over 100,000 Totes in Commercial Deployment",
+     "source_url": "https://www.agilityrobotics.com/content/digit-moves-over-100k-totes",
+     "confidence": "high"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "産業用ロボット世界年間設置台数",
+     "unit": "千台",
+     "source_title": "IFR World Robotics 2025 Executive Summary",
+     "source_url": "https://ifr.org/img/worldrobotics/Executive_Summary_WR_2025_Industrial_Robots.pdf",
+     "notes": "2014-2021は地域別棒グラフからの読み取り合算(近似)。2022-2024は本文記載の実数(552,946/541,302/542,076)。2025・2028はIFR予測。",
+     "series": [
+      {
+       "x": "2014",
+       "y": 213
+      },
+      {
+       "x": "2015",
+       "y": 249
+      },
+      {
+       "x": "2016",
+       "y": 297
+      },
+      {
+       "x": "2017",
+       "y": 393
+      },
+      {
+       "x": "2018",
+       "y": 415
+      },
+      {
+       "x": "2019",
+       "y": 376
+      },
+      {
+       "x": "2020",
+       "y": 379
+      },
+      {
+       "x": "2021",
+       "y": 519
+      },
+      {
+       "x": "2022",
+       "y": 553
+      },
+      {
+       "x": "2023",
+       "y": 541
+      },
+      {
+       "x": "2024",
+       "y": 542
+      },
+      {
+       "x": "2025",
+       "y": 575,
+       "label": "IFR予測"
+      },
+      {
+       "x": "2028",
+       "y": 700,
+       "label": "IFR予測(70万台超)"
+      }
+     ]
+    },
+    {
+     "metric": "産業用ロボット2024年設置の国別内訳",
+     "unit": "台",
+     "source_title": "IFR World Robotics 2025",
+     "source_url": "https://ifr.org/img/worldrobotics/Executive_Summary_WR_2025_Industrial_Robots.pdf",
+     "notes": "中国は世界の54%。上位5カ国で80%。",
+     "series": [
+      {
+       "x": "中国",
+       "y": 295045
+      },
+      {
+       "x": "日本",
+       "y": 44453
+      },
+      {
+       "x": "米国",
+       "y": 34164
+      },
+      {
+       "x": "韓国",
+       "y": 30596
+      },
+      {
+       "x": "ドイツ",
+       "y": 26982
+      },
+      {
+       "x": "欧州全体",
+       "y": 85006
+      },
+      {
+       "x": "世界計",
+       "y": 542076
+      }
+     ]
+    },
+    {
+     "metric": "ヒューマノイド出荷台数 2025年(社別)",
+     "unit": "台",
+     "source_title": "Forbes / TrendForce / PR Newswire / Figure",
+     "source_url": "https://www.forbes.com/sites/jonmarkman/2026/04/27/unitree-g1-humanoid-robots-are-reshaping-the-robotics-investment-stack/",
+     "notes": "世界計は約13,000台(推定)。Figureは2026年4月末時点の累計生産350台超を参考値として記載。UBTechは2025年末までの生産台数。",
+     "series": [
+      {
+       "x": "Unitree",
+       "y": 5500,
+       "label": "2025年出荷(超)"
+      },
+      {
+       "x": "AgiBot",
+       "y": 5100,
+       "label": "2025年出荷(超)"
+      },
+      {
+       "x": "UBTech Walker S2",
+       "y": 1000,
+       "label": "2025年末累計生産(約)"
+      },
+      {
+       "x": "Figure 03",
+       "y": 350,
+       "label": "2026年4月末累計(超)"
+      },
+      {
+       "x": "世界計(推定)",
+       "y": 13000
+      }
+     ]
+    },
+    {
+     "metric": "ヒューマノイド価格の低下(発売時価格)",
+     "unit": "USD",
+     "source_title": "Unitree / 1X / Tesla(目標)",
+     "source_url": "https://shop.unitree.com/",
+     "notes": "発売時期順。Optimusは量産時の目標価格(未実現)。G1はEDU構成で$16,000、base $13,500との情報もあり。",
+     "series": [
+      {
+       "x": "2023 Unitree H1",
+       "y": 90000
+      },
+      {
+       "x": "2024 Unitree G1",
+       "y": 16000
+      },
+      {
+       "x": "2025-07 Unitree R1",
+       "y": 5900
+      },
+      {
+       "x": "2025-10 Unitree H2",
+       "y": 40900
+      },
+      {
+       "x": "2025-10 1X NEO(家庭用)",
+       "y": 20000
+      },
+      {
+       "x": "2026+ Tesla Optimus目標",
+       "y": 22500,
+       "label": "$20k-25kの中央値"
+      }
+     ]
+    },
+    {
+     "metric": "ヒューマノイド製造コスト(BOMレンジ上限、Goldman Sachs推計)",
+     "unit": "USD/台",
+     "source_title": "Goldman Sachs Research",
+     "source_url": "https://www.goldmansachs.com/insights/articles/the-global-market-for-robots-could-reach-38-billion-by-2035",
+     "notes": "2022: $50k-250k → 2023: $30k-150k(約40%減)。2026年の$40k-60kは業界二次情報による商用グレード価格帯で出典が異なる点に注意。",
+     "series": [
+      {
+       "x": "2022",
+       "y": 250000,
+       "label": "レンジ上限"
+      },
+      {
+       "x": "2023",
+       "y": 150000,
+       "label": "レンジ上限"
+      },
+      {
+       "x": "2026",
+       "y": 60000,
+       "label": "商用価格帯上限(二次情報)"
+      }
+     ]
+    },
+    {
+     "metric": "中国ヒューマノイド出荷予測(Morgan Stanley、2026年6月改定)",
+     "unit": "台",
+     "source_title": "SCMP / CNBC",
+     "source_url": "https://www.scmp.com/tech/article/3358210/morgan-stanley-raises-china-humanoid-robot-shipment-forecast-50000-units",
+     "notes": "2026年は従来予測28,000から50,000へ、2030年は262,000から446,000へ上方修正。いずれも予測値。",
+     "series": [
+      {
+       "x": "2026",
+       "y": 50000,
+       "label": "新予測"
+      },
+      {
+       "x": "2030",
+       "y": 446000,
+       "label": "新予測"
+      }
+     ]
+    },
+    {
+     "metric": "ヒューマノイド市場規模予測の比較",
+     "unit": "億USD",
+     "source_title": "Goldman Sachs / Morgan Stanley",
+     "source_url": "https://www.morganstanley.com/insights/articles/humanoid-robot-market-5-trillion-by-2050",
+     "notes": "機関・定義が異なるため単純比較不可。MS 2050はエコシステム全体($5T=50,000億USD)。",
+     "series": [
+      {
+       "x": "2025 世界(MS)",
+       "y": 30
+      },
+      {
+       "x": "2026 中国(MS)",
+       "y": 20
+      },
+      {
+       "x": "2030 世界(MS)",
+       "y": 280
+      },
+      {
+       "x": "2030 中国(MS)",
+       "y": 150
+      },
+      {
+       "x": "2035 世界(GS)",
+       "y": 380
+      },
+      {
+       "x": "2050 世界エコシステム(MS)",
+       "y": 50000
+      }
+     ]
+    }
+   ],
+   "open_questions": [
+    "ヒューマノイドの信頼性(MTBF・実稼働率)の公開データがほぼ存在せず、出荷台数のうち実際に生産業務に就いている比率が不明(研究・デモ・データ収集用途が相当数)",
+    "Tesla Optimus V3の量産立ち上がり(2026年夏開始予定)が計画通り進むか、および「学習用」から生産的タスクへの移行時期",
+    "VLAの標準ベンチマークが未確立で、π*0.6・Gemini Robotics 1.5・Helix・GR00T等の性能主張を横並び比較できない",
+    "米中デカップリング(レアアース・アクチュエータ供給網、中国製ロボットへの安全保障規制)がコスト曲線と調達に与える影響",
+    "Unitree IPO後の開示で出荷台数・粗利率60%等の主張が検証可能になるか",
+    "合成データ(世界モデル生成軌道)で訓練したポリシーの実機性能が実データ訓練と同等になるかの定量エビデンス",
+    "家庭向け(1X NEO、Figureの2026年後半計画)がテレオペ依存をどの速度で脱却できるか"
+   ]
+  },
+  {
+   "domain": "中国のAI・ロボット政策と輸出規制の世界への影響",
+   "summary": "中国は2025年4月に中重レアアース7元素を輸出許可制とし、10月には対象を12元素へ拡大、中国産レアアースを0.1%以上含む外国製磁石・部品にまで許可を求める「中国版再輸出規制」を初適用した。中国はレアアース採掘の70%、精製の90%、永久磁石製造の93%を握るため、2025年4〜5月には対米磁石輸出が月50トン未満(平常の1割)に急減し、米欧の自動車・モーター工場が一時停止に追い込まれた。2025年10月の米中首脳合意で10月分規制は2026年11月10日まで停止されたが、対米イットリウム輸出は2026年2月時点でも規制前の3割程度にとどまり、価格は中国外で最大6倍と高止まりする。ロボット供給網でも中国優位は顕著で、ヒューマノイド部品網の6〜7割を支配し、EV電池は中国勢が世界の69%(CATL+BYDだけで55.6%)、2025年のヒューマノイド生産12,800体は世界の約9割を占めた。政府は具身智能を第15次五カ年計画の6大成長エンジンに指定し、1兆元規模の国家基金や省レベルの購入補助(最大30%)で後押しする。半導体ではSMICの7nm級能力が2026年に月6万枚へ倍増し、Huawei Ascendは2026年に約160万ダイを計画するが、国産HBMは910C換算25〜30万個分しかなく最大の隘路である。AIモデルはEpoch AIの計測で米国に平均7ヶ月遅れながら、DeepSeek・Qwen・Kimi等がオープンウェイトで世界のデファクトを狙う。米国は2025年12月にH200輸出を条件付き解禁したが中国側が税関で受け入れを止める逆転現象が起き、2026年11月の停止期限に向け「チップ対鉱物」の人質交換型均衡が続く。中国外のヒューマノイド生産能力は設計値で年2〜3万体規模に育ちつつあるが、磁石・電池・減速機の部材で中国を迂回した量産は2026年時点では不可能に近い。",
+   "key_findings": [
+    {
+     "claim": "中国はレアアース採掘の70%、分離・精製の90%、永久磁石製造の93%を支配し、2025年4月に7元素、10月に12元素へ輸出許可制を拡大、外国製品にも0.1%ルールを初適用した",
+     "detail": "2025年10月9日発表の規制は中国産重レアアースを0.1%以上含む外国製磁石・部品・アセンブリにも輸出許可を要求する中国初の域外適用(FDPR類似)。2025年12月1日から外国軍関連企業への許可は原則拒否。",
+     "as_of": "2025-10",
+     "source_title": "CSIS: China's New Rare Earth and Magnet Restrictions",
+     "source_url": "https://www.csis.org/analysis/chinas-new-rare-earth-and-magnet-restrictions-threaten-us-defense-supply-chains",
+     "confidence": "high"
+    },
+    {
+     "claim": "2025年4月の規制直後、中国の対米レアアース磁石輸出は5月に50トン未満(平常月500トン超)へ急減し、6月に353トン(前月比+660%)へ回復した",
+     "detail": "世界向け磁石輸出も6月3,188トン(前月比+157.5%、前年同月比▲38.1%)。米欧の自動車工場で磁石不足による稼働停止が発生。回復後も欧州価格は中国国内の最大6倍。",
+     "as_of": "2025-07",
+     "source_title": "中国税関データ(Discovery Alert)/IEA commentary",
+     "source_url": "https://discoveryalert.com.au/china-rare-earth-magnet-exports-us-2025-surge/",
+     "confidence": "high"
+    },
+    {
+     "claim": "2025年10月の米中首脳合意で10月規制は2026年11月10日まで停止されたが、対米イットリウム輸出は2026年2月でも20トンと規制前(月66トン超)の3割にとどまる",
+     "detail": "米政府は5省庁で73億ドル超をコミット(MP Materialsに4億ドル出資+NdPr価格フロア$110/kg、USA Rare Earthに16億ドル等)。Mountain Passの2025年生産8,900トンは米国消費の約1/3で、残り需要の71%は依然中国から輸入。",
+     "as_of": "2026-04",
+     "source_title": "CSIS: Rare Earth Export Restrictions One Year Later",
+     "source_url": "https://www.csis.org/analysis/rare-earth-export-restrictions-one-year-later",
+     "confidence": "high"
+    },
+    {
+     "claim": "中国はヒューマノイドロボット部品サプライチェーンの6〜7割を支配し、2025年のヒューマノイド生産12,800体は世界の約90%を占めた",
+     "detail": "MERICSは「主要部品企業の63%を中国が支配」と推計。ハーモニック減速機でLeaderdriveが世界シェア15%(2023)・出荷33万→79万台(2022→2025)、RV減速機は生産の8割超が中国国内。産業用ロボットの中国国内市場でも中国メーカーが57%超で外資を逆転(2024)。",
+     "as_of": "2025-12",
+     "source_title": "MERICS: Embodied AI report / Jamestown Foundation",
+     "source_url": "https://merics.org/en/report/embodied-ai-chinas-ambitious-path-transform-its-robotics-industry",
+     "confidence": "medium"
+    },
+    {
+     "claim": "EV電池では2025年の世界搭載量1,187GWhのうちCATL 39.2%+BYD 16.4%で計55.6%、中国6社合計で約69%を占める",
+     "detail": "CATLは464.7GWh(前年比+35.7%)、BYDは194.8GWh(+27.7%)。ロボット用バッテリーも同じ供給網に依存する。",
+     "as_of": "2026-02",
+     "source_title": "CnEVPost (SNE Research): Global EV battery market share 2025",
+     "source_url": "https://cnevpost.com/2026/02/04/global-ev-battery-market-share-2025/",
+     "confidence": "high"
+    },
+    {
+     "claim": "SMICの7nm級能力は2025年末45k→2026年60k→2027年80k wspmへ拡大、Huawei Ascendは2026年に最大160万ダイを計画するが、国産HBMは910C換算25〜30万個分が上限",
+     "detail": "Ascend出荷は2024年50.7万→2025年80.5万個。TSMC由来ダイ在庫290万個超とSamsung製HBM在庫約1,300万スタックが当面の生産を支える。CXMTの2026年HBM生産は約200万スタックにとどまり、HBMが自給の最大隘路。",
+     "as_of": "2025-12",
+     "source_title": "SemiAnalysis: Huawei Ascend Production Ramp",
+     "source_url": "https://newsletter.semianalysis.com/p/huawei-ascend-production-ramp",
+     "confidence": "medium"
+    },
+    {
+     "claim": "中国AIモデルは米フロンティアに平均7ヶ月遅れ(範囲4〜14ヶ月)で、2026年1月時点でOpenAI o3(2025年4月)に並ぶ中国モデルは未出現",
+     "detail": "Epoch Capabilities Indexによる計測。中国トップ勢はほぼ全てオープンウェイトで、オープンウェイト全体のSOTA遅延(約3.5ヶ月)と構造が重なる。2025年に中国はオープンウェイト開発で世界首位を獲得(Stanford AI Index)。2026年上期はDeepSeek V4・Kimi K2.6・Qwen3.6等が相次ぎ、DeepSeek自身は「SOTAに3〜6ヶ月遅れ」と自己評価。",
+     "as_of": "2026-04",
+     "source_title": "Epoch AI: Chinese AI models have lagged the US frontier by 7 months",
+     "source_url": "https://epoch.ai/data-insights/us-vs-china-eci",
+     "confidence": "high"
+    },
+    {
+     "claim": "中国政府は具身智能(Embodied AI)を第15次五カ年計画(2026-30)の6大成長エンジンに指定し、600億元の国家AI産業基金、20年で1兆元の国家創業投資引導基金、深圳100億元基金などを投入",
+     "detail": "省レベルでプロジェクト費用の最大30%の補助。ヒューマノイド企業150社超、国費ロボット訓練センター40ヶ所超。「Robot+」で2030年までに製造業ロボット密度倍増目標。2025年の産業用ロボット生産は55.6万台。",
+     "as_of": "2026-03",
+     "source_title": "Carnegie Endowment / MERICS / The Diplomat",
+     "source_url": "https://carnegieendowment.org/research/2025/11/embodied-ai-china-smart-robots",
+     "confidence": "medium"
+    },
+    {
+     "claim": "米国は2025年12月にNvidia H200の対中輸出を条件付き解禁(売上の25%納付、約10社・各7.5万個上限)したが、2026年半ば時点で中国税関が受け入れを止め実出荷はほぼゼロ",
+     "detail": "Blackwellは禁輸継続。中国側は国産チップ利用を指導し、8.2万個の出荷準備が宙吊り。2026年1月には中国が対日デュアルユース輸出管理を強化。米中とも停止期限の2026年11月10日が次の交渉の山。",
+     "as_of": "2026-06",
+     "source_title": "Tom's Hardware: The Nvidia H200 export saga",
+     "source_url": "https://www.tomshardware.com/tech-industry/semiconductors/us-eases-nvidia-export-restrictions-h200-cleared-for-china-under-tight-controls",
+     "confidence": "medium"
+    },
+    {
+     "claim": "2024年の世界産業用ロボット設置54.2万台のうち中国が29.5万台(54%)を占め、中国外のヒューマノイド量産能力は設計値でも年2〜3万体規模にとどまる",
+     "detail": "日本4.45万台で第2位。米国ではFigure BotQが年1.2万体の設計能力(実績350体超)、Agility RoboFabが最大年1万体(実際は数百〜数千)、Tesla Optimusは2026年夏に低量産開始予定。ただし磁石93%・電池69%・レアアース精製90%が中国依存のため、部材レベルで中国を迂回した量産は2026年時点で不可能に近い。",
+     "as_of": "2026-06",
+     "source_title": "IFR World Robotics 2025 / Humanoids Daily",
+     "source_url": "https://ifr.org/ifr-press-releases/news/global-robot-demand-in-factories-doubles-over-10-years",
+     "confidence": "medium"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "中国のレアアース供給網シェア(工程別)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "採掘",
+       "y": 70
+      },
+      {
+       "x": "分離・精製",
+       "y": 90
+      },
+      {
+       "x": "永久磁石製造",
+       "y": 93
+      }
+     ],
+     "source_title": "CSIS (2025-10)",
+     "source_url": "https://www.csis.org/analysis/chinas-new-rare-earth-and-magnet-restrictions-threaten-us-defense-supply-chains",
+     "notes": "2025年10月時点の推計"
+    },
+    {
+     "metric": "中国の対米レアアース磁石輸出(月次)",
+     "unit": "トン",
+     "series": [
+      {
+       "x": "2025-03",
+       "y": 500,
+       "label": "平常月の目安(500超)"
+      },
+      {
+       "x": "2025-05",
+       "y": 46,
+       "label": "規制直撃"
+      },
+      {
+       "x": "2025-06",
+       "y": 353,
+       "label": "+660% MoM"
+      }
+     ],
+     "source_title": "中国税関総署データ(Discovery Alert経由)",
+     "source_url": "https://discoveryalert.com.au/china-rare-earth-magnet-exports-us-2025-surge/",
+     "notes": "2025-03の500トンは『平常月500トン超』との記述からの目安値、2025-05は『50トン未満』の近似"
+    },
+    {
+     "metric": "中国の世界向けレアアース磁石輸出(月次)",
+     "unit": "トン",
+     "series": [
+      {
+       "x": "2024-06",
+       "y": 5150,
+       "label": "前年基準(逆算)"
+      },
+      {
+       "x": "2025-05",
+       "y": 1238,
+       "label": "逆算値"
+      },
+      {
+       "x": "2025-06",
+       "y": 3188,
+       "label": "実測"
+      }
+     ],
+     "source_title": "中国税関データ(Discovery Alert / China Briefing)",
+     "source_url": "https://discoveryalert.com.au/china-rare-earth-magnet-exports-us-2025-surge/",
+     "notes": "2025-06の3,188トンのみ実測。他2点は『前月比+157.5%』『前年同月比▲38.1%』からの逆算"
+    },
+    {
+     "metric": "産業用ロボット年間設置台数(2024年、国別)",
+     "unit": "台",
+     "series": [
+      {
+       "x": "中国",
+       "y": 295000
+      },
+      {
+       "x": "日本",
+       "y": 44500
+      },
+      {
+       "x": "世界計",
+       "y": 542000
+      }
+     ],
+     "source_title": "IFR World Robotics 2025",
+     "source_url": "https://ifr.org/ifr-press-releases/news/global-robot-demand-in-factories-doubles-over-10-years",
+     "notes": "中国が世界の54%。中国の稼働台数は200万台超で世界最大"
+    },
+    {
+     "metric": "Huawei Ascend AIチップ出荷数",
+     "unit": "個",
+     "series": [
+      {
+       "x": "2024",
+       "y": 507000,
+       "label": "主に910B"
+      },
+      {
+       "x": "2025",
+       "y": 805000,
+       "label": "910C 65.3万含む(見込)"
+      },
+      {
+       "x": "2026",
+       "y": 1600000,
+       "label": "計画(最大ダイ数)"
+      }
+     ],
+     "source_title": "SemiAnalysis: Huawei Ascend Production Ramp",
+     "source_url": "https://newsletter.semianalysis.com/p/huawei-ascend-production-ramp",
+     "notes": "2026年は計画値(910C単体では約60万個目標)。実現はHBM調達に依存"
+    },
+    {
+     "metric": "SMIC 7nm級ウェハ生産能力",
+     "unit": "千枚/月(wspm)",
+     "series": [
+      {
+       "x": "2025",
+       "y": 45
+      },
+      {
+       "x": "2026",
+       "y": 60
+      },
+      {
+       "x": "2027",
+       "y": 80
+      }
+     ],
+     "source_title": "SemiAnalysis / Tom's Hardware",
+     "source_url": "https://newsletter.semianalysis.com/p/huawei-ascend-production-ramp",
+     "notes": "2026-27は projection。5nmはパイロット段階"
+    },
+    {
+     "metric": "世界EV電池搭載シェア2025(メーカー別)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "CATL",
+       "y": 39.2
+      },
+      {
+       "x": "BYD",
+       "y": 16.4
+      },
+      {
+       "x": "中国6社計",
+       "y": 68.9
+      },
+      {
+       "x": "世界計GWh",
+       "y": 1187,
+       "label": "参考: 総量GWh"
+      }
+     ],
+     "source_title": "SNE Research via CnEVPost (2026-02)",
+     "source_url": "https://cnevpost.com/2026/02/04/global-ev-battery-market-share-2025/",
+     "notes": "中国6社計68.9%は2025年1-10月累計ベース"
+    },
+    {
+     "metric": "中国AIモデルの対米フロンティア遅延(Epoch Capabilities Index)",
+     "unit": "ヶ月",
+     "series": [
+      {
+       "x": "最小(2023年以降)",
+       "y": 4
+      },
+      {
+       "x": "平均",
+       "y": 7
+      },
+      {
+       "x": "最大(2024-05, GPT-4超え時)",
+       "y": 14
+      }
+     ],
+     "source_title": "Epoch AI: US vs China ECI gap (2026-01)",
+     "source_url": "https://epoch.ai/data-insights/us-vs-china-eci",
+     "notes": "2026-01時点でo3(2025-04)同等の中国モデルは未出現。DeepSeek V4は自己評価で3-6ヶ月遅れ(2026-04)"
+    },
+    {
+     "metric": "ヒューマノイドロボット生産・生産能力(2025-26年)",
+     "unit": "体/年",
+     "series": [
+      {
+       "x": "中国 2025年実績",
+       "y": 12800,
+       "label": "世界の約90%"
+      },
+      {
+       "x": "Figure BotQ 設計能力",
+       "y": 12000,
+       "label": "実績は350体超"
+      },
+      {
+       "x": "Agility RoboFab 最大能力",
+       "y": 10000,
+       "label": "実際は数百〜数千"
+      }
+     ],
+     "source_title": "MERICS / Humanoids Daily",
+     "source_url": "https://www.humanoidsdaily.com/news/hardware-first-brains-later-the-great-american-humanoid-scale-up-of-2026",
+     "notes": "米側は設計能力値であり実生産は大幅に下回る。Tesla Optimusは2026年夏に低量産開始予定"
+    },
+    {
+     "metric": "Leaderdrive(緑的諧波)ハーモニック減速機出荷数",
+     "unit": "台",
+     "series": [
+      {
+       "x": "2022",
+       "y": 330000
+      },
+      {
+       "x": "2025",
+       "y": 790000,
+       "label": "見込"
+      }
+     ],
+     "source_title": "Jamestown Foundation: New Gains in PRC Robotics",
+     "source_url": "https://jamestown.org/new-gains-in-prc-robotics-software-hardware/",
+     "notes": "2023年に世界シェア15%・中国国内シェア26%"
+    }
+   ],
+   "open_questions": [
+    "2026年11月10日の米中相互停止期限後、中国が10月規制(0.1%ルール・域外適用)を復活させるか、恒久緩和に向かうか",
+    "CXMTのHBM3量産(2026年目標)が実際に立ち上がるか — HuaweiのAscend 160万ダイ計画の実現可否を左右",
+    "中国税関によるH200受け入れ拒否が恒久方針となるか(中国のAIチップ完全内製化宣言に等しいか)",
+    "Tesla Optimus・Figureの2026年量産目標の実績値(公称設計能力と実出荷の乖離が大きい)",
+    "中国外の磁石製造(MP Materials、Vulcan Elements等)が2027-28年に実際に何トン供給できるか",
+    "日独が握る精密工作機械・ボールねじの対中輸出規制という「逆カード」が発動される可能性",
+    "ヒューマノイド部品シェア推計の幅(63%〜70%)の精緻化 — 一次統計が存在せずシンクタンク推計に依存"
+   ]
+  },
+  {
+   "domain": "米国(および世界)の電力とデータセンタ建設能力",
+   "summary": "米国のデータセンタ電力需要は2024年実績192TWh(全電力の4.7%、LBNL 2025年更新版)から、2030年には主要機関の予測でおおむね2.5〜4倍に膨らむ。LBNLの参照ケースは649TWh(11.8%、レンジ521〜843TWh)、EPRIは380〜790TWh(9〜17%)・ピーク負荷45〜94GW、IEAは米国で2024年比+240TWh(+130%)と見る。EPRIは2年間で予測を約2倍に上方修正しており、予測自体が需要の急伸を追いかけている状態にある。LBNL換算では2030年に148GWの系統接続容量(年+17.4GW、CAGR22%)が必要になる。一方、供給側のボトルネックは深刻で、大型ガスタービンは3社寡占でリードタイム約3年、GE Vernovaは2026年末までに2030年分まで完売見込み(契約+予約110GW超)。系統接続キューは約2,600GW・中央値5年待ち、大型変圧器は納期3〜5年・価格は2019年比8割高で、「電力そのもの」より「電力を届ける設備と許認可」が律速になっている。対応として原子力回帰が本格化し、Three Mile Island再稼働(Microsoft 835MW・20年PPA、2027年送電予定)、Palisades再稼働(2026年に遅延中)、ハイパースケーラ4社の原子力契約は計9.8GW超、地熱もFervoの100MW級EGSが2026年10月送電予定。中国は2025年に風力・太陽光だけで430GW超、純増約540GWを新設し、米国の約63GWの8倍前後の増設ペースで、AnthropicやEpoch AIは「米国AIは2028年に50GW必要、単一訓練ランは2030年に4〜16GW」と電力を最大の制約と位置づける。2026年時点で既にxAIメンフィス(系統接続8MWしか得られずガスタービン自前調達)やStargate延期など制約の実例が出ており、資金面ではCoreWeaveの85億ドルGPU担保ローン(初の投資適格)に象徴されるレバレッジ拡大と循環取引懸念が併存する。",
+   "key_findings": [],
+   "datapoints": [
+    {
+     "metric": "米国データセンタ電力消費(LBNL 2025 Update、実績+参照ケース予測)",
+     "unit": "TWh/年",
+     "series": [
+      {
+       "x": "2023",
+       "y": 176,
+       "label": "実績(概算・2024年版レンジ下方)"
+      },
+      {
+       "x": "2024",
+       "y": 192,
+       "label": "実績"
+      },
+      {
+       "x": "2028",
+       "y": 464,
+       "label": "Reference Case"
+      },
+      {
+       "x": "2030",
+       "y": 649,
+       "label": "Reference Case"
+      },
+      {
+       "x": "2030",
+       "y": 521,
+       "label": "不確実性レンジ下限"
+      },
+      {
+       "x": "2030",
+       "y": 843,
+       "label": "不確実性レンジ上限"
+      }
+     ],
+     "notes": "2023年値は報告書の歴史推定(150-200TWh帯)からの近似。2024=4.7%、2030 Ref=11.8%(NERC前提)。仮想通貨マイニング除く。",
+     "source_title": "LBNL US Data Center Energy Usage Report: 2025 Update (2026-06)",
+     "source_url": "https://escholarship.org/uc/item/33m6w3x0"
+    },
+    {
+     "metric": "米国データセンタ合計ピーク負荷予測(EPRI Powering Intelligence 2026)",
+     "unit": "GW",
+     "series": [
+      {
+       "x": "2023",
+       "y": 19,
+       "label": "実績(EPRI 2024版)"
+      },
+      {
+       "x": "2024",
+       "y": 21.5,
+       "label": "実績(21-22GWの中央)"
+      },
+      {
+       "x": "2030",
+       "y": 45,
+       "label": "Lowシナリオ"
+      },
+      {
+       "x": "2030",
+       "y": 71,
+       "label": "Mediumシナリオ"
+      },
+      {
+       "x": "2030",
+       "y": 94,
+       "label": "Highシナリオ"
+      }
+     ],
+     "notes": "2030年年間消費はLow380/Med590/High790TWh(全米の9/13/17%)。2024年版(2030年35GW)から約60%上方修正。",
+     "source_title": "EPRI Powering Intelligence 2026",
+     "source_url": "https://powering-intelligence.epri.com/executive-summary.html"
+    },
+    {
+     "metric": "2030年米国データセンタ電力予測の機関間比較",
+     "unit": "TWh/年",
+     "series": [
+      {
+       "x": "LBNL 低",
+       "y": 521
+      },
+      {
+       "x": "LBNL Ref",
+       "y": 649
+      },
+      {
+       "x": "LBNL 高",
+       "y": 843
+      },
+      {
+       "x": "EPRI 低",
+       "y": 380
+      },
+      {
+       "x": "EPRI 中",
+       "y": 590
+      },
+      {
+       "x": "EPRI 高",
+       "y": 790
+      },
+      {
+       "x": "IEA(2024比+240概算)",
+       "y": 425
+      }
+     ],
+     "notes": "IEA値は『2024年比+240TWh(+130%)』からの逆算近似(基準約185TWh)。機関ごとに定義・手法が異なる。",
+     "source_title": "LBNL / EPRI / IEA 比較",
+     "source_url": "https://www.iea.org/reports/energy-and-ai/executive-summary"
+    },
+    {
+     "metric": "GE Vernova ガスタービン契約・受注状況",
+     "unit": "GW",
+     "series": [
+      {
+       "x": "2025Q4",
+       "y": 83,
+       "label": "契約総量(backlog+slot予約)"
+      },
+      {
+       "x": "2026Q1",
+       "y": 100,
+       "label": "契約総量"
+      },
+      {
+       "x": "2026年末目標",
+       "y": 110,
+       "label": "契約総量(会社ガイダンス)"
+      }
+     ],
+     "notes": "2026Q1内訳: 受注残44GW+スロット予約56GW。新規契約の約20%がデータセンタ向け。リードタイム約3年。",
+     "source_title": "GE Vernova 1Q26 / Power Engineering (2026-04)",
+     "source_url": "https://www.power-eng.com/gas/turbines/data-centers-drive-record-surge-in-ge-vernova-power-equipment-orders-as-turbine-slots-tighten-through-2030/"
+    },
+    {
+     "metric": "2025年 発電容量新設の中米比較",
+     "unit": "GW/年",
+     "series": [
+      {
+       "x": "中国 風力+太陽光",
+       "y": 430
+      },
+      {
+       "x": "中国 純増合計",
+       "y": 540
+      },
+      {
+       "x": "米国 全技術(計画ベース)",
+       "y": 63
+      },
+      {
+       "x": "米国 事業用太陽光(実績)",
+       "y": 25.6
+      },
+      {
+       "x": "米国 風力(実績)",
+       "y": 4.9
+      }
+     ],
+     "notes": "中国値はEmber/集計報道。中国太陽光累計1.2TW(+35.4%)、風力640GW(+22.9%)。米国63GWはEIA計画値。",
+     "source_title": "Ember China Energy Transition Review 2025 / carboncredits.com",
+     "source_url": "https://ember-energy.org/latest-insights/china-energy-transition-review-2025/"
+    },
+    {
+     "metric": "フロンティアAI単一訓練ランの電力需要(Epoch AI推定)",
+     "unit": "GW",
+     "series": [
+      {
+       "x": "2028",
+       "y": 1,
+       "label": "下限"
+      },
+      {
+       "x": "2028",
+       "y": 2,
+       "label": "上限"
+      },
+      {
+       "x": "2030",
+       "y": 4,
+       "label": "下限"
+      },
+      {
+       "x": "2030",
+       "y": 16,
+       "label": "上限"
+      }
+     ],
+     "notes": "成長率は年2.2〜2.9倍。米国AIデータセンタ全体は2030年に50GW超、世界100GW超の推定。",
+     "source_title": "Epoch AI: Power demands of frontier AI training (2025-08-11)",
+     "source_url": "https://epoch.ai/blog/power-demands-of-frontier-ai-training"
+    },
+    {
+     "metric": "大型変圧器リードタイムの推移",
+     "unit": "月",
+     "series": [
+      {
+       "x": "2019(pre-2020)",
+       "y": 27,
+       "label": "24-30カ月の中央"
+      },
+      {
+       "x": "2026",
+       "y": 48,
+       "label": "3-5年(36-60カ月)の中央"
+      }
+     ],
+     "notes": "業界推定値(記事からの読み取り)。価格は2019年比で電力用変圧器+77%、配電用+78〜95%。",
+     "source_title": "ChargedUpPro / 業界集計 (2026)",
+     "source_url": "https://chargeduppro.com/post/data-center-transformer-shortage-power-bottleneck-industrial-property-2026"
+    }
+   ],
+   "open_questions": [
+    "『2026年計画の約12GWのうち約7GWが延期・中止』という集計の一次確認(Bloomberg/CBRE/DC Frontier等の信頼できるソースでの裏取り)",
+    "OpenAI Stargate各サイトの2026年後半時点の着工・通電状況(Oracle延期報道の続報)",
+    "Palisades原発が2026年前半に実際に送電を開始したかの最終確認",
+    "IEA 2026年更新版(485→950TWh)の正式レポート名と米国内訳の詳細",
+    "電力価格上昇(PJM容量市場高騰等)が住民負担・政治的反発としてデータセンタ立地に与える影響の定量化",
+    "中国のデータセンタ・AI向け電力需要自体の規模(増設ペースだけでなく需要側の中米比較)"
+   ]
+  },
+  {
+   "domain": "AI開発で先行しない国(日本・EU)の状況と制度的条件",
+   "summary": "日本とEUはAI開発のフロンティア競争では米中に大きく劣後するが、その現れ方は制度によって全く異なる。日本の企業生成AI活用方針は49.7%(2024年度)で、7〜9割の米中独に見劣りし、個人利用率も26.7%対中国81.2%・米国68.8%と差が大きい(総務省・令和7年版情報通信白書)。一方で制度環境はAI導入に有利に傾いている。AI推進法(2025年9月全面施行)は罰則なしの推進型で、規制型のEUと対照的。さらに人手不足倒産が2025年度に441件と3年連続過去最多(建設112件・物流55件)、外国人労働者は257万人と過去最多で、現場系ではAIは「雇用を奪う脅威」でなく「倒産を防ぐ手段」として受容されやすい。ただし政府のGENIAC支援は3期累計339億円、国内最高評価のSakana AIでも4,000億円と、米フロンティアとは資本規模で2桁の差がある。EUはAI Actで規制先行したが、2026年5月のDigital Omnibus合意で高リスクAI義務を16か月延期するなど自ら緩和に転じ、旗艦Mistralの評価額(117億ユーロ、ASMLが11%出資)も米大手の1桁下にとどまる。労働制度の違いは「AI失業」の観測のされ方を決定的に変える。労働流動性が最高の米国では22〜25歳のAI高曝露職で雇用が16%相対減(Stanford/ADPデータ)と若年層に鋭く現れるが、流動性が高く安全網の厚いデンマークでは賃金・労働時間への効果はゼロ近傍(Humlum & Vestergaard)。勤続12.4年・整理解雇4要件の日本では、2026年3月卒の就職率98.0%と新卒市場は堅調な一方、上場企業の希望退職募集が2万781人(前年度比2.5倍)に急増し、大和ハウスの新卒669→150人など採用計画の縮小が始まった。日本のAIショックは失業率でなく「中高年の出口と新卒の入口」の静かな調整として現れるため、統計上不可視化されやすく、再配分の遅れが生産性格差(時間当たり60.1ドル、OECD28位)として蓄積するリスクがある。",
+   "key_findings": [
+    {
+     "claim": "日本企業の生成AI活用方針(活用する)は49.7%(2024年度、前年42.7%)で、業務利用率9割超の中国(95.8%)・米国(90.6%)・ドイツ(90.3%)に大きく劣る",
+     "detail": "総務省・令和7年版情報通信白書(2025年7月公表)。日本の「業務で使用中」は55.2%、メール・議事録・資料作成補助での利用は47.3%。",
+     "source_title": "総務省 令和7年版情報通信白書 企業におけるAI利用の現状",
+     "source_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112220.html",
+     "confidence": "high",
+     "as_of": "2025-07"
+    },
+    {
+     "claim": "個人の生成AI利用率は日本26.7%で、中国81.2%・米国68.8%・ドイツ59.2%に大差。前年9.1%から約3倍に増えたが差は歴然",
+     "detail": "日本国内は年代差が大きく20代44.7%、60代15.5%。利用しない理由は「必要ない」4割超が最多。",
+     "source_title": "総務省 令和7年版情報通信白書 個人におけるAI利用の現状",
+     "source_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112210.html",
+     "confidence": "high",
+     "as_of": "2025-07"
+    },
+    {
+     "claim": "EUはDigital Omnibus(2026年5月7日暫定合意)でAI Actの高リスクAI義務を16か月延期(2026年8月→2027年12月)するなど、施行前に自ら規制を緩和・延期した",
+     "detail": "Annex I製品型は2028年8月へ1年延期、合成コンテンツ表示義務は2026年12月へ4か月延期。非同意性的画像・CSAM生成AIの新規禁止を追加。AI Officeへ監督権限を集中。",
+     "source_title": "Covington: EU AI Act Update — Timeline Relief, Targeted Simplification, and New Prohibitions",
+     "source_url": "https://www.insideglobaltech.com/2026/05/28/eu-ai-act-update-timeline-relief-targeted-simplification-and-new-prohibitions/",
+     "confidence": "high",
+     "as_of": "2026-05"
+    },
+    {
+     "claim": "欧州最大のAI企業Mistralは2025年9月に17億ユーロを調達し評価額117億ユーロ(ASMLが13億ユーロ出資で11%株主)、2026年には200億ユーロ評価で追加調達交渉中だが、米フロンティア勢とは1桁以上の差",
+     "detail": "2024年の58億ユーロから1年で評価倍増。2030年までに1GWの自前計算容量を目標。ASML出資は「欧州主権AI」の象徴。",
+     "source_title": "Mistral AI raises 1.7B€ / CNBC",
+     "source_url": "https://www.cnbc.com/2025/09/09/ai-firm-mistral-valued-at-14-billion-as-asml-takes-major-stake.html",
+     "confidence": "high",
+     "as_of": "2025-09"
+    },
+    {
+     "claim": "日本のAI推進法は2025年9月1日に全面施行(罰則なしの推進型)、法定のAI基本計画が2025年12月23日に閣議決定され、規制型のEUと対照的な「開発に優しい」制度設計",
+     "detail": "GENIACによる計算資源支援は第1〜3期累計339億円・採択延べ30件、第4期(2026年6月)で16テーマ採択(PFN含む)。ただし米フロンティア1社の年間投資の1/100以下の規模。",
+     "source_title": "内閣府 AI法全面施行 / AI基本計画(閣議決定)",
+     "source_url": "https://www8.cao.go.jp/cstp/ai/ai_plan/aiplan_20251223.pdf",
+     "confidence": "high",
+     "as_of": "2025-12"
+    },
+    {
+     "claim": "Sakana AIは2025年11月に約200億円を調達し企業価値約4,000億円で国内未上場スタートアップ過去最高となったが、防衛・エッジ・特化型ニッチへの収斂であり、フロンティア競争には参加していない",
+     "detail": "累計調達約520億円。三菱UFJ FG、Khosla Ventures等が出資。国内勢はガバメントAI・領域特化LLMに向かう構図。",
+     "source_title": "日経: サカナAIの企業価値4000億円、国内スタートアップ最高に",
+     "source_url": "https://www.nikkei.com/article/DGXZQOUC137OW0T11C25A1000000/",
+     "confidence": "high",
+     "as_of": "2025-11"
+    },
+    {
+     "claim": "米国ではAI高曝露職の22〜25歳で雇用が16%相対減(改訂版、初版13%)し、調整は賃金でなく採用を通じて発生している(Stanford・ADP給与個票)",
+     "detail": "Brynjolfsson, Chandar & Chen (2025年11月改訂)。若手ソフトウェア開発者は2022年末ピークから約20%減。自動化的利用の職種で減、補完的利用では全年齢で増。",
+     "source_title": "Canaries in the Coal Mine? (Stanford Digital Economy Lab)",
+     "source_url": "https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/",
+     "confidence": "high",
+     "as_of": "2025-11"
+    },
+    {
+     "claim": "高流動性・flexicurityのデンマークでは、ChatGPT登場2年後でもAIチャットボットの賃金・労働時間への効果は精密なゼロ(2%超の効果を棄却)、平均の時間節約は3%にとどまる",
+     "detail": "Humlum & Vestergaard (NBER WP33777)。25,000人・7,000職場の調査×行政記録。ヘビーユーザーや早期導入職場でも同じ。タスク再構成は起きるが純雇用効果なし。",
+     "source_title": "Large Language Models, Small Labor Market Effects (BFI/NBER)",
+     "source_url": "https://bfi.uchicago.edu/working-papers/large-language-models-small-labor-market-effects/",
+     "confidence": "high",
+     "as_of": "2025-04"
+    },
+    {
+     "claim": "日本ではAIショックが米国型の若年失業でなく「中高年の希望退職(2025年度2万781人、前年度比約2.5倍)と新卒採用計画の縮小」として現れ始めた。2026年3月卒の大卒就職率は98.0%と新卒市場自体は堅調",
+     "detail": "第一生命経済研究所の分析。メンバーシップ型では新卒は幹部育成投資でありエントリー業務の自動化と直結しない。一方、大和ハウスは新卒採用を669人→約150人へ削減、人事担当779人調査では約4割が「AIで新卒採用減」と回答。米国は22〜27歳大卒失業率5.6%>全体4.2%(NY連銀、2026年3月)。",
+     "source_title": "第一生命経済研究所: なぜAIが普及しても新卒採用は好調なのか",
+     "source_url": "https://www.dlri.co.jp/report/macro/617768.html",
+     "confidence": "medium",
+     "as_of": "2026-04"
+    },
+    {
+     "claim": "日本の正社員解雇は整理解雇4要件(人員削減の必要性・解雇回避努力・人選の合理性・手続の妥当性)と労働契約法16条で強く制約され、平均勤続年数12.4年は米国3.9年・デンマーク7.0年より圧倒的に長く、転職率は約5%にとどまる",
+     "detail": "AIによる雇用調整は指名解雇でなく配転・希望退職・採用抑制・非正規の非更新で進むため、失業統計に現れにくい。",
+     "source_title": "OECDデータ(東洋経済引用)/JILPTデータブック国際労働比較2025",
+     "source_url": "https://toyokeizai.net/articles/-/900776",
+     "confidence": "high",
+     "as_of": "2025-12"
+    },
+    {
+     "claim": "人手不足倒産は2025年度441件(前年度の約1.3倍)で3年連続過去最多、建設業が112件(25.4%)。外国人労働者は257万1,037人(2025年10月末、+11.7%)で過去最多 — 現場系ではAI省力化は雇用脅威でなく事業存続の手段",
+     "detail": "帝国データバンク調査。道路貨物運送55件、老人福祉22件など労働集約型で軒並み過去最多。医療・福祉の外国人労働者は前年比+28.1%で4年間に2.5倍。",
+     "source_title": "帝国データバンク: 人手不足倒産の動向調査(2025年度)",
+     "source_url": "https://www.tdb.co.jp/report/economic/20260409-laborshortage-br25fy/",
+     "confidence": "high",
+     "as_of": "2026-04"
+    },
+    {
+     "claim": "日本の時間当たり労働生産性は60.1ドルでOECD38カ国中28位(2024年実績、前年から2つ低下、G7最下位継続)であり、AI導入の遅れが生産性格差の固定化につながるリスクがある",
+     "detail": "日本生産性本部「労働生産性の国際比較2025」(2025年12月22日公表)。2024年の実質上昇率は-0.6%で38カ国中33位。",
+     "source_title": "日本生産性本部: 労働生産性の国際比較2025",
+     "source_url": "https://www.jpc-net.jp/research/detail/007846.html",
+     "confidence": "high",
+     "as_of": "2025-12"
+    }
+   ],
+   "datapoints": [
+    {
+     "metric": "生成AIの個人利用率(国別、2024年度)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "日本",
+       "y": 26.7
+      },
+      {
+       "x": "ドイツ",
+       "y": 59.2
+      },
+      {
+       "x": "米国",
+       "y": 68.8
+      },
+      {
+       "x": "中国",
+       "y": 81.2
+      }
+     ],
+     "source_title": "総務省 令和7年版情報通信白書",
+     "source_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112210.html",
+     "notes": "2024年度調査。日本は前年(9.1%)から+17.6pt"
+    },
+    {
+     "metric": "日本の個人生成AI利用率の推移",
+     "unit": "%",
+     "series": [
+      {
+       "x": "2023年度",
+       "y": 9.1
+      },
+      {
+       "x": "2024年度",
+       "y": 26.7
+      }
+     ],
+     "source_title": "総務省 令和7年版情報通信白書",
+     "source_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112210.html"
+    },
+    {
+     "metric": "日本の年代別生成AI利用率(2024年度)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "20代",
+       "y": 44.7
+      },
+      {
+       "x": "30代",
+       "y": 23.8
+      },
+      {
+       "x": "40代",
+       "y": 29.6
+      },
+      {
+       "x": "50代",
+       "y": 19.9
+      },
+      {
+       "x": "60代",
+       "y": 15.5
+      }
+     ],
+     "source_title": "総務省 令和7年版情報通信白書",
+     "source_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112210.html"
+    },
+    {
+     "metric": "企業の生成AI業務利用率(国別、2024年度)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "日本",
+       "y": 55.2
+      },
+      {
+       "x": "ドイツ",
+       "y": 90.3
+      },
+      {
+       "x": "米国",
+       "y": 90.6
+      },
+      {
+       "x": "中国",
+       "y": 95.8
+      }
+     ],
+     "source_title": "総務省 令和7年版情報通信白書(報道整理含む)",
+     "source_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112220.html",
+     "notes": "日本は「業務で使用中」の割合。海外3カ国の数値は白書図表の報道(ledge.ai・日経)からの読み取り。日本の活用方針「活用する」は49.7%(前年42.7%)"
+    },
+    {
+     "metric": "平均勤続年数の国際比較",
+     "unit": "年",
+     "series": [
+      {
+       "x": "米国",
+       "y": 3.9
+      },
+      {
+       "x": "デンマーク",
+       "y": 7
+      },
+      {
+       "x": "スウェーデン",
+       "y": 8
+      },
+      {
+       "x": "英国",
+       "y": 9.4
+      },
+      {
+       "x": "ドイツ",
+       "y": 10.1
+      },
+      {
+       "x": "フランス",
+       "y": 10.3
+      },
+      {
+       "x": "日本",
+       "y": 12.4
+      }
+     ],
+     "source_title": "OECDデータ(東洋経済引用)",
+     "source_url": "https://toyokeizai.net/articles/-/900776",
+     "notes": "2023年前後のOECDデータ。日本は12.8年とする資料(2023年)もあり"
+    },
+    {
+     "metric": "人手不足倒産件数(年度)",
+     "unit": "件",
+     "series": [
+      {
+       "x": "2024年度",
+       "y": 350
+      },
+      {
+       "x": "2025年度",
+       "y": 441
+      }
+     ],
+     "source_title": "帝国データバンク 人手不足倒産の動向調査(2025年度)",
+     "source_url": "https://www.tdb.co.jp/report/economic/20260409-laborshortage-br25fy/",
+     "notes": "3年連続過去最多。2025年度内訳: 建設112、道路貨物運送55、老人福祉22、飲食21。暦年2025年は427件"
+    },
+    {
+     "metric": "外国人労働者数(各年10月末)",
+     "unit": "万人",
+     "series": [
+      {
+       "x": "2022",
+       "y": 182.3
+      },
+      {
+       "x": "2023",
+       "y": 204.9
+      },
+      {
+       "x": "2024",
+       "y": 230.3
+      },
+      {
+       "x": "2025",
+       "y": 257.1
+      }
+     ],
+     "source_title": "厚生労働省 外国人雇用状況の届出状況(令和7年10月末)",
+     "source_url": "https://www.mhlw.go.jp/stf/newpage_68794.html",
+     "notes": "2025年は257万1,037人(+11.7%)で過去最多。2022〜2024は過年度の同統計(学習知識で補完、公表値と整合)"
+    },
+    {
+     "metric": "Mistral AIの評価額推移",
+     "unit": "億ユーロ",
+     "series": [
+      {
+       "x": "2024-06",
+       "y": 58
+      },
+      {
+       "x": "2025-09",
+       "y": 117
+      },
+      {
+       "x": "2026(交渉中)",
+       "y": 200
+      }
+     ],
+     "source_title": "CNBC / TechFundingNews",
+     "source_url": "https://www.cnbc.com/2025/09/09/ai-firm-mistral-valued-at-14-billion-as-asml-takes-major-stake.html",
+     "notes": "2026年の200億ユーロは調達交渉中の目標値(推定)。2025年9月ラウンドはASMLが13億ユーロ出資し11%株主に"
+    },
+    {
+     "metric": "上場企業の希望退職募集人数(日本)",
+     "unit": "人",
+     "series": [
+      {
+       "x": "2024年度",
+       "y": 8300
+      },
+      {
+       "x": "2025年度",
+       "y": 20781
+      }
+     ],
+     "source_title": "第一生命経済研究所レポート(引用データ)",
+     "source_url": "https://www.dlri.co.jp/report/macro/617768.html",
+     "notes": "2025年度は2万781人で前年度の約2.5倍。2024年度の値は「約2.5倍」からの逆算近似。対象の多くは中高年"
+    },
+    {
+     "metric": "米国のAI高曝露職における若年(22-25歳)雇用の相対変化",
+     "unit": "%",
+     "series": [
+      {
+       "x": "22-25歳・高曝露職",
+       "y": -16
+      },
+      {
+       "x": "若手ソフトウェア開発者(2022年末比)",
+       "y": -20
+      }
+     ],
+     "source_title": "Canaries in the Coal Mine? (Stanford Digital Economy Lab, 2025年11月改訂)",
+     "source_url": "https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/",
+     "notes": "ADP給与個票による相対雇用変化。経験者・低曝露職は横ばい〜増。スウェーデン研究では22-25歳採用-5.5%、50歳以上+1.3%"
+    },
+    {
+     "metric": "米国の大卒若年層(22-27歳)と全体の失業率(2026年3月)",
+     "unit": "%",
+     "series": [
+      {
+       "x": "22-27歳大卒",
+       "y": 5.6
+      },
+      {
+       "x": "全労働者平均",
+       "y": 4.2
+      }
+     ],
+     "source_title": "NY連銀データ(第一生命経済研究所引用)",
+     "source_url": "https://www.dlri.co.jp/report/macro/617768.html",
+     "notes": "日本の2026年3月卒大卒就職率は98.0%で対照的"
+    }
+   ],
+   "open_questions": [
+    "日本企業のAI導入が生産性(TFP・付加価値)に与えた効果の因果推定はまだ存在しない(白書は導入率のみ)。企業レベルパネルでの検証が必要",
+    "2025年度の希望退職急増(2.5倍)のうちAI起因の寄与度は未分離(業績要因・株主ガバナンス圧力との交絡)",
+    "EU Digital Omnibus(2026年5月合意)後に域内AI投資・スタートアップ形成が実際に回復するかは2026年後半以降のデータ待ち",
+    "外国人労働者の増加(257万人)とAI・ロボット省力化投資は代替関係か補完関係か — 賃金水準別の実証がない",
+    "日本型の『採用凍結・賃金停滞として現れるAIショック』は統計上不可視のため、新卒求人倍率・職種別求人数・配転データでの継続モニタリングが必要",
+    "GENIAC 339億円規模で国産基盤モデルが商業的に自立できるか、それとも特化・政府調達ニッチに恒久的に限定されるか"
+   ]
+  }
+ ],
+ "verdicts": [
+  {
+   "verdict": "confirmed",
+   "notes": "出典のTom's Hardware記事タイトルが「Google, Microsoft, Meta, and Amazon capex spending to hit $725 billion in 2026, up 77% from last year」と主張どおりの数値を明記。第三者ソース(Value Add VC、FTの2026年Q1決算集計を引くYahoo Finance/CNBC系記事)も4社合計の2026年capex計画≈7,250億ドル、2025年実績≈4,100億ドル、+77%を裏付けた。内訳はAmazon約$200B、Microsoft約$190B、Alphabet $175-185B、Meta $115-135B。なお2026年2月時点の報道では$690〜700B見込みだったが、その後のガイダンス引き上げで$725Bに増額されており、主張は最新値と整合。数値・時点のずれなし。",
+   "evidence_url": "https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典PDFを直接取得しテキスト抽出して照合。Hulten定理の使用、AI曝露タスク20%(Eloundou et al.由来の賃金加重シェア)、採算自動化率23%(Svanberg et al.)、平均総コスト削減14.4%(労働コスト27%削減×労働シェアから導出)、積として0.0066≈0.66%(10年、年率約0.064%)、投資効果込みGDP 0.93〜1.16%、投資ブーム想定で上限1.4〜1.56%——すべて本文に明記されており主張と一致。「0.93〜1.56%」は基準ケースと強い投資反応ケースの両範囲を合わせた表現として正確。NBER w32487・SSRN版でも数値を確認。唯一の留意点は0.66%が「上限(no more than)」として提示されている点だが、主張の記述と矛盾しない。",
+   "evidence_url": "https://shapingwork.mit.edu/wp-content/uploads/2024/05/Acemoglu_Macroeconomics-of-AI_May-2024.pdf"
+  },
+  {
+   "verdict": "corrected",
+   "corrected_claim": "22〜25歳のAI高曝露職種の雇用は生成AI普及後に相対16%減(企業レベルショック統制後、ADPの2025年9月までのデータに基づく2025年11月13日改訂版論文)、若手ソフトウェア開発者(22〜25歳)は2022年末ピーク比で約20%減(2025年9月時点)",
+   "evidence_url": "https://digitaleconomy.stanford.edu/app/uploads/2025/11/CanariesintheCoalMine_Nov25.pdf",
+   "notes": "出典ページとNov 2025版PDF原文を直接確認。「16%相対減(firm-time効果統制後)」と「ソフトウェア開発者22-25歳がnearly 20%減(2022年末ピーク比)」はいずれも原文に明記されADPデータであることも確認。ただしデータ終端は2025年9月(Jan 2021–Sep 2025の給与記録)であり、主張の「2025年10月時点」は不正確。なお初版(2025年8月、7月までのデータ)では13%で、11月改訂で16%に更新された経緯がある。数値は正しく時点のみ要修正のためcorrected。"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典のMETRブログ(2026-01-29)を直接取得し、GPT-4 0314のTH1.1ホライズン3.5分[1.6,6.9]、Claude Opus 4.5の320分[170,729]、「post-2023 doubling-time is 131 days under TH1.1」の記載を確認。第三者ソース(smarterx.ai、AI 2027 Tracker、LessWrong)でも320分と131日(約4.3ヶ月)が独立に裏付けられた。GPT-4は2023年3月、Opus 4.5は2025年11月リリースで時点も正確。旧TH1手法(倍増165日)との混同もなく、主張はTH1.1の数値として一貫している。",
+   "evidence_url": "https://metr.org/blog/2026-1-29-time-horizon-1-1/"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典URLをWebFetchで確認: 「same underlying model as Fable 5, but with the safeguards lifted in some areas」と明記され、同一ウェイト二層提供・2026-06-09発表/提供開始・$10/$50(百万トークン)がすべて一致。Anthropic公式ドキュメント(platform.claude.com)も「both become available on June 9, 2026」「Mythos 5はProject Glasswing承認顧客限定・安全分類器なし」「$10/$50」を裏付け、TechCrunch・CNBC(2026-06-09付)も同内容を独立に報道。留意点2つ: (1)「制限解除」は正確には「安全分類器の非搭載/一部領域のセーフガード解除」であり全制限撤廃ではない(30日データ保持義務等は両モデル共通)。(2) 米輸出規制により6/12〜6/30にアクセス一時停止、7/1に再開されたが、発表・提供開始日6/9自体は正しい。",
+   "evidence_url": "https://www.anthropic.com/news/claude-fable-5-mythos-5"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典PDF(IFR World Robotics 2025 Executive Summary)本文を直接抽出して照合。「542,076 robots installed in 2024」は見出し「Second highest installation count in history」付きで史上2位(1位は2022年の552,946台)と明記。中国は「Installations were up 7% to 295,045 units」「More than every other robot (54%) installed worldwide in 2024 ended up in China」で54%も一致。稼働台数は「In 2024, the two-million-unit mark was surpassed: 2,027,190 units」で初の200万台突破も本文どおり(2021年100万台超、2022年150万台超の後)。IFRプレスリリースやThe Robot Report等の第三者ソースも丸め値で裏付け。数値・時点・文脈の切り取りいずれも問題なし。",
+   "evidence_url": "https://ifr.org/img/worldrobotics/Executive_Summary_WR_2025_Industrial_Robots.pdf"
+  },
+  {
+   "verdict": "corrected",
+   "corrected_claim": "philippdubach.com の記事「Aschenbrenner's Receipts」(2026年5月21日)は、Situational Awareness(2024年6月)の予測について「技術・インフラ系の具体的予測8件が2026年5月までに的中(test-time compute、GPQA飽和、電力ボトルネック、Marcellusガス、湾岸チップ転換、AMDの$1T TAM等)、政治経済系予測8件が外れ(自発的ラボ統合、議会の兆ドル支出、民主主義国連合、輸出規制強化等)」という二極分化を示したと論じている。ただし「8/10」という分母付きの採点は記事に存在せず、各カテゴリの母数は明示されていない。また記事自身が「乗算的な論理連鎖では混合証拠は見出しのスコアカードが示すより反証に近い」と留保している。",
+   "evidence_url": "https://philippdubach.com/posts/aschenbrenners-receipts/",
+   "notes": "出典URLを取得し原文を直接grepで確認。記事は実在し(2026-05-21公開)、「技術・インフラ系8件的中/政治経済系8件外れ」の二極分化という主張の骨子は原文に明記されている。ただし主張の「約8/10」という分数表現は原文になく(「of ten」「8-of-10」「/10」いずれも0ヒット)、分母10は記事に書かれていない補間。WebFetchの要約が「roughly 8-of-10」という引用を捏造した点も原文照合で排除。EA Forumの独立スコアカード2本も技術系的中・政治系外れの大枠を裏付ける。骨子は正しいが数値表現の修正が必要なため corrected。"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典URL(Anthropic公式 2026-06-30公開)を確認したところ、「On Friday, June 12, the US government applied export controls to our newest models, Claude Fable 5 and Claude Mythos 5」と明記され、外国籍ユーザーへのアクセス制限が求められた結果、両モデルへの全ユーザーアクセスを一時停止したと記載。第三者ソース(Fortune 2026-06-13、Forbes 2026-06-16、CNBC・Al Jazeera 2026-06-30〜07-01)も、商務省(Lutnick長官の書簡)が6月12日に外国籍者への提供停止を命じ、Anthropicが即座に全ユーザーのアクセスを停止した(グローバル停止)ことを裏付けている。細部の補足: 命令自体は「外国籍者への提供停止」であり、全ユーザー停止はそれを実装するためのAnthropic側の措置(主張の記述と整合)。なお輸出管理は6月30日に解除され、7月1日からアクセス復旧済みだが、主張の時点(6月12日)の内容としては正確。",
+   "evidence_url": "https://www.anthropic.com/news/redeploying-fable-5"
+  },
+  {
+   "verdict": "confirmed",
+   "evidence_url": "https://www.csis.org/analysis/chinas-new-rare-earth-and-magnet-restrictions-threaten-us-defense-supply-chains",
+   "notes": "出典のCSIS記事(2025年10月9日)に「採掘の約70%、分離・精製の90%、磁石製造の93%」および中国産重希土類0.1%以上を含む外国製品への規制が明記されていることをWebFetchで確認。第三者ソース(Al Jazeera、White & Case、Squire Patton Boggs等)との突き合わせで、2025年4月の公告2025年第18号による7元素(サマリウム・ガドリニウム・テルビウム・ジスプロシウム・ルテチウム・スカンジウム・イットリウム)の輸出許可制、2025年10月9日の公告第61号による5元素(ホルミウム・エルビウム・ツリウム・ユウロピウム・イッテルビウム)追加で計12元素への拡大、および域外適用のデミニミス(0.1%)ルールの初導入も裏付けられた。数値・時点とも一致し、誤りは見つからなかった。なお採掘シェアはCSIS原文では「roughly 70 percent」(約70%)である点のみ留意。"
+  },
+  {
+   "verdict": "corrected",
+   "corrected_claim": "SWE-bench Verifiedは2026年7月時点で実質飽和。出典のllm-stats.comではClaude Fable 5が95.0%で首位、Claude Mythos Previewが93.9%(Mythos 5の95.5%という数値はllm-statsには無く、BenchLM.ai 2026-07-04時点の集計による)。2024年8月13日の公開時の最高スコアはGPT-4o(Agentlessスキャフォールド)の33.2%だった。",
+   "evidence_url": "https://benchlm.ai/benchmarks/sweVerified",
+   "notes": "出典URL(llm-stats)を実際に取得すると首位はFable 5の95.0%で、2位は「Claude Mythos Preview」93.9%。主張の「Mythos 5が95.5%」はこの出典には無く、BenchLM.ai(2026-07-04時点)の数値。数値自体は第三者ソースで実在確認できたが出典帰属が誤り。2024年8月公開時トップ「30%台」はOpenAI公式発表のGPT-4o 33.2%と一致し正確。「実質飽和」もOpenAIが同ベンチの評価停止を表明しており妥当。なおllm-stats掲載スコアの大半はベンダー自己申告である点に留意。"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典URL(NVIDIA公式リリース、2026年5月20日発表)を直接確認: FY27Q1(2026年4月26日終了の四半期)のデータセンタ売上は752億ドル・YoY+92%と明記されており主張と一致。四半期の期間を「2026年2-4月」とするのも妥当(正確には2026年1月26日〜4月26日)。FY2026通期売上2,159億ドル・+65%も、Q4 FY2026リリース(2026年2月25日発表)およびSEC 8-K(q4fy26pr.htm)で確認。第三者ソース(CNBC、Jon Peddie Research、SEC提出書類)とも整合。数値・時点ともに誤りなし。",
+   "evidence_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典のEAフォーラム投稿(2026年3月29日付、GreaterWrongミラー経由で全文確認)に「he predicted $100B run rate by mid-2026, and the best is $60B」とあり、これを「clearest miss」と評価。$60B/$100B=約4割未達の記述と一致。「The AGI-by-2027 timeline is unresolved(6ヶ月前は非現実的に見えたが、最近のSWE能力の伸びで再び信憑性が上がった)」ともあり、「2026年3月時点で未確定」も一致。独立検索(Medium等の他レビュー)も同趣旨。留意点: 評価時点は2026年3月で「2026年央」の期限前のため$100B未達判定は暫定的であり、投稿コメントでも「2倍未満のずれで、まだ4月にもなっていない」と指摘されている。",
+   "evidence_url": "https://forum.effectivealtruism.org/posts/RuwF8FCfpsLeZRgur/how-did-leopold-do-evaluating-situational-awareness-s"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典(Stanford Digital Economy Lab、2026年2月9日公開の追試記事)を直接確認。(1) AI高曝露職は平均的に金利曝露がむしろ低く(「more AI-exposed jobs are actually less exposed to interest rates on average」)、金利説を支持しないと結論(原文は「we do not find strong support」で「棄却」よりやや弱い表現だが趣旨は一致)。(2) 最も厳格な統制(firm-time固定効果)では雇用減が有意になるのは2024年以降で、2022〜23年の減少は他要因も寄与と明記。Fortune等の第三者報道でも金利・過剰採用・リモートワークの頑健性チェックと2024年以降の有意性が裏付けられた。数値・時点のずれなし。",
+   "evidence_url": "https://digitaleconomy.stanford.edu/news/canaries-interest-rates-and-timinga-more-on-recent-drivers-of-employment-changes-for-young-workers/"
+  },
+  {
+   "verdict": "confirmed",
+   "evidence_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112210.html",
+   "notes": "出典URL(総務省 令和7年版情報通信白書)を直接取得し、日本26.7%(2024年度、前年度9.1%)、中国81.2%、米国68.8%、ドイツ59.2%の全数値が記載されていることを確認。ITmedia(2025年7月9日)やLedge.aiなど独立ソースも同一数値を報道しており一致。9.1%→26.7%は約2.9倍で「約3倍」も妥当。留意点として、この「利用率」は「試したことがある」割合(2024年度調査)であり日常的利用率ではないが、主張の趣旨(利用経験率の国際格差)は正確。"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典URLは403で直接閲覧不可だが、記事タイトル(660% surge in June 2025)が主張と一致。独立ソースで検証: 中国税関データに基づくCNBC/Reuters報道で6月の対米レアアース磁石輸出は約353トン・前月比+660%、SCMP/Bloombergで5月は約46.4トン(50トン未満、前年比-93.3%)を確認。4月4日の輸出規制導入も一致。前年比-93.3%から逆算した平常月(2024年5月)は約690トンで「500トン超」も整合。数値・時点ともに正確。",
+   "evidence_url": "https://www.cnbc.com/2025/07/21/rare-earth-magnets-china-exports-surge.html"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典PDF(Aghion-Jones-Jones \"Artificial Intelligence and Economic Growth\", NBER w23928 / Agrawal他編の第9章)をテキスト抽出して検証。式(12)は主張どおり Yt=At(βt^(1-ρ)Kt^ρ+(1-βt)^(1-ρ)L^ρ)^(1/ρ) で、代替の弾力性<1(ρ<0)のタスク粗補完を仮定。「growth is determined not by what we are good at but rather by what is essential and yet hard to improve」とBaumolコスト病による成長制約を明記。Figure 9.1のシミュレーション例では自動化率βが極限で100%に近づく一方、資本分配率は約1/3に有界(極限値 (s̄/(gY+δ))^ρ)で、成長率は年2%で一定の漸近的均斉成長路を提示。NBER・MITスライド等の第三者ソースとも整合。なお1/3と2%は一般定理でなくシミュレーション例のパラメータ依存値だが、主張も「均斉成長例を提示した」と例として述べており正確。",
+   "evidence_url": "https://web.stanford.edu/~chadj/AJJ-AIandGrowth.pdf"
+  },
+  {
+   "verdict": "corrected",
+   "notes": "出典のTrendForce記事は「2026年に中国生産94%増、Unitree+AgiBotが約8割を占める見込み」という2026年予測であり、2025年実績の13,000台も2社シェア8割も記載なし(出典の帰属誤り)。第三者ソースではOmdia(2026年1月)が2025年世界出荷13,318台、AgiBot 5,168台(約39%)首位、Unitree 4,200台(32%)2位で、2社合計は約7割。「Unitree 5,500台超」は同社自身のIPO目論見書ベースの発表値で、Omdiaの4,200台と矛盾。自社発表値とOmdia総数を混ぜると約8割になるが、これは異なる出所の混合。なおCounterpointは世界計約16,000台としており調査会社間で総数も割れる。",
+   "corrected_claim": "Omdiaによれば2025年の世界ヒューマノイド出荷は約13,300台(前年比約5倍)で、首位AgiBot 5,168台(約39%)、2位Unitree 4,200台(約32%)の中国2社で約7割を占めた。なおUnitree自身は2025年に5,500台超の出荷を発表しており、調査会社間で数値は割れている(Counterpointは世界計約16,000台)。「2社で約8割」というTrendForceの数字は2026年の中国生産に関する予測である。",
+   "evidence_url": "https://www.scmp.com/tech/tech-trends/article/3339346/chinese-firms-outpace-us-rivals-2025-humanoid-robot-shipments-agibot-takes-lead"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典のLessWrong記事(Kokotajlo & Lifland、2026年2月13日)を直接確認。「定量指標の進捗は予測ペースの約65%(範囲58–66%)」「SWE-bench Verifiedは2025年中頃予測85%に対し実際の最高74.5%(Opus 4.1)」「OpenAI年換算収益は~$20Bで予測$18Bをやや上回る」と全数値が原文と一致。著者公式ブログ(aifutures.org)と第三者記事でも同数値を裏取り。補足: 74.5%は予測対象時点(2025年中頃)での比較で、2025年末にはOpus 4.5が80.9%に達したがそれでも85%未達のため主張の趣旨は不変。",
+   "evidence_url": "https://www.lesswrong.com/posts/JYGeAAh92hAwvseFk/grading-ai-2027-s-2025-predictions"
+  },
+  {
+   "verdict": "corrected",
+   "corrected_claim": "ARC-AGI-2は2025年3月の公開時にフロンティアモデルのスコアがほぼ0%だったが、約16ヶ月後の2026年7月時点でGPT-5.5が85%(非公式報告、公式検証は未確認)で首位に立ち、GPT-5.4 Proが83.3%、Gemini 3.1 Proが77.1%で続くまで急伸した。",
+   "evidence_url": "https://benchlm.ai/benchmarks/arcAgi2",
+   "notes": "出典URL(agentmarketcap 2026-04-06)には主張の数値がなく、同記事の首位はGemini 3.1 Proの77.1%でGPT-5.5への言及なし。第三者ソース(BenchLM 2026-07-04、blockchain.news、officechai)は「GPT-5.5が85%で首位」を支持するが公式検証未了との留保あり。83.3%は首位でなく2位GPT-5.4 Proのスコアで、「フロンティアが83.3%」と「GPT-5.5が85%」は内部矛盾。公開時スコアは0.1%でなく0%、公開(2025年3月)からの期間は20ヶ月でなく約16ヶ月。急伸トレンド自体は事実だが数値・時点に複数の誤りがあるため corrected。"
+  },
+  {
+   "verdict": "corrected",
+   "notes": "出典(Anthropic公式)と第三者報道(CNBC・Constellation・9to5Mac等)で「2026-06-30輸出管理解除、07-01グローバル再展開(19日間停止後)」および Opus 4.8/GPT-5.5/Kimi K2.7 が同一脆弱性を特定可能だったという記述は確認。ただし「他モデルも再現可能と判明したことが解除の背景」という因果付けは出典の記述より強い。公式ページはこの知見を「Fable 5固有の能力ではない」ことの証拠として提示するにとどまり、解除・再展開を支えた主対応としては Amazon報告の回避手法を99%超ブロックする改良版安全分類器を挙げている。第三者記事でも他モデル同等性の開示は解除理由ではなく論争の種として扱われている。",
+   "corrected_claim": "2026-06-30に米政府はFable 5/Mythos 5への輸出管理を解除し、Anthropicは07-01にFable 5をグローバルに再展開した(6/12からの約19日間の停止後)。再展開の主な根拠はAmazon報告のセーフガード回避手法を99%超ブロックする改良版安全分類器の導入であり、Opus 4.8・GPT-5.5・Kimi K2.7など他モデルも同一脆弱性を特定できたという検証結果は「Fable 5固有の能力ではない」ことを示す補強材料として発表内で言及された(解除の公式理由としては明示されていない)。",
+   "evidence_url": "https://www.anthropic.com/news/redeploying-fable-5"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典のTrendForce記事(2026-06-15)を取得し、需給ギャップ「約20%→2026年末に約10%」の記述を確認。同記事はTSMCの2026年CoWoS能力を月産12万〜14万枚とし、主張の12〜13万枚はこの範囲内で、第三者ソース(Silicon Analysts: 125k wpm、レンジ120k〜130k)とも一致。2023年末の約1.3万枚/月は出典記事自体には記載がないが、Nomad Semi・Silicon Analystsが「end-2023: 13,000 wpm」を独立に報告し、TrendForceの過去記事(2024年末32k〜40k超、2025年75k)の推移とも整合。13k→120k〜130kで約10倍の表現も妥当。なお業界合計ではOSAT分5〜6万枚が加わり約20万枚/月になる点は主張の範囲外で、切り取りの問題はない。",
+   "evidence_url": "https://www.trendforce.com/news/2026/06/15/news-tsmc-cowos-supply-demand-gap-reportedly-seen-narrowing-from-20-to-10-by-end-2026-as-capacity-expands/"
+  },
+  {
+   "verdict": "confirmed",
+   "notes": "出典EPIページは403で直接取得不可だったが、検索インデックス経由でEPI記事本文の「若年大卒(22-27歳)失業率が2023年7月の低点4.0%から2026年3月に5.3%(12カ月移動平均)へ上昇」を確認。5.7%(2026年Q1)と不完全就業率41.5%はNY連銀の recent college graduates トラッカーの数値で、Bloomberg(2026/5/5)やForbes等の第三者ソースとも整合。注意点: 5.7%はNY連銀四半期値、5.3%はEPIの12カ月平均という別指標の併記であり、「新卒」は正確には22-27歳の若年大卒層を指すが、数値・時点はいずれも正確。",
+   "evidence_url": "https://www.newyorkfed.org/research/college-labor-market"
+  },
+  {
+   "verdict": "corrected",
+   "corrected_claim": "令和7年版情報通信白書(2024年度調査)によれば、日本企業の生成AI活用方針(積極活用+限定活用)策定率は49.7%(前年度42.7%)で、同指標の中国92.8%・米国84.8%・ドイツ76.4%を大きく下回る。また業務での生成AI利用率(何らかの業務で使用中)も日本55.2%に対し、中国95.8%・米国90.6%・ドイツ90.3%と9割超であり、いずれの指標でも大きく劣る。",
+   "evidence_url": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r07/html/nd112220.html",
+   "notes": "出典ページの本文とCSVデータ(f00043.csv/f00045.csv)で全数値を一次確認。日本49.7%(前年42.7%、2024年度調査)は正確、中国95.8%・米国90.6%・ドイツ90.3%も図表Ⅰ-1-2-14に実在する正確な数値。ただし主張は異なる2指標を対比している: 49.7%は「活用方針策定率」、9割超の3か国数値は「業務利用率」。同一指標で比べると、活用方針は日本49.7% vs 中国92.8%・米国84.8%・ドイツ76.4%、業務利用率は日本55.2% vs 中国95.8%・米国90.6%・ドイツ90.3%。「大きく劣る」という結論自体は両指標とも成立するが、数値の組み合わせ方に修正が必要。第三者ソース(ITmedia、日経等の白書報道)とも整合。"
+  },
+  {
+   "verdict": "corrected",
+   "corrected_claim": "Epoch AIのGATEモデル(arXiv:2503.04941、2025-03)はcompute基盤のAI開発モデル+AI自動化フレームワーク+準内生成長モデルの統合評価モデル。完全自動化に必要な実効訓練計算量のデフォルトは1e36.5 FLOP(許容範囲1e33〜1e41、Cotraのバイオアンカー由来。1e36はDavidsonの中央値として論文中で言及)。公式ブログによれば自動化進行期の成長率は歴史平均~3%/年の2〜20倍(すなわち年約6〜60%)に加速すると出力する。「積極シナリオで年30〜100%」という出力記述は出典にない。",
+   "evidence_url": "https://epoch.ai/blog/announcing-gate",
+   "notes": "arXivのPDF全文とEpoch公式ブログで照合。モデル構造・2025-03という時点・「歴史平均3%の2〜20倍」はブログで確認(ただし論文本体でなくブログの記述)。完全自動化計算量は論文のデフォルトが1e36.5 eFLOP(範囲1e33〜1e41)で、1e36はDavidson(2023)の中央値として引用されているのみ。「積極シナリオで年30〜100%」は論文・ブログのいずれにも見当たらず、2〜20倍×3%=約6〜60%/年と整合しない。よって数値2点の修正が必要。"
+  }
+ ],
+ "other": [
+  {
+   "gaps": [
+    {
+     "topic": "AGI到達時期・知能爆発の予測分布(要件1・2)の調査が完全に欠落",
+     "why": "notes/ にはこのテーマの調査ノートが1本もない。calibration.ts の既定値 agiMidYear=2031, capabilitySlope=0.45, cognitiveCap=0.85 は一次ソースの裏付けゼロの置き値であり、記事の中核主張とシミュレーション既定シナリオの両方が根拠不明のまま。専門家サーベイ・予測市場・METRのタスク時間半減期など2025〜2026年の最新の定量指標を集め、中位/悲観/楽観の分布として整理する必要がある。",
+     "search_hint": "\"Metaculus AGI\" forecast 2026 / \"METR\" task horizon doubling time 2026 update / AI Impacts expert survey transformative AI timeline / \"superhuman coder\" forecast 2026 / Epoch AI compute scaling trends 2026 / 「AGI 到達時期 予測 2026 専門家」"
+    },
+    {
+     "topic": "産業爆発(explosive growth)の条件・時期(要件3)の理論・実証調査がゼロ",
+     "why": "「どんな条件があれば産業爆発が起きるか」は企画書の明示要件だが、Baumol効果・ボトルネックタスク・ロボット生産の再帰的拡大など成長理論側の文献調査が皆無。モデルの capitalDeepening=1.2 や costSavingPerTask=0.3(Acemoglu 2024の27%と注記のみ、原典未フェッチ)もこの調査で裏付け・更新すべき。",
+     "search_hint": "Epoch AI \"explosive economic growth\" AI report / Tom Davidson takeoff speeds compute-centric model / Acemoglu 2024 \"The Simple Macroeconomics of AI\" TFP estimate 原文PDF / Erdil Besiroglu explosive growth from AI automation / 「AI 経済成長 爆発的 条件 ボトルネック」"
+    },
+    {
+     "topic": "過去予測の検証(Situational Awareness・AI 2027)とMythos/Fable騒動の一次ソース(要件10・11)が未収集",
+     "why": "「過去予測と現状の突合」は企画の方針に明記されているが、Aschenbrenner『Situational Awareness』(2024-06)と『AI 2027』(2025-04)の具体的な予測項目(計算量・能力・時期)を2026年央の実績と照合する材料が何もない。Mythos/Fable騒動は学習知識(2026年1月まで)でも詳細が不確かで、事実経過・原因・教訓を一次報道で確認しないと記事に書けない。",
+     "search_hint": "situational-awareness.ai Aschenbrenner 予測 2025 2026 検証 retrospective / \"AI 2027\" ai-2027.com scenario prediction accuracy 2026 review / Mythos AI incident 2025 何が起きたか 経緯 / Fable model incident controversy timeline 一次報道"
+    },
+    {
+     "topic": "フィジカルAIの現状・中国以外のロボット生産能力・中国輸出規制の影響(要件6・7・9)の調査がゼロ",
+     "why": "1万字記事の主題なのに調査ノートが1本もない。ヒューマノイド出荷台数・コスト曲線、減速機/アクチュエータ/レアアース磁石の中国依存度、2025年以降の中国輸出規制の実施状況といった定量データが皆無で、モデルの chinaExportControl ペナルティ(0.35)や physicalLagYears=6 も根拠なし。中国国内シェアと非中国生産キャパの数字がないと要件9に答えられない。",
+     "search_hint": "IFR World Robotics 2025 installations by country / humanoid robot shipments forecast 2026 Unitree Figure Optimus units / China rare earth magnet export controls 2025 2026 robotics impact / harmonic drive reducer market share China / 「ヒューマノイド 量産 2026 出荷台数」「中国 レアアース 輸出規制 ロボット」"
+    },
+    {
+     "topic": "米国の電力・データセンター供給力(要件8)の実測データが未収集",
+     "why": "「米国は電力とDCを国内でまかなえるか」は企画の明示論点だが、DC電力需要予測・系統接続待ち・ガスタービン納期・原子力/SMR計画などの一次データが1つもない。モデルでは adoptionSpeed に「電力・投資制約を含む」と書きながら裏付けとなる数値(GW需要 vs 供給増設ペース)が存在せず、可視化データセット(site/src/data/ 自体が未作成)にも入れられない。",
+     "search_hint": "LBNL data center energy usage report 2024 2025 GW projection / EIA electricity demand data centers forecast 2030 / interconnection queue backlog 2026 / gas turbine order backlog GE Vernova 2026 / EPRI data center load growth scenarios / 「米国 データセンター 電力 不足 2026」"
+    },
+    {
+     "topic": "シミュレーション係数の一次ソース裏付けと米中の雇用・UBI・社会安定性データ(要件4・12)の欠落",
+     "why": "calibration.ts は全て「暫定」で、cognitiveExposure(米0.46/日0.40等)は Eloundou et al./ILO と注記のみで原典の国別数値未確認、laborFlexibility は OECD雇用保護指標(EPL)との対応が未調査、reinstatement=0.35・reabsorptionBase=0.55・fiscalSpace 等は完全な置き値。さらに要件4のうち米中2カ国分(中国の若年失業・戸籍制度と社会安定、米のUBI実証・政治的実現性、各国財政余地)の調査ノートがなく、日EU偏重のまま国別シナリオ比較が書けない。",
+     "search_hint": "Eloundou GPTs are GPTs occupation exposure by country table / ILO 2025 generative AI exposure country income group / OECD EPL index 2023 Japan US Germany France / China youth unemployment rate 2026 official NBS / UBI pilot results meta-analysis 2025 / IMF Fiscal Monitor 2026 fiscal space by country / Acemoglu Restrepo reinstatement effect magnitude estimate"
+    }
+   ]
+  }
+ ]
+}
