@@ -1,0 +1,377 @@
+{
+  "source": "https://metr.org/assets/benchmark_results_1_1.yaml",
+  "retrieved": "2026-09-09",
+  "pageUpdated": "2026-05-08",
+  "units": "minutes",
+  "sha256": "aae31902b0519a4da73e16643915e5e8aca13cd3315c3aac893ce3d6dfe92ad9",
+  "rows": [
+    {
+      "id": "gpt_4",
+      "name": "GPT-4",
+      "date": "2023-03-14",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 7.995283,
+        "ci_low": 1.93292,
+        "estimate": 3.987428
+      },
+      "p80": {
+        "ci_high": 2.523746,
+        "ci_low": 0.342984,
+        "estimate": 0.889561
+      }
+    },
+    {
+      "id": "gpt_4_1106_inspect",
+      "name": "GPT-4 (Nov 2023)",
+      "date": "2023-11-06",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 8.443226,
+        "ci_low": 1.866859,
+        "estimate": 4.044959
+      },
+      "p80": {
+        "ci_high": 2.358414,
+        "ci_low": 0.276599,
+        "estimate": 0.783032
+      }
+    },
+    {
+      "id": "claude_3_opus_inspect",
+      "name": "Claude 3 Opus",
+      "date": "2024-03-04",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 8.76484,
+        "ci_low": 1.706313,
+        "estimate": 3.952262
+      },
+      "p80": {
+        "ci_high": 2.118276,
+        "ci_low": 0.190491,
+        "estimate": 0.638973
+      }
+    },
+    {
+      "id": "gpt_4_turbo_inspect",
+      "name": "GPT-4 Turbo",
+      "date": "2024-04-09",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 6.736613,
+        "ci_low": 1.980046,
+        "estimate": 3.732787
+      },
+      "p80": {
+        "ci_high": 2.196806,
+        "ci_low": 0.428277,
+        "estimate": 0.927933
+      }
+    },
+    {
+      "id": "gpt_4o_inspect",
+      "name": "GPT-4o",
+      "date": "2024-05-13",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 12.905741,
+        "ci_low": 4.001482,
+        "estimate": 6.991195
+      },
+      "p80": {
+        "ci_high": 3.01517,
+        "ci_low": 0.562997,
+        "estimate": 1.267009
+      }
+    },
+    {
+      "id": "claude_3_5_sonnet_20240620_inspect",
+      "name": "Claude 3.5 Sonnet (Jun)",
+      "date": "2024-06-20",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 22.384214,
+        "ci_low": 5.489734,
+        "estimate": 11.395377
+      },
+      "p80": {
+        "ci_high": 4.573519,
+        "ci_low": 0.57927,
+        "estimate": 1.671757
+      }
+    },
+    {
+      "id": "o1_preview",
+      "name": "o1-preview",
+      "date": "2024-09-12",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 33.379877,
+        "ci_low": 11.716193,
+        "estimate": 20.326586
+      },
+      "p80": {
+        "ci_high": 8.912444,
+        "ci_low": 2.012646,
+        "estimate": 4.420545
+      }
+    },
+    {
+      "id": "claude_3_5_sonnet_20241022_inspect",
+      "name": "Claude 3.5 Sonnet (Oct)",
+      "date": "2024-10-22",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 40.82028,
+        "ci_low": 10.144026,
+        "estimate": 20.522872
+      },
+      "p80": {
+        "ci_high": 7.363864,
+        "ci_low": 0.89379,
+        "estimate": 2.595677
+      }
+    },
+    {
+      "id": "o1_inspect",
+      "name": "o1",
+      "date": "2024-12-05",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 64.95249,
+        "ci_low": 21.164512,
+        "estimate": 38.831588
+      },
+      "p80": {
+        "ci_high": 16.640636,
+        "ci_low": 3.036033,
+        "estimate": 7.090121
+      }
+    },
+    {
+      "id": "claude_3_7_sonnet_inspect",
+      "name": "Claude 3.7 Sonnet",
+      "date": "2025-02-24",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 104.226017,
+        "ci_low": 33.006168,
+        "estimate": 60.388937
+      },
+      "p80": {
+        "ci_high": 28.889879,
+        "ci_low": 4.575608,
+        "estimate": 12.09179
+      }
+    },
+    {
+      "id": "o3_inspect",
+      "name": "o3",
+      "date": "2025-04-16",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 190.943818,
+        "ci_low": 74.615398,
+        "estimate": 119.732634
+      },
+      "p80": {
+        "ci_high": 57.823511,
+        "ci_low": 15.127348,
+        "estimate": 29.981603
+      }
+    },
+    {
+      "id": "claude_4_opus_inspect",
+      "name": "Claude Opus 4",
+      "date": "2025-05-22",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 163.454074,
+        "ci_low": 59.994073,
+        "estimate": 100.366123
+      },
+      "p80": {
+        "ci_high": 41.937268,
+        "ci_low": 8.483125,
+        "estimate": 20.429752
+      }
+    },
+    {
+      "id": "claude_4_1_opus_inspect",
+      "name": "Claude Opus 4.1",
+      "date": "2025-08-05",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 159.451918,
+        "ci_low": 59.272391,
+        "estimate": 100.472004
+      },
+      "p80": {
+        "ci_high": 47.785951,
+        "ci_low": 10.538456,
+        "estimate": 23.455761
+      }
+    },
+    {
+      "id": "gpt_5_2025_08_07_inspect",
+      "name": "GPT-5",
+      "date": "2025-08-07",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 405.551565,
+        "ci_low": 112.641357,
+        "estimate": 203.012577
+      },
+      "p80": {
+        "ci_high": 70.093125,
+        "ci_low": 19.184874,
+        "estimate": 38.312431
+      }
+    },
+    {
+      "id": "gemini_3_pro",
+      "name": "Gemini 3 Pro",
+      "date": "2025-11-18",
+      "vendor": "Google",
+      "p50": {
+        "ci_high": 379.235434,
+        "ci_low": 139.565157,
+        "estimate": 224.325884
+      },
+      "p80": {
+        "ci_high": 103.295501,
+        "ci_low": 25.650451,
+        "estimate": 54.142849
+      }
+    },
+    {
+      "id": "gpt_5_1_codex_max_inspect",
+      "name": "GPT-5.1 Codex Max",
+      "date": "2025-11-19",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 396.206723,
+        "ci_low": 134.31077,
+        "estimate": 223.714694
+      },
+      "p80": {
+        "ci_high": 88.365435,
+        "ci_low": 27.30204,
+        "estimate": 50.632499
+      }
+    },
+    {
+      "id": "claude_opus_4_5_inspect",
+      "name": "Claude Opus 4.5",
+      "date": "2025-11-24",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 623.704698,
+        "ci_low": 161.717714,
+        "estimate": 292.994594
+      },
+      "p80": {
+        "ci_high": 104.641318,
+        "ci_low": 20.660485,
+        "estimate": 49.430584
+      }
+    },
+    {
+      "id": "gpt_5_2",
+      "name": "GPT-5.2",
+      "date": "2025-12-11",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 815.177445,
+        "ci_low": 198.067494,
+        "estimate": 352.249302
+      },
+      "p80": {
+        "ci_high": 131.730719,
+        "ci_low": 31.665111,
+        "estimate": 66.002649
+      }
+    },
+    {
+      "id": "claude_opus_4_6_inspect",
+      "name": "Claude Opus 4.6",
+      "date": "2026-02-05",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 3633.786163,
+        "ci_low": 316.685725,
+        "estimate": 718.80683
+      },
+      "p80": {
+        "ci_high": 170.437873,
+        "ci_low": 27.026521,
+        "estimate": 69.874587
+      }
+    },
+    {
+      "id": "gpt_5_3_codex",
+      "name": "GPT-5.3 Codex",
+      "date": "2026-02-05",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 816.351994,
+        "ci_low": 194.913134,
+        "estimate": 349.530732
+      },
+      "p80": {
+        "ci_high": 122.058963,
+        "ci_low": 22.361504,
+        "estimate": 54.739407
+      }
+    },
+    {
+      "id": "gemini_3_1_pro",
+      "name": "Gemini 3.1 Pro",
+      "date": "2026-02-19",
+      "vendor": "Google",
+      "p50": {
+        "ci_high": 694.750898,
+        "ci_low": 233.50073,
+        "estimate": 384.147435
+      },
+      "p80": {
+        "ci_high": 158.618017,
+        "ci_low": 52.025934,
+        "estimate": 89.801503
+      }
+    },
+    {
+      "id": "gpt_5_4",
+      "name": "GPT-5.4",
+      "date": "2026-03-05",
+      "vendor": "OpenAI",
+      "p50": {
+        "ci_high": 768.779526,
+        "ci_low": 186.581591,
+        "estimate": 341.735276
+      },
+      "p80": {
+        "ci_high": 108.679232,
+        "ci_low": 23.957027,
+        "estimate": 53.877851
+      }
+    },
+    {
+      "id": "claude_mythos_preview_early_inspect",
+      "name": "Claude Mythos Preview (early)",
+      "date": "2026-04-07",
+      "vendor": "Anthropic",
+      "p50": {
+        "ci_high": 3304.261235,
+        "ci_low": 508.876789,
+        "estimate": 1044.780145
+      },
+      "p80": {
+        "ci_high": 398.514614,
+        "ci_low": 97.30292,
+        "estimate": 185.911829
+      }
+    }
+  ]
+}

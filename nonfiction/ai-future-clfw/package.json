@@ -1,0 +1,16 @@
+{
+  "name": "ai-future-clfw",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm ci --prefix site",
+    "build": "npm run build --prefix site",
+    "dev": "npm run dev --prefix site",
+    "preview": "npm run build && wrangler dev --ip 0.0.0.0",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:check": "npm run build && wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "4.131.2"
+  }
+}

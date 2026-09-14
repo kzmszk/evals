@@ -1,0 +1,15 @@
+{
+  "name": "typescript-course",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node app/content/validate.mjs",
+    "dev": "wrangler dev --ip 0.0.0.0 --port 8788",
+    "preview": "npm run dev",
+    "deploy:check": "npm test && wrangler deploy --dry-run",
+    "deploy": "npm test && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.131.2"
+  }
+}
