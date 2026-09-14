@@ -22,6 +22,8 @@ python や java など経験者向けに typescript のマスターコースを�
 
 ### 学習アプリの起動
 
+Cloudflare Workersへのデプロイ手順は [typescript/README.md](typescript/README.md) を参照。
+
 [typescript/app/index.html](typescript/app/index.html) をブラウザで直接開く(`file://` で動作)。エディタ(Monaco)の読み込みにのみネットワークが必要。
 
 ```sh
